@@ -48,7 +48,7 @@ function TechStackPage({ pageIdx, total }) {
   return (
     <section className="page tech-page">
       <div className="page-pad">
-        <h2 className="tech-title">기술 스택</h2>
+        <h2 className="tech-title">Tech Stack</h2>
         <p className="tech-sub">각 기술을 어느 프로젝트의 어느 기능에 사용했는지 함께 명시했습니다.</p>
 
         <div className="tech-grid">
