@@ -7,7 +7,7 @@ function AboutPage({ pageIdx, total }) {
   return (
     <section className="page about-page">
       <div className="page-pad">
-        <h2 className="tech-title">프로필</h2>
+        <h2 className="tech-title">Profile</h2>
         <p></p>
 
         <div className="about-grid">
