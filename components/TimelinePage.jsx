@@ -5,7 +5,7 @@ function TimelinePage({ pageIdx, total, projects }) {
   return (
     <section className="page timeline-page">
       <div className="page-pad">
-        <h2 className="tl-title">프로젝트</h2>
+        <h2 className="tl-title">Project</h2>
         <p className="tl-sub">아래 순서는 개발 일자 기준입니다.</p>
 
         <div className="tl-list">
