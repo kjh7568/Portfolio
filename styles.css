@@ -213,3 +213,27 @@ body {
   height: 13px;
   display: inline-block;
 }
+
+/* ---------- Responsive (모바일/태블릿) ---------- */
+@media screen and (max-width: 1180px) {
+  #root {
+    padding: 20px 20px 60px;
+    gap: 16px;
+  }
+
+  .page {
+    width: calc(100vw - 40px);
+    height: calc((100vw - 40px) * 210 / 297);
+  }
+
+  .page > .page-pad,
+  .page > .cover-inner,
+  .page > .closing-inner {
+    width: 297mm !important;
+    height: 210mm !important;
+    transform: scale(calc((100vw - 40px) / 1123px));
+    transform-origin: top left;
+    flex-shrink: 0;
+    box-sizing: border-box;
+  }
+}
