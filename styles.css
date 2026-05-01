@@ -1,0 +1,215 @@
+/* ============================================================
+   Portfolio — Page Shell & Print Layout
+   A4 세로 (210mm × 297mm) - PDF 우선
+   ============================================================ */
+
+@import url("colors_and_type.css");
+
+/* ---------- Page Shell ---------- */
+html, body { margin: 0; padding: 0; background: #ECECEC; }
+body {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  padding: 40px 20px 80px;
+}
+
+/* A4 가로 — 297 × 210 mm.
+   Use mm directly so print maps 1:1. */
+.page {
+  width: 297mm;
+  height: 210mm;
+  background: #fff;
+  box-shadow: 0 8px 32px rgba(15, 23, 42, 0.10);
+  box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
+  color: var(--fg);
+  page-break-after: always;
+  break-after: page;
+}
+
+.page:last-child {
+  page-break-after: auto;
+  break-after: auto;
+}
+
+/* ---------- Page Chrome ---------- */
+.page-pad {
+  padding: 18mm 18mm 16mm;
+  height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.page-footer {
+  position: absolute;
+  left: 18mm;
+  right: 18mm;
+  bottom: 8mm;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font: 500 9.5px/1 var(--font-mono);
+  color: var(--fg-3);
+  letter-spacing: 0.08em;
+}
+.page-footer .meta { display: flex; gap: 18px; align-items: center; }
+.page-footer .meta span { color: var(--fg-3); }
+
+.page-eyebrow {
+  font: 600 10px/1 var(--font-sans);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 16px;
+}
+
+/* ---------- Print ---------- */
+@page {
+  size: A4 landscape;
+  margin: 0;
+}
+@media print {
+  *, *::before, *::after {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  html, body { background: #fff; }
+  #root { padding: 0; gap: 0; }
+  .page {
+    box-shadow: none;
+    margin: 0;
+    page-break-after: always;
+    break-after: page;
+  }
+  .page:last-child {
+    page-break-after: auto;
+    break-after: auto;
+  }
+  /* Avoid leaks */
+  a { color: inherit; text-decoration: none; }
+  .no-print { display: none !important; }
+}
+
+/* ---------- Print floating button ---------- */
+.print-fab {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 1000;
+  padding: 14px 20px;
+  background: var(--fg);
+  color: #fff;
+  border: 0;
+  border-radius: 6px;
+  font: 600 13px/1 var(--font-sans);
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: transform var(--dur) var(--ease), background var(--dur) var(--ease);
+}
+.print-fab:hover {
+  background: var(--accent);
+  transform: translateY(-1px);
+}
+.print-fab .arr { color: var(--accent); font-weight: 800; }
+.print-fab:hover .arr { color: #fff; }
+
+/* ---------- Image placeholder ---------- */
+.img-ph {
+  background: #E8ECF1;
+  border: 1px solid var(--line-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 4px;
+  color: var(--fg-3);
+  font: 500 10px/1.4 var(--font-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  position: relative;
+  border-radius: 3px;
+  overflow: hidden;
+}
+.img-ph::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(45deg, rgba(0,0,0,0.04) 25%, transparent 25%),
+    linear-gradient(-45deg, rgba(0,0,0,0.04) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, rgba(0,0,0,0.04) 75%),
+    linear-gradient(-45deg, transparent 75%, rgba(0,0,0,0.04) 75%);
+  background-size: 16px 16px;
+  background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+  opacity: 0.5;
+}
+.img-ph .label {
+  position: relative;
+  z-index: 1;
+  background: #fff;
+  padding: 4px 10px;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  color: var(--fg-2);
+  font-weight: 600;
+}
+.img-ph .dim {
+  position: relative;
+  z-index: 1;
+  color: var(--fg-4);
+  font-size: 9px;
+}
+
+/* ---------- Common atoms ---------- */
+.hairline { height: 1px; background: var(--line); border: 0; margin: 0; }
+.rule-strong { height: 2px; background: var(--fg); border: 0; margin: 0; }
+
+.tag-chip {
+  font: 500 9.5px/1 var(--font-mono);
+  padding: 5px 8px;
+  background: var(--bg-sunk);
+  color: var(--fg-2);
+  border-radius: 3px;
+  display: inline-block;
+}
+
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border: 1px solid var(--line-2);
+  border-radius: 4px;
+  font: 500 11px/1 var(--font-sans);
+  color: var(--fg);
+  text-decoration: none;
+  background: #fff;
+  transition: all var(--dur) var(--ease);
+}
+.icon-btn:hover {
+  border-color: var(--fg);
+  background: var(--fg);
+  color: #fff;
+}
+.icon-btn .ic {
+  width: 13px;
+  height: 13px;
+  display: inline-block;
+}
