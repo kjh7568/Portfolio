@@ -27,6 +27,9 @@ function TimelinePage({ pageIdx, total, projects }) {
         <div className="tl-footer-note">
           ※ 각 프로젝트는 2페이지 — <b>개요</b>(목적·환경·링크) + <b>기능 소개</b>(구현한 인게임 기능). 기술 상세는 별도 기술 문서로 분리했습니다.
         </div>
+        <div className="tl-footer-note">
+          📌 프로젝트 소개에 GIF를 활용하고 있어, PDF보다 <a href="https://kjh7568.github.io/Portfolio/" target="_blank" rel="noopener noreferrer">웹사이트</a>에서 확인하시면 더욱 이해가 쉽습니다.
+        </div>
 
         <PageFooter idx={pageIdx} total={total} />
       </div>
