@@ -1,0 +1,1487 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>Hive Survivor — 기술문서</title>
+<link rel="stylesheet" href="css/colors_and_type.css?v=2">
+<style>
+/* ============================================================
+   Tech Document — A4 landscape (297 × 210mm @ 96dpi = 1123 × 794px)
+   ============================================================ */
+:root{
+  --page-w: 1123px;
+  --page-h: 794px;
+  --pad-x: 64px;
+  --pad-y: 56px;
+
+  /* GitHub Light code colors */
+  --code-bg:        #F6F8FA;
+  --code-border:    #D0D7DE;
+  --code-fg:        #1F2328;
+  --code-comment:   #6E7781;
+  --code-keyword:   #CF222E;
+  --code-string:    #0A3069;
+  --code-number:    #0550AE;
+  --code-fn:        #8250DF;
+  --code-type:      #953800;
+  --code-attr:      #116329;
+  --code-line:      #57606A;
+  --code-gutter-bg: #EAEEF2;
+
+  /* Doc-specific */
+  --tag-bg:         #F1F4F9;
+  --callout-bg:     var(--blue-50);
+  --callout-border: var(--blue-700);
+  --warn-bg:        #FFF8E6;
+  --warn-border:    #B45309;
+  --good-bg:        #ECFDF3;
+  --good-border:    #15803D;
+}
+
+*,*::before,*::after{ box-sizing: border-box; }
+html,body{ margin:0; padding:0; background:#ECECEC; color:var(--fg); font:var(--body); }
+body{ padding: 32px 0 64px; }
+
+/* ----- Top utility bar (web only) ----- */
+.utility-bar{
+  position: sticky; top: 0; z-index: 50;
+  display:flex; justify-content:space-between; align-items:center;
+  width: var(--page-w); margin: 0 auto 28px;
+  padding: 12px 16px;
+  background:#fff; border:1px solid var(--line); border-radius: var(--r-2);
+  box-shadow: var(--shadow-1);
+}
+.utility-bar .crumb{ display:flex; align-items:center; gap:10px; font: var(--mono-sm); color: var(--fg-3); }
+.utility-bar .crumb a{ color: var(--fg-2); text-decoration: none; border-bottom: 1px solid var(--line-2); padding-bottom: 1px; }
+.utility-bar .crumb a:hover{ color: var(--accent); border-color: var(--accent); }
+.utility-bar .crumb .sep{ color: var(--fg-4); }
+.utility-bar .crumb .here{ color: var(--fg); font-weight: 600; font-family: var(--font-sans); font-size: 13px; }
+
+.utility-bar .progress{ display:flex; align-items:center; gap:10px; font: var(--mono-sm); color: var(--fg-3); }
+.utility-bar .progress .track{ width: 180px; height: 4px; background: var(--bg-sunk); border-radius: 999px; overflow: hidden; }
+.utility-bar .progress .fill{ height:100%; background: var(--accent); width: 0%; transition: width 200ms var(--ease); }
+
+@media print{
+  .utility-bar{ display:none; }
+}
+
+/* ============================================================
+   PAGE
+   ============================================================ */
+.page{
+  width: var(--page-w);
+  height: var(--page-h);
+  margin: 0 auto 24px;
+  background:#fff;
+  box-shadow: 0 8px 24px rgba(15,23,42,0.08);
+  position: relative;
+  overflow: hidden;
+  page-break-after: always;
+  break-after: page;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto 1fr auto;
+  grid-template-areas:
+    "header"
+    "main"
+    "footer";
+}
+
+/* page header */
+.page-header{
+  grid-area: header;
+  padding: 18px var(--pad-x) 14px;
+  border-bottom: 1px solid var(--line);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.page-header .left{ display:flex; align-items:baseline; gap: 14px; }
+.page-header .doc-mark{
+  font: 800 16px/1 var(--font-sans);
+  letter-spacing: -0.02em;
+  color: var(--fg);
+}
+.page-header .doc-mark .dot{ color: var(--accent); }
+.page-header .doc-title{
+  font: 600 13px/1 var(--font-sans);
+  color: var(--fg-3);
+}
+.page-header .doc-title b{ color: var(--fg); font-weight: 600; }
+.page-header .right{ display:flex; align-items:center; gap: 16px; font: var(--mono-sm); color: var(--fg-3); }
+.page-header .right .sep{ width:1px; height:12px; background: var(--line-2); }
+
+/* page footer */
+.page-footer{
+  grid-area: footer;
+  padding: 10px var(--pad-x);
+  border-top: 1px solid var(--line);
+  display:flex; align-items:center; justify-content:space-between;
+  font: var(--mono-sm); color: var(--fg-4);
+}
+.page-footer .pn{ color: var(--fg-2); font-weight: 600; }
+.page-footer .pn b{ color: var(--fg); }
+
+/* page main */
+.page-main{
+  grid-area: main;
+  padding: 28px var(--pad-x) 24px;
+  overflow: hidden;
+  position: relative;
+}
+
+/* ToC sidebar */
+.toc{
+  grid-area: toc;
+  border-left: 1px solid var(--line);
+  padding: 28px 28px 24px 24px;
+  background: var(--bg-alt);
+  display: flex; flex-direction: column; gap: 18px;
+}
+.toc .lbl{
+  font: 600 10px/1 var(--font-sans);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+}
+.toc ul{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:2px; }
+.toc li a{
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  align-items: baseline;
+  padding: 7px 8px;
+  border-radius: var(--r-1);
+  text-decoration: none;
+  color: var(--fg-2);
+  font: 500 12.5px/1.35 var(--font-sans);
+  transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+.toc li a .num{ font: 500 11px/1 var(--font-mono); color: var(--fg-4); }
+.toc li a:hover{ background: #fff; color: var(--accent); }
+.toc li a.active{ background:#fff; color: var(--fg); border-left: 2px solid var(--accent); padding-left: 6px; }
+.toc li a.active .num{ color: var(--accent); }
+
+.toc .meta{ margin-top: auto; padding-top: 14px; border-top: 1px solid var(--line); }
+.toc .meta .row{ display:flex; justify-content:space-between; padding: 4px 0; font: var(--mono-sm); color: var(--fg-3); }
+.toc .meta .row b{ color: var(--fg); font-weight: 600; }
+
+/* ============================================================
+   CONTENT PRIMITIVES
+   ============================================================ */
+.eyebrow-doc{
+  font: 600 11px/1 var(--font-sans);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.section-title{
+  font: 700 32px/1.2 var(--font-sans);
+  letter-spacing: -0.018em;
+  margin: 8px 0 4px;
+  color: var(--fg);
+}
+.section-sub{
+  font: 500 16px/1.5 var(--font-sans);
+  color: var(--fg-2);
+  margin: 0 0 18px;
+  max-width: 70ch;
+}
+
+.h-num{
+  font: 500 11px/1 var(--font-mono);
+  color: var(--fg-4);
+  margin-right: 8px;
+}
+
+/* card */
+.card{
+  border: 1px solid var(--line);
+  border-radius: var(--r-2);
+  padding: 16px 18px;
+  background: #fff;
+}
+.card.sunk{ background: var(--bg-sunk); }
+.card.accent-bar{ position: relative; padding-left: 22px; }
+.card.accent-bar::before{
+  content: ""; position: absolute; left: 0; top: 12px; bottom: 12px;
+  width: 4px; border-radius: 2px; background: var(--accent);
+}
+
+.card .card-head{
+  display:flex; align-items:center; gap:10px; margin-bottom: 8px;
+}
+.card .card-head .ttl{ font: 600 14px/1.3 var(--font-sans); color: var(--fg); margin: 0; }
+.card .card-head .badge{
+  font: 600 10px/1 var(--font-sans);
+  letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 4px 7px; border-radius: var(--r-1);
+  background: var(--bg-sunk); color: var(--fg-3);
+}
+.card .card-head .badge.b-blue{ background: var(--accent-soft); color: var(--accent-strong); }
+.card .card-head .badge.b-warn{ background: var(--warn-bg); color: var(--warn); }
+.card .card-head .badge.b-good{ background: var(--good-bg); color: var(--success); }
+
+.card p{ font: 400 13px/1.6 var(--font-sans); color: var(--fg-2); margin: 0; }
+.card p + p{ margin-top: 8px; }
+
+/* tags */
+.tags{ display:flex; flex-wrap:wrap; gap:6px; }
+.tag{ font: var(--mono-sm); padding: 4px 10px; border-radius: var(--r-1); background: var(--tag-bg); color: var(--fg-2); }
+.tag-outline{ background: transparent; border: 1px solid var(--line-2); color: var(--fg-2); }
+.tag-accent{ background: var(--accent-soft); color: var(--accent-strong); }
+.tag-solid{ background: var(--accent); color:#fff; }
+
+/* metric */
+.metric-row{
+  display:grid; grid-template-columns: repeat(4, 1fr); gap: 0;
+  border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+}
+.metric-row .m{ padding: 14px 18px 14px 0; border-right: 1px solid var(--line); }
+.metric-row .m:last-child{ border-right: 0; padding-right: 0; }
+.metric-row .m:not(:first-child){ padding-left: 18px; }
+.metric-row .m .v{
+  font: 800 28px/1 var(--font-sans);
+  letter-spacing: -0.02em;
+  color: var(--fg);
+}
+.metric-row .m .v .small{ font-size: 14px; color: var(--fg-3); font-weight: 500; }
+.metric-row .m .v .delta{ font: 600 12px/1 var(--font-mono); color: var(--success); margin-left: 6px; }
+.metric-row .m .v .delta.bad{ color: var(--danger); }
+.metric-row .m .l{
+  font: 500 10px/1 var(--font-sans);
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--fg-3); margin-top: 8px;
+}
+
+/* callout */
+.callout{
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--callout-border);
+  background: var(--callout-bg);
+  padding: 12px 16px;
+  border-radius: var(--r-2);
+  display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: start;
+}
+.callout .ic{ font: 700 12px/1 var(--font-mono); color: var(--callout-border); padding-top: 2px; letter-spacing: 0.1em; }
+.callout p{ margin: 0; font: 400 13px/1.55 var(--font-sans); color: var(--fg-2); }
+.callout p + p{ margin-top: 6px; }
+.callout.warn{ border-left-color: var(--warn-border); background: var(--warn-bg); }
+.callout.warn .ic{ color: var(--warn-border); }
+.callout.good{ border-left-color: var(--good-border); background: var(--good-bg); }
+.callout.good .ic{ color: var(--good-border); }
+
+/* placeholder image / diagram */
+.ph{
+  border: 1px dashed var(--line-2);
+  border-radius: var(--r-2);
+  background:
+    repeating-linear-gradient(
+      45deg,
+      #FAFBFD 0px, #FAFBFD 12px,
+      #F1F4F9 12px, #F1F4F9 24px
+    );
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap: 6px;
+  color: var(--fg-3);
+  text-align: center;
+  padding: 12px;
+}
+.ph .ic{ font: 600 11px/1 var(--font-mono); color: var(--fg-4); letter-spacing: 0.16em; }
+.ph .ttl{ font: 600 13px/1.3 var(--font-sans); color: var(--fg-2); }
+.ph .sub{ font: 500 11px/1.4 var(--font-mono); color: var(--fg-4); }
+
+/* code block — GitHub Light */
+.code{
+  border: 1px solid var(--code-border);
+  border-radius: var(--r-2);
+  background: var(--code-bg);
+  overflow: hidden;
+  font: 400 12px/1.6 var(--font-mono);
+  color: var(--code-fg);
+}
+.code .code-head{
+  display:flex; align-items:center; justify-content:space-between;
+  padding: 6px 12px;
+  background: var(--code-gutter-bg);
+  border-bottom: 1px solid var(--code-border);
+  font: 500 11px/1 var(--font-mono);
+  color: var(--code-line);
+}
+.code .code-head .file{ color: var(--code-fg); font-weight: 600; }
+.code .code-head .lang{ font: 500 10px/1 var(--font-mono); letter-spacing: 0.1em; text-transform: uppercase; }
+.code pre{
+  margin: 0; padding: 12px 14px 12px 0;
+  overflow: auto;
+  display: grid;
+  grid-template-columns: auto 1fr;
+}
+.code pre .ln{
+  user-select: none;
+  text-align: right;
+  padding: 0 12px;
+  color: var(--code-line);
+  background: transparent;
+  border-right: 1px solid var(--code-border);
+  margin-right: 12px;
+  white-space: pre;
+}
+.code pre code{ display:block; white-space: pre; }
+
+/* token colors */
+.tk-c{ color: var(--code-comment); font-style: italic; }
+.tk-k{ color: var(--code-keyword); }
+.tk-s{ color: var(--code-string); }
+.tk-n{ color: var(--code-number); }
+.tk-f{ color: var(--code-fn); }
+.tk-t{ color: var(--code-type); }
+.tk-a{ color: var(--code-attr); }
+
+/* inline code */
+code.inline{
+  font: 500 12px/1 var(--font-mono);
+  padding: 2px 6px;
+  background: var(--code-bg);
+  border: 1px solid var(--code-border);
+  border-radius: 4px;
+  color: var(--code-fg);
+}
+
+/* generic body lists */
+.body p{ font: 400 13px/1.65 var(--font-sans); color: var(--fg-2); margin: 0 0 8px; }
+.body p:last-child{ margin: 0; }
+.body ul{ margin: 0 0 8px; padding-left: 16px; display:flex; flex-direction:column; gap: 4px; }
+.body ul li{ font: 400 13px/1.55 var(--font-sans); color: var(--fg-2); }
+.body ul li b{ color: var(--fg); font-weight: 700; }
+
+/* split layouts */
+.split-2{ display:grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.split-3{ display:grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.split-2-1{ display:grid; grid-template-columns: 2fr 1fr; gap: 18px; }
+.split-1-2{ display:grid; grid-template-columns: 1fr 2fr; gap: 18px; }
+
+/* ============================================================
+   COVER PAGE
+   ============================================================ */
+.cover{
+  grid-template-columns: 1fr;
+  grid-template-areas: "main" "footer";
+  grid-template-rows: 1fr auto;
+}
+.cover .page-main{
+  display:grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 56px;
+  padding: 72px var(--pad-x) 56px;
+}
+.cover .left{ display:flex; flex-direction:column; justify-content:space-between; }
+.cover .eyebrow-doc{ margin-bottom: 14px; }
+.cover h1.cover-title{
+  font: 800 84px/0.95 var(--font-sans);
+  letter-spacing: -0.035em;
+  margin: 0 0 14px;
+  color: var(--fg);
+}
+.cover .cover-sub{
+  font: 500 18px/1.45 var(--font-sans);
+  color: var(--fg-2);
+  max-width: 410px;
+  margin: 0 0 28px;
+}
+.cover .cover-meta{
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px 32px;
+  border-top: 1px solid var(--line);
+  padding-top: 18px;
+}
+.cover .cover-meta .row .l{
+  font: 600 10px/1 var(--font-sans);
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--fg-3);
+}
+.cover .cover-meta .row .v{
+  font: 600 14px/1.4 var(--font-sans);
+  color: var(--fg);
+  margin-top: 6px;
+}
+.cover .cover-meta .row .v .mono{ font: 500 13px/1.4 var(--font-mono); color: var(--fg-2); }
+
+.cover .right{
+  background: var(--bg-alt);
+  border: 1px solid var(--line);
+  border-radius: var(--r-3);
+  padding: 28px;
+  display:flex; flex-direction:column; gap: 18px;
+  position: relative;
+}
+.cover .right .placeholder-hero{
+  border: 1px dashed var(--line-2);
+  border-radius: var(--r-2);
+  aspect-ratio: 1280 / 720;
+  width: 100%;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap: 10px;
+  color: var(--fg-3);
+  background:
+    repeating-linear-gradient(
+      45deg,
+      #FFFFFF 0px, #FFFFFF 14px,
+      #F1F4F9 14px, #F1F4F9 28px
+    );
+}
+.cover .right .placeholder-hero .ttl{ font: 700 14px/1.3 var(--font-sans); color: var(--fg-2); }
+.cover .right .placeholder-hero .sub{ font: 500 11px/1.4 var(--font-mono); color: var(--fg-4); letter-spacing: 0.08em; }
+
+.cover .right .toc-preview{
+  display:flex; flex-direction:column; gap: 0;
+  border-top: 1px solid var(--line);
+  padding-top: 18px;
+  margin-top: 8px;
+  flex: 1;
+  min-height: 0;
+  justify-content: space-between;
+}
+.cover .right .toc-preview .lbl{ font: 600 11px/1 var(--font-sans); letter-spacing: 0.16em; text-transform: uppercase; color: var(--fg-3); margin-bottom: 10px; }
+.cover .right .toc-preview .row{
+  display:grid; grid-template-columns: 32px 1fr auto; gap: 12px;
+  font: 500 13px/1.45 var(--font-sans);
+  color: var(--fg-2);
+  padding: 8px 0;
+  border-bottom: 1px dotted var(--line);
+}
+.cover .right .toc-preview .row:last-child{ border-bottom: 0; }
+.cover .right .toc-preview .row .n{ font: 600 12px/1.45 var(--font-mono); color: var(--accent); }
+.cover .right .toc-preview .row .p{ font: 500 11px/1.45 var(--font-mono); color: var(--fg-4); }
+
+.cover .author{
+  display:flex; align-items:center; justify-content: space-between;
+  margin-top: 24px;
+}
+.cover .author .who{ font: 600 14px/1.3 var(--font-sans); color: var(--fg); }
+.cover .author .who .meta{ display:block; font: 500 12px/1.4 var(--font-mono); color: var(--fg-3); margin-top: 4px; }
+.cover .author .stamp{
+  font: 500 12px/1.4 var(--font-mono);
+  text-align: right;
+  white-space: pre-line;
+  color: var(--fg-3);
+  text-align: right;
+  border-left: 1px solid var(--line);
+  padding-left: 14px;
+}
+
+/* ============================================================
+   OVERVIEW PAGE (page 2: header, hero metric, feature index)
+   ============================================================ */
+.overview-hero{
+  display:grid; grid-template-columns: 1.1fr 1fr; gap: 28px;
+  margin-bottom: 18px;
+}
+.overview-hero .left .h{
+  font: 700 28px/1.2 var(--font-sans);
+  letter-spacing: -0.015em;
+  margin: 6px 0 8px;
+}
+.overview-hero .left .lead{
+  font: 500 14px/1.6 var(--font-sans);
+  color: var(--fg-2);
+  margin: 0 0 12px;
+}
+
+.feature-index{
+  display:grid; grid-template-columns: repeat(2, 1fr); gap: 12px;
+}
+.feature-index .fi{
+  border: 1px solid var(--line);
+  border-radius: var(--r-2);
+  padding: 14px 16px;
+  display:grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center;
+  transition: all var(--dur) var(--ease);
+}
+.feature-index .fi:hover{ border-color: var(--fg); transform: translateY(-1px); box-shadow: var(--shadow-1); }
+.feature-index .fi .n{
+  font: 800 22px/1 var(--font-sans);
+  letter-spacing: -0.02em;
+  color: var(--accent);
+  width: 36px;
+}
+.feature-index .fi .t{ font: 600 14px/1.3 var(--font-sans); color: var(--fg); margin: 0 0 2px; }
+.feature-index .fi .d{ font: 400 11.5px/1.4 var(--font-sans); color: var(--fg-3); margin: 0; }
+.feature-index .fi .p{
+  font: 500 11px/1 var(--font-mono);
+  color: var(--fg-4);
+}
+
+/* ============================================================
+   FEATURE COVER (sub-cover for each feature)
+   ============================================================ */
+.feature-cover .page-main{
+  display:grid;
+  grid-template-rows: auto 1fr auto;
+  gap: 18px;
+}
+.feature-cover .sub-eyebrow{ display:flex; align-items:baseline; gap: 18px; }
+.feature-cover .sub-eyebrow .num{
+  font: 800 28px/1 var(--font-sans);
+  letter-spacing: -0.02em;
+  color: var(--accent);
+}
+.feature-cover .sub-title{
+  font: 800 56px/1.05 var(--font-sans);
+  letter-spacing: -0.03em;
+  margin: 8px 0 12px;
+}
+.feature-cover .one-liner{
+  font: 600 18px/1.5 var(--font-sans);
+  color: var(--fg-2);
+  max-width: 60ch;
+  margin: 0 0 24px;
+}
+.feature-cover .one-liner .hl-blue{ font-weight: 700; }
+
+.feature-cover .why{
+  display:grid; grid-template-columns: 220px 1fr; gap: 28px;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  padding: 18px 0;
+}
+.feature-cover .why .l{
+  font: 600 11px/1 var(--font-sans);
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--accent);
+  padding-top: 4px;
+}
+.feature-cover .why p{ font: 400 14px/1.7 var(--font-sans); color: var(--fg-2); margin: 0 0 10px; max-width: 75ch; }
+.feature-cover .why p:last-child{ margin: 0; }
+
+.feature-cover .pages-hint{
+  display:flex; gap: 12px;
+  flex-wrap: wrap;
+}
+.feature-cover .pages-hint .ph-card{
+  flex: 1;
+  border: 1px solid var(--line);
+  border-radius: var(--r-2);
+  padding: 12px 14px;
+  background: var(--bg-alt);
+  min-width: 0;
+}
+.feature-cover .pages-hint .ph-card .lbl{ font: 500 10px/1 var(--font-mono); letter-spacing: 0.1em; color: var(--fg-4); }
+.feature-cover .pages-hint .ph-card .ttl{ font: 600 13px/1.3 var(--font-sans); color: var(--fg); margin-top: 6px; }
+
+/* ============================================================
+   STRUCTURE PAGE
+   ============================================================ */
+.structure-page .layout{
+  display:grid; grid-template-columns: 1.4fr 1fr; gap: 22px;
+  align-items: stretch;
+}
+.structure-page .diagram-wrap{
+  display:flex; flex-direction:column; gap: 10px;
+  min-height: 460px;
+}
+.structure-page .diagram-wrap .ph{ flex:1; min-height: 460px; padding: 24px; }
+.structure-page .legend{
+  display:flex; gap: 14px; flex-wrap: wrap;
+  font: var(--mono-sm); color: var(--fg-3);
+}
+.structure-page .legend .lg{ display:flex; align-items:center; gap: 6px; }
+.structure-page .legend .sw{ width: 14px; height: 14px; border-radius: 3px; border: 1px solid var(--line-2); background: #fff; }
+.structure-page .legend .sw.s2{ background: var(--accent-soft); border-color: var(--accent); }
+.structure-page .legend .sw.s3{ background: var(--accent); border-color: var(--accent-strong); }
+
+.structure-page .notes{ display:flex; flex-direction:column; gap: 12px; }
+.structure-page .notes h4{ font: 600 13px/1.3 var(--font-sans); margin: 0 0 4px; }
+.structure-page .notes .item{
+  border: 1px solid var(--line);
+  border-radius: var(--r-2);
+  padding: 12px 14px;
+}
+.structure-page .notes .item p{ font: 400 12.5px/1.55 var(--font-sans); color: var(--fg-2); margin: 0; }
+
+/* ============================================================
+   FEATURE-DETAIL PAGE
+   ============================================================ */
+.detail-page .grid{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  grid-auto-rows: minmax(0, auto);
+  gap: 12px;
+}
+.detail-page .grid .span2{ grid-column: 1 / -1; }
+
+/* ============================================================
+   TROUBLESHOOTING PAGE
+   ============================================================ */
+.ts-page .stack{ display:grid; grid-template-columns: 220px 1fr; gap: 16px; align-items: start; }
+.ts-page .stack .step-l{
+  font: 600 10px/1 var(--font-sans);
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--accent);
+  padding-top: 4px;
+  display:flex; align-items: center; gap: 10px;
+}
+.ts-page .stack .step-l .num{ font: 800 22px/1 var(--font-sans); letter-spacing: -0.02em; color: var(--fg); }
+.ts-page .timeline{ display:flex; flex-direction: column; gap: 10px; }
+
+/* ============================================================
+   RETROSPECTIVE PAGE
+   ============================================================ */
+.retro-page .grid{
+  display:grid; grid-template-columns: 1fr 1fr; gap: 16px;
+}
+.retro-page .pillar{
+  border: 1px solid var(--line);
+  border-radius: var(--r-2);
+  padding: 18px 20px;
+  display:flex; flex-direction:column; gap: 10px;
+}
+.retro-page .pillar h4{
+  display:flex; align-items:baseline; gap: 10px;
+  font: 700 18px/1.2 var(--font-sans);
+  margin: 0 0 4px;
+}
+.retro-page .pillar h4 .num{ font: 500 11px/1 var(--font-mono); color: var(--fg-4); }
+.retro-page .pillar p{ font: 400 13px/1.6 var(--font-sans); color: var(--fg-2); margin: 0; }
+.retro-page .pillar.accent{ background: var(--accent-faint); border-color: var(--blue-100); }
+
+/* ============================================================
+   PRINT
+   ============================================================ */
+@page{
+  size: A4 landscape;
+  margin: 0;
+}
+@media print{
+  html, body{ background: #fff; padding: 0; }
+  .page{ box-shadow: none; margin: 0; page-break-after: always; }
+  .page:last-of-type{ page-break-after: auto; }
+}
+</style>
+</head>
+<body>
+
+<!-- Web-only utility bar -->
+<div class="utility-bar">
+  <div class="crumb">
+    <a href="Portfolio.html">← 포트폴리오</a>
+    <span class="sep">/</span>
+    <span>PROJECT 01</span>
+    <span class="sep">/</span>
+    <span class="here">Hive Survivor — 기술문서</span>
+  </div>
+  <div class="progress">
+    <span id="page-indicator">01 / 12</span>
+    <div class="track"><div class="fill" id="progress-fill"></div></div>
+  </div>
+</div>
+
+<!-- ============================================================
+     PAGE 01 — COVER
+============================================================ -->
+<section class="page cover" data-screen-label="01 Cover">
+  <main class="page-main">
+    <div class="left">
+      <div>
+        <div class="eyebrow-doc">PROJECT 01 — TECHNICAL DOCUMENT</div>
+        <h1 class="cover-title">Hive<br>Survivor.</h1>
+        <p class="cover-sub" style="max-width: 410px;">
+          벌집 모양 셀 위에서 펼쳐지는 탑다운 서바이버 게임의 <b>클라이언트 구조와 핵심 기능</b>을 정리한 기술문서.
+        </p>
+
+        <div class="cover-meta">
+          <div class="row">
+            <div class="l">Genre</div>
+            <div class="v">탑다운 · 서바이버</div>
+          </div>
+          <div class="row">
+            <div class="l">Period</div>
+            <div class="v"><span class="mono">2025.06 — 2025.09</span><br><span class="mono" style="color:var(--fg-3)">3 months</span></div>
+          </div>
+          <div class="row">
+            <div class="l">Team</div>
+            <div class="v">4명 · 클라이언트 단독</div>
+          </div>
+          <div class="row">
+            <div class="l">Stack</div>
+            <div class="v"><span class="mono">Unity 2022.3 · C# 9 · URP · UniTask</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="author">
+        <div class="who">
+          김지훈 <span class="accent">/ Jeehoon Kim</span>
+          <span class="meta">Unity Client Developer</span>
+        </div>
+        <div class="stamp" style="padding: 0px 0px 0px 25px; line-height: 1.25">
+          <div><b style="color: var(--accent); font-weight: 700;">EMAIL:</b> rwrwg159@gmail.com</div>
+          <div><b style="color: var(--accent); font-weight: 700;">PHONE:</b> 010-0000-0000</div>
+        </div>
+      </div>
+    </div>
+
+    <aside class="right">
+      <div class="placeholder-hero">
+        <div class="ttl">키 비주얼 / 표지 이미지</div>
+        <div class="sub">DROP IMAGE HERE — 1280 × 720 권장</div>
+      </div>
+
+      <div class="toc-preview">
+        <div class="lbl">Document Map</div>
+        <div class="row"><span class="n">01</span><span>표지 · 프로젝트 개요</span><span class="p">p.01</span></div>
+        <div class="row"><span class="n">F1</span><span>Hex Grid Pathfinding</span><span class="p">p.02</span></div>
+        <div class="row"><span class="n">F2</span><span>Wave Spawn System</span><span class="p">p.06</span></div>
+        <div class="row"><span class="n">F3</span><span>Object Pool / Damage</span><span class="p">p.08</span></div>
+        <div class="row"><span class="n">F4</span><span>Skill Synergy Graph</span><span class="p">p.10</span></div>
+        <div class="row"><span class="n">11</span><span>회고 · 다음 개선</span><span class="p">p.11</span></div>
+      </div>
+    </aside>
+  </main>
+
+  <footer class="page-footer">
+    <span></span>
+    <span class="pn"><b>01</b> / 12</span>
+  </footer>
+</section>
+
+
+<!-- ============================================================
+     PAGE 02 — OVERVIEW (gameplay · flow · features)
+============================================================ -->
+<section class="page" data-screen-label="02 Overview">
+  <header class="page-header">
+    <div class="left">
+      <span class="doc-title">Hive Survivor / <b>Project Overview</b></span>
+    </div>
+  </header>
+
+  <main class="page-main" style="overflow:auto;">
+    <div class="eyebrow-doc">OVERVIEW</div>
+    <h2 class="section-title" style="font-size:24px; margin-bottom:14px;">인게임 한눈에 보기 · 흐름 · 핵심 기능</h2>
+
+    <div style="display:grid; grid-template-columns: 1.05fr 1fr; gap: 22px; align-items: start; margin-bottom: 18px;">
+      <div class="ph" style="height: 360px; padding: 24px;">
+        <div class="ic">GAMEPLAY 01</div>
+        <div class="ttl">인게임 플레이 스크린샷</div>
+        <div class="sub">대표 전투 장면 — 1280 × 720 권장</div>
+      </div>
+
+      <div>
+        <h3 style="font:700 15px/1.3 var(--font-sans); margin: 0 0 10px;">게임 흐름</h3>
+        <div style="display:flex; flex-direction:column; gap: 10px;">
+          <div class="card sunk" style="padding: 12px 14px;">
+            <div style="display:grid; grid-template-columns: 28px 1fr; gap: 12px; align-items: baseline;">
+              <span style="font: 600 12px/1 var(--font-mono); color: var(--accent);">01</span>
+              <div>
+                <p style="font: 600 13px/1.3 var(--font-sans); margin: 0;">스테이지 진입 · 초기 스폰</p>
+                <p style="font: 400 12.5px/1.55 var(--font-sans); color: var(--fg-2); margin: 4px 0 0;">Hex Grid 위에서 캐릭터 배치, 첫 웨이브 디렉터가 스폰 곡선을 시드합니다.</p>
+              </div>
+            </div>
+          </div>
+          <div class="card sunk" style="padding: 12px 14px;">
+            <div style="display:grid; grid-template-columns: 28px 1fr; gap: 12px; align-items: baseline;">
+              <span style="font: 600 12px/1 var(--font-mono); color: var(--accent);">02</span>
+              <div>
+                <p style="font: 600 13px/1.3 var(--font-sans); margin: 0;">웨이브 진행 · 길찾기 + 전투</p>
+                <p style="font: 400 12.5px/1.55 var(--font-sans); color: var(--fg-2); margin: 4px 0 0;">A* 길찾기로 적이 진입, 풀에서 투사체·데미지 객체를 재사용해 GC alloc 0을 유지합니다.</p>
+              </div>
+            </div>
+          </div>
+          <div class="card sunk" style="padding: 12px 14px;">
+            <div style="display:grid; grid-template-columns: 28px 1fr; gap: 12px; align-items: baseline;">
+              <span style="font: 600 12px/1 var(--font-mono); color: var(--accent);">03</span>
+              <div>
+                <p style="font: 600 13px/1.3 var(--font-sans); margin: 0;">스킬 선택 · 시너지 발현</p>
+                <p style="font: 400 12.5px/1.55 var(--font-sans); color: var(--fg-2); margin: 4px 0 0;">레벨업 시 스킬 그래프에서 시너지 가중치를 계산해 추천 후보를 제시합니다.</p>
+              </div>
+            </div>
+          </div>
+          <div class="card sunk" style="padding: 12px 14px;">
+            <div style="display:grid; grid-template-columns: 28px 1fr; gap: 12px; align-items: baseline;">
+              <span style="font: 600 12px/1 var(--font-mono); color: var(--accent);">04</span>
+              <div>
+                <p style="font: 600 13px/1.3 var(--font-sans); margin: 0;">클리어 · 통계 집계</p>
+                <p style="font: 400 12.5px/1.55 var(--font-sans); color: var(--fg-2); margin: 4px 0 0;">스테이지 종료 시 프레임/드로우콜/힙 사용량을 기록해 메트릭 페이지로 전송합니다.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="font:700 16px/1.3 var(--font-sans); margin: 0 0 10px;">핵심 기능 — 카드를 클릭해 해당 페이지로 이동</h3>
+    <div class="feature-index" style="grid-template-columns: repeat(3, 1fr);">
+      <a class="fi" href="#f1">
+        <div class="n">01</div>
+        <div>
+          <p class="t">Hex Grid Pathfinding</p>
+          <p class="d">육각 셀 기반 A* — 100 유닛 동시 경로 16ms 이내</p>
+        </div>
+        <div class="p">p.03 →</div>
+      </a>
+      <a class="fi" href="#f2">
+        <div class="n">02</div>
+        <div>
+          <p class="t">Wave Spawn System</p>
+          <p class="d">시간·난이도 곡선 기반 데이터 드리븐 스폰</p>
+        </div>
+        <div class="p">p.07 →</div>
+      </a>
+      <a class="fi" href="#f3">
+        <div class="n">03</div>
+        <div>
+          <p class="t">Object Pool & Damage</p>
+          <p class="d">투사체·데미지 풀링으로 GC alloc 0 유지</p>
+        </div>
+        <div class="p">p.09 →</div>
+      </a>
+    </div>
+  </main>
+
+  <footer class="page-footer">
+    <span></span>
+    <span class="pn"><b>02</b> / 12</span>
+  </footer>
+</section>
+
+
+<!-- ============================================================
+     PAGE 03 — FEATURE 01 COVER
+============================================================ -->
+<section class="page feature-cover" id="f1" data-screen-label="03 F1 Cover">
+  <header class="page-header">
+    <div class="left">
+      <span class="doc-title">Hive Survivor / <b>Feature 01 · Hex Grid Pathfinding</b></span>
+    </div>
+  </header>
+
+  <main class="page-main">
+    <div>
+      <div class="sub-eyebrow">
+        <span class="num">01</span>
+        <span class="eyebrow-doc">FEATURE · HEX GRID PATHFINDING</span>
+      </div>
+      <h2 class="sub-title">육각 그리드 위에서<br>100마리가 동시에 움직이게 하기.</h2>
+      <p class="one-liner">셀 단위 A*에 <span class="hl-blue">계층화 캐싱</span>을 더해, 적 100유닛 동시 경로 계산을 16ms 이내로 안정화했습니다.</p>
+    </div>
+
+    <div class="why">
+      <div class="l">구현 배경<br><span style="color:var(--fg-4); font:500 11px/1.4 var(--font-mono); letter-spacing:0.06em; text-transform:none;">Why this feature?</span></div>
+      <div class="body">
+        <p>초기 빌드는 사각 그리드 + Vector3 기반 직선 추적이었으나, 적이 30유닛을 넘는 순간 추적 알고리즘이 메인 스레드에서 30ms 이상을 점유했습니다. 또한 사각 그리드의 8방향 이동은 벌집 컨셉과 시각적으로 어긋났습니다.</p>
+        <p><b>해결 방향</b>: (1) 게임 셀을 axial 좌표의 육각 그리드로 교체, (2) 적 그룹을 클러스터로 묶어 같은 도착지에 대해 경로를 1회만 계산, (3) 매 프레임이 아닌 200ms 간격으로 다시 계산하고 그 사이는 path follow만 수행.</p>
+      </div>
+    </div>
+
+    <div class="pages-hint">
+      <div class="ph-card">
+        <div class="lbl">p.03 ·  STRUCTURE</div>
+        <div class="ttl">클래스 구조 다이어그램과 데이터 흐름</div>
+      </div>
+      <div class="ph-card">
+        <div class="lbl">p.04·05 · DETAIL</div>
+        <div class="ttl">셀 좌표계, 경로 캐싱, 코드 스니펫</div>
+      </div>
+      <div class="ph-card">
+        <div class="lbl">p.06 · TROUBLESHOOTING</div>
+        <div class="ttl">90마리 진입 시 16ms 스파이크 사례</div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="page-footer">
+    <span></span>
+    <span class="pn"><b>03</b> / 12</span>
+  </footer>
+</section>
+
+
+<!-- ============================================================
+     PAGE 04 — FEATURE 01 STRUCTURE
+============================================================ -->
+<section class="page structure-page" data-screen-label="04 F1 Structure">
+  <header class="page-header">
+    <div class="left">
+      <span class="doc-title">Hive Survivor / Feature 01 / <b>Structure</b></span>
+    </div>
+  </header>
+
+  <main class="page-main">
+    <div class="eyebrow-doc">CORE STRUCTURE — UML</div>
+    <h2 class="section-title" style="font-size:24px; margin-bottom:14px;">Pathfinder · GridService · PathCache 3-layer</h2>
+
+    <div class="layout" style="height: 590px">
+      <div class="diagram-wrap">
+        <div class="ph" style="aspect-ratio: auto; height: 1198px; width: 567.578px">
+          <div class="ic">DIAGRAM 01</div>
+          <div class="ttl">Pathfinder — UML 클래스 다이어그램</div>
+          <div class="sub">draw.io / mermaid 외부 작성 후 첨부 — 1280 × 720 권장</div>
+        </div>
+      </div>
+
+      <div class="notes">
+        <div class="item">
+          <h4>설계 의도</h4>
+          <p>적 AI가 매 프레임 길찾기를 호출하지 않도록, <b>요청을 큐에 모아 비동기로 처리</b>합니다. 순수 C# 레이어와 MonoBehaviour 레이어를 분리해 테스트 가능성을 확보했습니다.</p>
+        </div>
+        <div class="item">
+          <h4>핵심 클래스 3개</h4>
+          <p><b>HexCoord</b>: axial(q,r) 구조체. 거리/이웃 계산을 매 프레임 반복하므로 struct + IEquatable로 GC를 차단했습니다.</p>
+          <p style="margin-top:6px;"><b>GridService</b>: 셀 가중치(이동비용)와 차단 상태를 보관. 갱신은 이벤트로 broadcast.</p>
+          <p style="margin-top:6px;"><b>PathCache</b>: 같은 (start, goal)에 대한 경로를 200ms TTL로 캐싱. 같은 도착지에 모이는 적 클러스터에서 절대적인 효과.</p>
+        </div>
+        <div class="callout">
+          <span class="ic">DI</span>
+          <p>세 클래스 모두 인터페이스로 추상화 후 Zenject로 주입합니다. 테스트에서는 fake grid를 주입해 5×5 같은 미니맵으로 단위 검증.</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="page-footer">
+    <span></span>
+    <span class="pn"><b>04</b> / 12</span>
+  </footer>
+</section>
+
+
+<!-- ============================================================
+     PAGE 05 — FEATURE 01 DETAIL
+============================================================ -->
+<section class="page detail-page" data-screen-label="05 F1 Detail">
+  <header class="page-header">
+    <div class="left">
+      <span class="doc-title">Hive Survivor / Feature 01 / <b>Detail</b></span>
+    </div>
+  </header>
+
+  <main class="page-main">
+    <div class="eyebrow-doc">FEATURE DETAIL — 1 / 2</div>
+    <h2 class="section-title" style="font-size:22px; margin-bottom:10px;">Axial 좌표계와 캐싱 전략</h2>
+
+    <div class="grid">
+      <div class="card accent-bar">
+        <div class="card-head">
+          <h4 class="ttl">1 · 좌표계 선택 — Axial</h4>
+          <span class="badge b-blue">DECISION</span>
+        </div>
+        <p>육각 그리드는 offset · cube · axial 표현이 가능합니다. 메모리(2개 정수)와 거리 계산 단순성의 균형을 위해 <b>axial(q, r)</b>을 채택. 거리 함수는 <code class="inline">(|q| + |q+r| + |r|) / 2</code>로 분기 없이 계산됩니다.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h4 class="ttl">2 · 이웃 룩업 테이블</h4>
+          <span class="badge">PERF</span>
+        </div>
+        <p>이웃 6방향 오프셋을 정적 배열로 보관해 매 호출 GC alloc을 0으로 유지했습니다. <code class="inline">readonly</code> static field로 노출.</p>
+      </div>
+
+      <div class="card span2">
+        <div class="card-head">
+          <h4 class="ttl">3 · A* 본체 — 우선순위 큐와 종료 조건</h4>
+          <span class="badge">CODE</span>
+        </div>
+        <div class="code" style="margin-top:6px;">
+          <div class="code-head"><span class="file">HexAStar.cs</span><span class="lang">CSHARP</span></div>
+<pre style="height: 240px"><span class="ln">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22</span><code><span class="tk-k">public</span> <span class="tk-k">readonly</span> <span class="tk-k">struct</span> <span class="tk-t">HexAStar</span>
+{
+    <span class="tk-k">private</span> <span class="tk-k">readonly</span> <span class="tk-t">IGridService</span> _grid;
+    <span class="tk-k">private</span> <span class="tk-k">readonly</span> <span class="tk-t">PathCache</span>    _cache;
+
+    <span class="tk-k">public</span> <span class="tk-t">PathResult</span> <span class="tk-f">FindPath</span>(<span class="tk-t">HexCoord</span> from, <span class="tk-t">HexCoord</span> goal)
+    {
+        <span class="tk-k">if</span> (_cache.<span class="tk-f">TryGet</span>(from, goal, <span class="tk-k">out</span> <span class="tk-k">var</span> cached)) <span class="tk-k">return</span> cached;
+
+        <span class="tk-k">var</span> open  = <span class="tk-t">PriorityQueuePool</span>&lt;<span class="tk-t">HexCoord</span>&gt;.<span class="tk-f">Rent</span>();
+        <span class="tk-k">var</span> came  = <span class="tk-t">DictPool</span>&lt;<span class="tk-t">HexCoord</span>, <span class="tk-t">HexCoord</span>&gt;.<span class="tk-f">Rent</span>();
+
+        open.<span class="tk-f">Enqueue</span>(from, <span class="tk-n">0</span>);
+        <span class="tk-k">while</span> (open.<span class="tk-t">Count</span> &gt; <span class="tk-n">0</span>)
+        {
+            <span class="tk-k">var</span> cur = open.<span class="tk-f">Dequeue</span>();
+            <span class="tk-k">if</span> (cur.<span class="tk-f">Equals</span>(goal)) <span class="tk-k">break</span>;
+            <span class="tk-c">// 6 neighbors lookup — zero alloc</span>
+            <span class="tk-k">foreach</span> (<span class="tk-k">var</span> n <span class="tk-k">in</span> _grid.<span class="tk-f">Neighbors</span>(cur)) { <span class="tk-c">/* relax edge */</span> }
+        }
+        <span class="tk-k">return</span> _cache.<span class="tk-f">Store</span>(from, goal, <span class="tk-f">Reconstruct</span>(came, goal));
+    }
+}</code></pre>
+        </div>
+      </div>
+
+      <div class="ph" style="min-height:120px; height: 120px;">
+        <div class="ic">SCREENSHOT 01</div>
+        <div class="ttl">인게임 — 경로 시각화 (Gizmo)</div>
+        <div class="sub">DROP IMAGE — 640 × 360</div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h4 class="ttl">4 · 캐시 키 정책</h4>
+          <span class="badge b-good">RESULT</span>
+        </div>
+        <p>(start, goal) 페어를 키로 하되, <b>start는 8셀 단위로 quantize</b>해 적 클러스터 효과를 극대화. 캐시 적중률 <b>0 → 64%</b>, A* 호출 횟수 <b>−71%</b>.</p>
+      </div>
+    </div>
+  </main>
+
+  <footer class="page-footer">
+    <span></span>
+    <span class="pn"><b>05</b> / 12</span>
+  </footer>
+</section>
+
+
+<!-- ============================================================
+     PAGE 06 — FEATURE 01 TROUBLESHOOTING
+============================================================ -->
+<section class="page ts-page" data-screen-label="06 F1 Trouble">
+  <header class="page-header">
+    <div class="left">
+      <span class="doc-title">Hive Survivor / Feature 01 / <b>Troubleshooting</b></span>
+    </div>
+  </header>
+
+  <main class="page-main">
+    <div class="eyebrow-doc">TROUBLESHOOTING — TS-01</div>
+    <h2 class="section-title" style="font-size:22px; margin-bottom:6px;">Wave 4 진입 시 16ms 스파이크</h2>
+    <p class="section-sub">90마리 적이 동시에 같은 플레이어를 향해 경로 재계산을 요청하면서 메인 스레드 1프레임을 통째로 점유.</p>
+
+    <div class="timeline">
+      <div class="stack">
+        <div class="step-l"><span class="num">01</span>SYMPTOM</div>
+        <div class="card">
+          <p>Wave 4 진입 직후 <b>0.5초간 16~22ms 스파이크</b>가 매 프레임 발생. Profiler 상 <code class="inline">HexAStar.FindPath</code>가 한 프레임 내에 90회 호출됨.</p>
+        </div>
+      </div>
+
+      <div class="stack">
+        <div class="step-l"><span class="num">02</span>ROOT CAUSE</div>
+        <div class="card sunk">
+          <p>적 AI가 <code class="inline">FixedUpdate</code>마다 길찾기를 호출하도록 작성되어 있었고, 적 풀이 한꺼번에 활성화되면서 같은 프레임에 모두 1차 경로를 요구. 캐시는 비어 있는 상태였음.</p>
+        </div>
+      </div>
+
+      <div class="stack">
+        <div class="step-l"><span class="num">03</span>FIX</div>
+        <div class="card accent-bar">
+          <p><b>(a)</b> 경로 요청을 큐로 받고, 한 프레임 당 <b>최대 16개</b>만 처리하도록 throttle. <b>(b)</b> 적 활성화 시점을 8프레임에 걸쳐 분산. <b>(c)</b> 적 spawn 시 부모(보스)의 경로를 미리 계산해 캐시 워밍.</p>
+          <div class="code" style="margin-top:10px;">
+            <div class="code-head"><span class="file">PathRequestQueue.cs</span><span class="lang">CSHARP</span></div>
+<pre><span class="ln">1
+2
+3
+4
+5
+6
+7
+8
+9</span><code><span class="tk-k">private</span> <span class="tk-k">const</span> <span class="tk-t">int</span> <span class="tk-a">MaxPerFrame</span> = <span class="tk-n">16</span>;
+
+<span class="tk-k">public</span> <span class="tk-k">void</span> <span class="tk-f">Tick</span>()
+{
+    <span class="tk-k">var</span> budget = <span class="tk-a">MaxPerFrame</span>;
+    <span class="tk-k">while</span> (budget-- &gt; <span class="tk-n">0</span> &amp;&amp; _q.<span class="tk-f">TryDequeue</span>(<span class="tk-k">out</span> <span class="tk-k">var</span> req))
+        req.<span class="tk-f">Resolve</span>(_pathfinder.<span class="tk-f">FindPath</span>(req.From, req.Goal));
+    <span class="tk-c">// remaining requests roll over to next frame</span>
+}</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="stack">
+        <div class="step-l"><span class="num">04</span>RESULT</div>
+        <div class="card" style="background: var(--good-bg); border-color: #BBE5C7;">
+          <div class="metric-row" style="border:0;">
+            <div class="m"><div class="v">22<span class="small">ms</span><span class="delta">→ 4.3ms</span></div><div class="l">Worst-case main thread</div></div>
+            <div class="m"><div class="v">90<span class="small">→ 16</span></div><div class="l">A* calls / frame</div></div>
+            <div class="m"><div class="v">0<span class="delta">held</span></div><div class="l">Visible AI delay</div></div>
+            <div class="m"><div class="v">60<span class="small">FPS</span></div><div class="l">Wave 4 hold</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="page-footer">
+    <span></span>
+    <span class="pn"><b>06</b> / 12</span>
+  </footer>
+</section>
+
+
+<!-- ============================================================
+     PAGE 07 — FEATURE 02 (compressed example, same anatomy)
+============================================================ -->
+<section class="page feature-cover" id="f2" data-screen-label="07 F2 Cover">
+  <header class="page-header">
+    <div class="left">
+      <span class="doc-title">Hive Survivor / <b>Feature 02 · Wave Spawn System</b></span>
+    </div>
+  </header>
+
+  <main class="page-main">
+    <div>
+      <div class="sub-eyebrow">
+        <span class="num">02</span>
+        <span class="eyebrow-doc">FEATURE · WAVE SPAWN SYSTEM</span>
+      </div>
+      <h2 class="sub-title">곡선과 ScriptableObject로<br>웨이브를 데이터로 만듭니다.</h2>
+      <p class="one-liner">난이도 곡선과 적 분포를 <span class="hl-blue">기획자가 인스펙터로 직접 편집</span>할 수 있도록 데이터 드리븐 스폰 시스템을 설계했습니다.</p>
+    </div>
+
+    <div class="why">
+      <div class="l">구현 배경<br><span style="color:var(--fg-4); font:500 11px/1.4 var(--font-mono); letter-spacing:0.06em; text-transform:none;">Why this feature?</span></div>
+      <div class="body">
+        <p>초기에는 웨이브를 코드로 하드코딩했고, 기획자가 적 비율을 한번 바꾸려면 개발자에게 요청해야 했습니다. 한 주에 평균 12회의 변경 요청이 들어왔습니다.</p>
+        <p><b>해결 방향</b>: 웨이브 = (시간 곡선) × (적 카탈로그) × (확률 분포)의 합성 함수로 모델링. 각 요소를 ScriptableObject로 분리해 기획자가 셀프 서비스 가능하도록 했습니다.</p>
+      </div>
+    </div>
+
+    <div class="pages-hint">
+      <div class="ph-card"><div class="lbl">p.07 · STRUCTURE</div><div class="ttl">곡선·카탈로그·디렉터 3계층</div></div>
+      <div class="ph-card"><div class="lbl">p.08 · DETAIL</div><div class="ttl">곡선 샘플링 + 가중 랜덤</div></div>
+      <div class="ph-card"><div class="lbl">p.09 · TROUBLESHOOTING</div><div class="ttl">동시 스폰 폭주 사례</div></div>
+    </div>
+  </main>
+
+  <footer class="page-footer">
+    <span></span>
+    <span class="pn"><b>07</b> / 12</span>
+  </footer>
+</section>
+
+
+<!-- ============================================================
+     PAGE 08 — FEATURE 02 DETAIL (single-page detail to keep doc tight)
+============================================================ -->
+<section class="page detail-page" data-screen-label="08 F2 Detail">
+  <header class="page-header">
+    <div class="left">
+      <span class="doc-title">Hive Survivor / Feature 02 / <b>Structure & Detail</b></span>
+    </div>
+  </header>
+
+  <main class="page-main">
+    <div class="eyebrow-doc">FEATURE 02 · STRUCTURE + DETAIL</div>
+    <h2 class="section-title" style="font-size:24px; margin-bottom:14px;">Director — Catalog — Curve 3계층</h2>
+
+    <div class="grid" style="grid-template-columns: 1fr 1.05fr;">
+      <div class="ph" style="min-height: 280px;">
+        <div class="ic">DIAGRAM 02</div>
+        <div class="ttl">Spawn System — UML</div>
+        <div class="sub">draw.io 외부 작성 — 1280 × 720 권장</div>
+      </div>
+
+      <div class="card accent-bar">
+        <div class="card-head"><h4 class="ttl">설계 의도</h4><span class="badge b-blue">DECISION</span></div>
+        <p><b>WaveDirector</b>는 시간을 받아 <b>WaveCurve</b>에서 강도를 샘플링하고, <b>EnemyCatalog</b>에서 가중 추첨으로 적을 골라 풀에 요청합니다. 세 계층은 서로 의존하지 않으며, ScriptableObject로 직렬화됩니다.</p>
+        <p style="margin-top:8px;">디렉터의 책임은 <b>“언제·얼마나·무엇을”</b> 묻는 것이고, 풀(다음 기능)은 <b>“어떻게 만드는지”</b>를 책임집니다.</p>
+      </div>
+
+      <div class="card span2">
+        <div class="card-head"><h4 class="ttl">곡선 샘플링 + 가중 추첨</h4><span class="badge">CODE</span></div>
+        <div class="code" style="margin-top:6px;">
+          <div class="code-head"><span class="file">WaveDirector.cs</span><span class="lang">CSHARP</span></div>
+<pre><span class="ln">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12</span><code><span class="tk-k">public</span> <span class="tk-k">async</span> <span class="tk-t">UniTask</span> <span class="tk-f">RunAsync</span>(<span class="tk-t">CancellationToken</span> ct)
+{
+    <span class="tk-k">var</span> elapsed = <span class="tk-n">0f</span>;
+    <span class="tk-k">while</span> (!ct.<span class="tk-t">IsCancellationRequested</span>)
+    {
+        <span class="tk-k">var</span> intensity = _curve.<span class="tk-f">Sample</span>(elapsed);                    <span class="tk-c">// 0..1</span>
+        <span class="tk-k">var</span> count     = <span class="tk-t">Mathf</span>.<span class="tk-f">CeilToInt</span>(intensity * _maxPerTick);
+        <span class="tk-k">for</span> (<span class="tk-k">var</span> i = <span class="tk-n">0</span>; i &lt; count; i++)
+            _spawner.<span class="tk-f">Spawn</span>(_catalog.<span class="tk-f">PickWeighted</span>(intensity));
+        <span class="tk-k">await</span> <span class="tk-t">UniTask</span>.<span class="tk-f">Delay</span>(_tickMs, cancellationToken: ct);
+        elapsed += _tickMs * <span class="tk-n">0.001f</span>;
+    }
+}</code></pre>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="page-footer">
+    <span></span>
+    <span class="pn"><b>08</b> / 12</span>
+  </footer>
+</section>
+
+
+<!-- ============================================================
+     PAGE 09 — FEATURE 03 (compressed)
+============================================================ -->
+<section class="page feature-cover" id="f3" data-screen-label="09 F3 Cover">
+  <header class="page-header">
+    <div class="left">
+      <span class="doc-title">Hive Survivor / <b>Feature 03 · Object Pool & Damage</b></span>
+    </div>
+  </header>
+
+  <main class="page-main">
+    <div>
+      <div class="sub-eyebrow">
+        <span class="num">03</span>
+        <span class="eyebrow-doc">FEATURE · OBJECT POOL · DAMAGE</span>
+      </div>
+      <h2 class="sub-title">투사체 1500개에도<br>GC alloc 0을 유지합니다.</h2>
+      <p class="one-liner">투사체와 피격 데미지 구조체를 <span class="hl-blue">제너릭 풀</span>로 묶어, 60FPS 가동 중 GC.Alloc 호출을 0회로 유지했습니다.</p>
+    </div>
+
+    <div class="why">
+      <div class="l">구현 배경<br><span style="color:var(--fg-4); font:500 11px/1.4 var(--font-mono); letter-spacing:0.06em; text-transform:none;">Why this feature?</span></div>
+      <div class="body">
+        <p>서바이버 장르 특성상 후반부 투사체 수가 1000개를 넘기며, 매 발사마다 new + Destroy 패턴은 GC 스파이크의 직접 원인이었습니다.</p>
+        <p>풀은 단순한 큐가 아니라 <b>“대여 → 사용 → 반납”</b> 약속을 강제하는 인터페이스(<code class="inline">IPoolable</code>)로 설계해, 누가 반납을 잊더라도 5초 후 자동 회수되는 안전망을 두었습니다.</p>
+      </div>
+    </div>
+
+    <div class="pages-hint">
+      <div class="ph-card"><div class="lbl">DESIGN</div><div class="ttl">IPoolable + Generic Pool&lt;T&gt;</div></div>
+      <div class="ph-card"><div class="lbl">DAMAGE</div><div class="ttl">readonly struct DamagePacket — heap 회피</div></div>
+      <div class="ph-card"><div class="lbl">RESULT</div><div class="ttl">GC.Alloc 0B / 30s · 메모리 −42%</div></div>
+    </div>
+  </main>
+
+  <footer class="page-footer">
+    <span></span>
+    <span class="pn"><b>09</b> / 12</span>
+  </footer>
+</section>
+
+
+<!-- ============================================================
+     PAGE 10 — FEATURE 03 TROUBLESHOOTING
+============================================================ -->
+<section class="page ts-page" data-screen-label="10 F3 Trouble">
+  <header class="page-header">
+    <div class="left">
+      <span class="doc-title">Hive Survivor / Feature 03 / <b>Troubleshooting</b></span>
+    </div>
+  </header>
+
+  <main class="page-main">
+    <div class="eyebrow-doc">TROUBLESHOOTING — TS-03</div>
+    <h2 class="section-title" style="font-size:24px; margin-bottom:6px;">투사체가 화면 밖에서 사라지지 않는 누수</h2>
+    <p class="section-sub">Pool에서 빌려간 투사체가 충돌·소멸 처리 분기 누락으로 5분 뒤 메모리 1.2GB까지 상승.</p>
+
+    <div class="timeline">
+      <div class="stack">
+        <div class="step-l"><span class="num">01</span>SYMPTOM</div>
+        <div class="card"><p>플레이 5분 경과 시 메모리 사용량이 선형으로 증가, Pool의 <code class="inline">RentedCount</code>가 0으로 돌아오지 않음.</p></div>
+      </div>
+      <div class="stack">
+        <div class="step-l"><span class="num">02</span>ROOT CAUSE</div>
+        <div class="card sunk"><p>화면 밖으로 나간 투사체가 <code class="inline">OnBecameInvisible</code> 콜백을 받지 못하는 카메라 설정에서 반납 분기로 들어가지 않았음. 수동 검사도 누락.</p></div>
+      </div>
+      <div class="stack">
+        <div class="step-l"><span class="num">03</span>FIX</div>
+        <div class="card accent-bar">
+          <p><b>(a)</b> Pool에 TTL(기본 5초)을 부여해 시한 자동 회수. <b>(b)</b> <code class="inline">Bounds</code> 기반 컬링으로 수동 체크. <b>(c)</b> 에디터 전용 <code class="inline">PoolInspector</code>를 만들어 미반납 인스턴스를 시각화.</p>
+        </div>
+      </div>
+      <div class="stack">
+        <div class="step-l"><span class="num">04</span>RESULT</div>
+        <div class="callout good">
+          <span class="ic">RESULT</span>
+          <p>30분 플레이 누수 <b>1.2GB → 0KB</b>. Pool 미반납으로 인한 회귀 버그를 잡기 위해 <b>에디터 인스펙터</b>를 신규 도구로 남겼고, 다른 시스템에서도 재사용 중입니다.</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="page-footer">
+    <span></span>
+    <span class="pn"><b>10</b> / 12</span>
+  </footer>
+</section>
+
+
+<!-- ============================================================
+     PAGE 11 — FEATURE 04 (compressed)
+============================================================ -->
+<section class="page detail-page" id="f4" data-screen-label="11 F4 Detail">
+  <header class="page-header">
+    <div class="left">
+      <span class="doc-title">Hive Survivor / <b>Feature 04 · Skill Synergy Graph</b></span>
+    </div>
+  </header>
+
+  <main class="page-main">
+    <div class="eyebrow-doc">FEATURE 04 · OVERVIEW</div>
+    <h2 class="section-title" style="font-size:24px; margin-bottom:14px;">스킬 시너지를 그래프로 모델링하기</h2>
+
+    <div class="grid" style="grid-template-columns: 1fr 1fr;">
+      <div class="card">
+        <div class="card-head"><h4 class="ttl">Why · 구현 배경</h4><span class="badge b-blue">INTRO</span></div>
+        <p>스킬 25종 × 가능 시너지 18종의 매트릭스를 if-else로 풀면 분기가 폭발합니다. 시너지를 <b>방향 가중 그래프</b>로 표현하면 스킬 추가 시 노드 1개만 추가하면 됩니다.</p>
+      </div>
+
+      <div class="card accent-bar">
+        <div class="card-head"><h4 class="ttl">Structure · 설계 의도</h4><span class="badge b-blue">STRUCT</span></div>
+        <p><b>SynergyGraph</b>는 인접 리스트(Dict&lt;SkillId, List&lt;Edge&gt;&gt;)로 구성. 스킬 획득 시 <code class="inline">QueryActiveBuffs(playerSkills)</code>가 활성 엣지만 필터링해 반환.</p>
+      </div>
+
+      <div class="card span2">
+        <div class="card-head"><h4 class="ttl">Detail · 시너지 평가 함수</h4><span class="badge">CODE</span></div>
+        <div class="code" style="margin-top:6px;">
+          <div class="code-head"><span class="file">SynergyGraph.cs</span><span class="lang">CSHARP</span></div>
+<pre><span class="ln">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11</span><code><span class="tk-k">public</span> <span class="tk-t">IEnumerable</span>&lt;<span class="tk-t">Buff</span>&gt; <span class="tk-f">QueryActiveBuffs</span>(<span class="tk-t">ReadOnlySpan</span>&lt;<span class="tk-t">SkillId</span>&gt; owned)
+{
+    <span class="tk-k">foreach</span> (<span class="tk-k">var</span> id <span class="tk-k">in</span> owned)
+    {
+        <span class="tk-k">if</span> (!_edges.<span class="tk-f">TryGetValue</span>(id, <span class="tk-k">out</span> <span class="tk-k">var</span> outs)) <span class="tk-k">continue</span>;
+        <span class="tk-k">foreach</span> (<span class="tk-k">var</span> edge <span class="tk-k">in</span> outs)
+            <span class="tk-k">if</span> (edge.<span class="tk-f">RequirementsMet</span>(owned))
+                <span class="tk-k">yield</span> <span class="tk-k">return</span> edge.Buff;
+    }
+}
+<span class="tk-c">// readonly struct Edge — zero alloc</span></code></pre>
+        </div>
+      </div>
+
+      <div class="ph" style="min-height:120px;">
+        <div class="ic">DIAGRAM 03</div>
+        <div class="ttl">스킬 시너지 그래프 시각화</div>
+        <div class="sub">DROP IMAGE — 720 × 360</div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h4 class="ttl">Trouble · 순환 시너지 무한 재귀</h4><span class="badge b-warn">TS</span></div>
+        <p>A→B→A로 활성화 조건이 순환할 경우 무한 재귀. <b>topological sort 단계에서 사이클 탐지</b>를 추가해 빌드 시점에 차단. 런타임은 비용 0.</p>
+      </div>
+    </div>
+  </main>
+
+  <footer class="page-footer">
+    <span></span>
+    <span class="pn"><b>11</b> / 12</span>
+  </footer>
+</section>
+
+
+<!-- ============================================================
+     PAGE 12 — RETROSPECTIVE
+============================================================ -->
+<section class="page retro-page" data-screen-label="12 Retrospective">
+  <header class="page-header">
+    <div class="left">
+      <span class="doc-title">Hive Survivor / <b>Retrospective</b></span>
+    </div>
+  </header>
+
+  <main class="page-main">
+    <div class="eyebrow-doc">RETROSPECTIVE — KEEP · PROBLEM · TRY</div>
+    <h2 class="section-title" style="font-size:28px;">3개월의 끝에서, 다음에는 더 잘하고 싶은 것.</h2>
+
+    <div class="grid" style="margin-top:14px;">
+      <div class="pillar accent">
+        <h4>Keep <span class="num">잘했다고 생각하는 것</span></h4>
+        <p><b>측정 후 결정.</b> 모든 최적화는 Profiler 캡쳐 → 가설 → 코드 변경 → 재측정 순서를 지켰습니다. 추측으로 손대지 않은 덕분에 실패 횟수가 0이었습니다.</p>
+        <p style="margin-top:6px;"><b>인터페이스 분리.</b> 길찾기·풀·디렉터 모두 인터페이스로 추상화한 덕에, 이후 다른 프로젝트에서 거의 그대로 이식할 수 있었습니다.</p>
+      </div>
+
+      <div class="pillar">
+        <h4>Problem <span class="num">아쉬웠던 것</span></h4>
+        <p><b>테스트가 늦었다.</b> 풀 누수 트러블슈팅은 unit test가 있었다면 더 빨리 잡혔을 사례입니다. 다음 프로젝트는 <code class="inline">Pool</code> 같은 기반 시스템부터 테스트를 깔고 시작합니다.</p>
+        <p style="margin-top:6px;"><b>아트 파이프라인 미숙.</b> Addressables 그룹 설계를 늦게 시작해 빌드 사이즈를 한 번 더 줄일 기회를 놓쳤습니다.</p>
+      </div>
+
+      <div class="pillar" style="grid-column: 1 / -1;">
+        <h4>Try <span class="num">다음 프로젝트에서 시도할 것</span></h4>
+        <div class="split-3">
+          <div>
+            <p><b>1 · ECS / Burst 도입</b></p>
+            <p style="margin-top:4px;">투사체 1500개 시뮬레이션은 ECS의 좋은 후보. Hex 좌표 산술도 Burst 친화적입니다.</p>
+          </div>
+          <div>
+            <p><b>2 · Editor 도구의 정착</b></p>
+            <p style="margin-top:4px;">PoolInspector를 시작점으로, 게임 도메인 전용 검사 도구를 의식적으로 더 만들어 봅니다.</p>
+          </div>
+          <div>
+            <p><b>3 · Telemetry</b></p>
+            <p style="margin-top:4px;">출시 후 디바이스별 FPS·세션 길이 데이터를 수집하는 파이프라인을 처음부터 설계합니다.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="page-footer">
+    <span></span>
+    <span class="pn"><b>12</b> / 12 · END</span>
+  </footer>
+</section>
+
+
+<!-- ============================================================
+     UTILITY-BAR PROGRESS LOGIC (web only)
+============================================================ -->
+<script>
+(function(){
+  const pages = Array.from(document.querySelectorAll('.page'));
+  const total = pages.length;
+  const ind   = document.getElementById('page-indicator');
+  const fill  = document.getElementById('progress-fill');
+
+  function update(){
+    const y = window.scrollY + window.innerHeight * 0.4;
+    let cur = 1;
+    for (let i = 0; i < pages.length; i++){
+      const r = pages[i].getBoundingClientRect();
+      const top = r.top + window.scrollY;
+      if (y >= top) cur = i + 1;
+    }
+    ind.textContent = String(cur).padStart(2,'0') + ' / ' + String(total).padStart(2,'0');
+    const pct = ((cur - 1) / (total - 1)) * 100;
+    fill.style.width = pct + '%';
+  }
+  window.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update);
+  update();
+})();
+</script>
+
+</body>
+</html>
