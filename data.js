@@ -13,7 +13,7 @@ const PROJECTS = [
     engine: "Unity 2022.3.16f1 LTS\nVisual Studio 2019\nGitHub Desktop",
     platform: "PC",
     intent: "이 프로젝트의 목표는 플레이어가 여러 층위에서 \"내 빌드를 만들어 가는 재미\"를 느끼게 하는 것이었습니다. 뽑기로 얻은 장비는 한 번에 버려지지 않고 옵션 락과 리롤을 통해 원하는 방향으로 다듬어 갈 수 있도록 만들었으며, 한 런 안에서는 레벨업마다 9종의 패시브 중 무작위로 추천된 셋 중 하나를 골라 그 판만의 빌드 방향을 새로 정해 나가게 됩니다. 여기에 인게임에서도 마나석 조각을 모아 스킬을 직접 제작하거나 교체할 수 있도록 설계해, 한 판이 끝나기 전이라도 상황에 맞춰 스킬 구성 자체를 능동적으로 바꿔 나갈 수 있게 했습니다.",
-    links: { git: "https://github.com/kjh7568/2D_project", video: "https://www.youtube.com/watch?v=FbooNqqnYjU", doc: "#" },
+    links: { git: "https://github.com/kjh7568/2D_project", video: "https://www.youtube.com/watch?v=FbooNqqnYjU", doc: "HiveSurvivor_Tech_Doc.html" },
     titleImg: "assets/Hive Survivor_title.png",
     tags: ["Unity", "C#", "인터페이스 기반 설계", "JSON 데이터 드리븐", "Object Pooling", "Coroutine", "SpriteRenderer / Animator", "uGUI", "Tilemap"],
     features: [

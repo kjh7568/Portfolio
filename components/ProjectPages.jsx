@@ -45,7 +45,7 @@ function ProjectOverviewPage({ pageIdx, total, project }) {
               </span>
               <span className="po-link-arr"><Icon name="arrow" size={14}/></span>
             </a>
-            <a className="po-link" href={p.links.doc} target="_blank">
+            <a className="po-link" href={p.links.doc}>
               <span className="po-link-ic"><Icon name="doc" size={16}/></span>
               <span className="po-link-body">
                 <span className="po-link-lbl">TECH DOC</span>
