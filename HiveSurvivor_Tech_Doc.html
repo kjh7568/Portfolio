@@ -1,609 +1,68 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Hive Survivor — 기술문서</title>
-    <link rel="stylesheet" href="css/colors_and_type.css?v=2">
-    <link rel="stylesheet" href="css/techdoc.tokens.css?v=1">
-    <link rel="stylesheet" href="css/techdoc.frame.css?v=1">
-    <link rel="stylesheet" href="css/techdoc.content.css?v=1">
-    <link rel="stylesheet" href="css/techdoc.pages.css?v=1">
-</head>
-<body>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hive Survivor — 기술문서</title>
+<link rel="stylesheet" href="css/colors_and_type.css?v=2">
+<link rel="stylesheet" href="css/techdoc.tokens.css?v=1">
+<link rel="stylesheet" href="css/techdoc.frame.css?v=1">
+<link rel="stylesheet" href="css/techdoc.content.css?v=1">
+<link rel="stylesheet" href="css/techdoc.pages.css?v=1">
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
 
-<!-- Web-only utility bar -->
-<div class="utility-bar">
-    <div class="crumb">
-        <a href="Portfolio.html">← 포트폴리오</a>
-        <span class="sep">/</span>
-        <span>PROJECT 01</span>
-        <span class="sep">/</span>
-        <span class="here">Hive Survivor — 기술문서</span>
-    </div>
-    <div class="progress">
-        <span id="page-indicator">01 / 08</span>
-        <div class="track">
-            <div class="fill" id="progress-fill"></div>
-        </div>
-    </div>
-</div>
-
-<!-- ============================================================
-     PAGE 01 — COVER
-============================================================ -->
-<section class="page cover" data-screen-label="01 Cover">
-    <main class="page-main">
-        <div class="left">
-            <div>
-                <div class="eyebrow-doc">PROJECT 01 — TECHNICAL DOCUMENT</div>
-                <h1 class="cover-title">Hive<br>Survivor.</h1>
-                <p class="cover-sub" style="max-width: 410px;">
-                    벌집 모양 셀 위에서 펼쳐지는 탑다운 서바이버 게임의 <b>클라이언트 구조와 핵심 기능</b>을 정리한 기술문서.
-                </p>
-
-                <div class="cover-meta">
-                    <div class="row">
-                        <div class="l">Genre</div>
-                        <div class="v">탑다운 · 서바이버</div>
-                    </div>
-                    <div class="row">
-                        <div class="l">Period</div>
-                        <div class="v"><span class="mono">2025.06 — 2025.09</span><br><span class="mono"
-                                                                                            style="color:var(--fg-3)">3 months</span>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="l">Team</div>
-                        <div class="v">4명 · 클라이언트 단독</div>
-                    </div>
-                    <div class="row">
-                        <div class="l">Stack</div>
-                        <div class="v"><span class="mono">Unity 2022.3 · C# 9 · URP · UniTask</span></div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="author">
-                <div class="who">
-                    김지훈 <span class="accent">/ Jeehoon Kim</span>
-                    <span class="meta">Unity Client Developer</span>
-                </div>
-                <div class="stamp" style="padding: 0px 0px 0px 25px; line-height: 1.25">
-                    <div><b style="color: var(--accent); font-weight: 700;">EMAIL:</b> rwrwg159@gmail.com</div>
-                    <div><b style="color: var(--accent); font-weight: 700;">PHONE:</b> 010-0000-0000</div>
-                </div>
-            </div>
-        </div>
-
-        <aside class="right">
-            <div class="placeholder-hero">
-                <div class="ttl">키 비주얼 / 표지 이미지</div>
-                <div class="sub">DROP IMAGE HERE — 1280 × 720 권장</div>
-            </div>
-
-            <div class="toc-preview">
-                <div class="lbl">Document Map</div>
-                <div class="row"><span class="n">01</span><span>표지 · 프로젝트 개요</span><span class="p">p.01</span></div>
-                <div class="row"><span class="n">F1</span><span>Hex Grid Pathfinding</span><span class="p">p.02</span>
-                </div>
-                <div class="row"><span class="n">F2</span><span>Wave Spawn System</span><span class="p">p.06</span>
-                </div>
-                <div class="row"><span class="n">F3</span><span>Object Pool / Damage</span><span class="p">p.08</span>
-                </div>
-                <div class="row"><span class="n">F4</span><span>Skill Synergy Graph</span><span class="p">p.10</span>
-                </div>
-                <div class="row"><span class="n">11</span><span>회고 · 다음 개선</span><span class="p">p.11</span></div>
-            </div>
-        </aside>
-    </main>
-
-    <footer class="page-footer">
-        <span></span>
-        <span class="pn"><b>01</b> / 08</span>
-    </footer>
-</section>
-
-
-<!-- ============================================================
-     PAGE 02 — OVERVIEW (gameplay · flow · features)
-============================================================ -->
-<section class="page" data-screen-label="02 Overview">
-    <header class="page-header">
-        <div class="left">
-            <span class="doc-title">Hive Survivor / <b>Project Overview</b></span>
-        </div>
-    </header>
-
-    <main class="page-main" style="overflow:auto;">
-        <div class="eyebrow-doc">OVERVIEW</div>
-        <h2 class="section-title" style="font-size:24px; margin-bottom:14px;">인게임 한눈에 보기 · 흐름 · 핵심 기능</h2>
-
-        <div style="display:grid; grid-template-columns: 1.05fr 1fr; gap: 22px; align-items: start; margin-bottom: 18px;">
-            <div class="ph" style="height: 360px; padding: 24px;">
-                <div class="ic">GAMEPLAY 01</div>
-                <div class="ttl">인게임 플레이 스크린샷</div>
-                <div class="sub">대표 전투 장면 — 1280 × 720 권장</div>
-            </div>
-
-            <div>
-                <h3 style="font:700 15px/1.3 var(--font-sans); margin: 0 0 10px;">게임 흐름</h3>
-                <div style="display:flex; flex-direction:column; gap: 10px;">
-                    <div class="card sunk" style="padding: 12px 14px;">
-                        <div style="display:grid; grid-template-columns: 28px 1fr; gap: 12px; align-items: baseline;">
-                            <span style="font: 600 12px/1 var(--font-mono); color: var(--accent);">01</span>
-                            <div>
-                                <p style="font: 600 13px/1.3 var(--font-sans); margin: 0;">스테이지 진입 · 초기 스폰</p>
-                                <p style="font: 400 12.5px/1.55 var(--font-sans); color: var(--fg-2); margin: 4px 0 0;">
-                                    Hex Grid 위에서 캐릭터 배치, 첫 웨이브 디렉터가 스폰 곡선을 시드합니다.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card sunk" style="padding: 12px 14px;">
-                        <div style="display:grid; grid-template-columns: 28px 1fr; gap: 12px; align-items: baseline;">
-                            <span style="font: 600 12px/1 var(--font-mono); color: var(--accent);">02</span>
-                            <div>
-                                <p style="font: 600 13px/1.3 var(--font-sans); margin: 0;">웨이브 진행 · 길찾기 + 전투</p>
-                                <p style="font: 400 12.5px/1.55 var(--font-sans); color: var(--fg-2); margin: 4px 0 0;">
-                                    A* 길찾기로 적이 진입, 풀에서 투사체·데미지 객체를 재사용해 GC alloc 0을 유지합니다.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card sunk" style="padding: 12px 14px;">
-                        <div style="display:grid; grid-template-columns: 28px 1fr; gap: 12px; align-items: baseline;">
-                            <span style="font: 600 12px/1 var(--font-mono); color: var(--accent);">03</span>
-                            <div>
-                                <p style="font: 600 13px/1.3 var(--font-sans); margin: 0;">스킬 선택 · 시너지 발현</p>
-                                <p style="font: 400 12.5px/1.55 var(--font-sans); color: var(--fg-2); margin: 4px 0 0;">
-                                    레벨업 시 스킬 그래프에서 시너지 가중치를 계산해 추천 후보를 제시합니다.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card sunk" style="padding: 12px 14px;">
-                        <div style="display:grid; grid-template-columns: 28px 1fr; gap: 12px; align-items: baseline;">
-                            <span style="font: 600 12px/1 var(--font-mono); color: var(--accent);">04</span>
-                            <div>
-                                <p style="font: 600 13px/1.3 var(--font-sans); margin: 0;">클리어 · 통계 집계</p>
-                                <p style="font: 400 12.5px/1.55 var(--font-sans); color: var(--fg-2); margin: 4px 0 0;">
-                                    스테이지 종료 시 프레임/드로우콜/힙 사용량을 기록해 메트릭 페이지로 전송합니다.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <h3 style="font:700 16px/1.3 var(--font-sans); margin: 0 0 10px;">핵심 기능 — 카드를 클릭해 해당 페이지로 이동</h3>
-        <div class="feature-index" style="grid-template-columns: repeat(3, 1fr);">
-            <a class="fi" href="#f1">
-                <div class="n">01</div>
-                <div>
-                    <p class="t">Hex Grid Pathfinding</p>
-                    <p class="d">육각 셀 기반 A* — 100 유닛 동시 경로 16ms 이내</p>
-                </div>
-                <div class="p">p.03 →</div>
-            </a>
-            <a class="fi" href="#f2">
-                <div class="n">02</div>
-                <div>
-                    <p class="t">Wave Spawn System</p>
-                    <p class="d">시간·난이도 곡선 기반 데이터 드리븐 스폰</p>
-                </div>
-                <div class="p">p.07 →</div>
-            </a>
-            <a class="fi" href="#f3">
-                <div class="n">03</div>
-                <div>
-                    <p class="t">Object Pool & Damage</p>
-                    <p class="d">투사체·데미지 풀링으로 GC alloc 0 유지</p>
-                </div>
-                <div class="p">p.09 →</div>
-            </a>
-        </div>
-    </main>
-
-    <footer class="page-footer">
-        <span></span>
-        <span class="pn"><b>02</b> / 08</span>
-    </footer>
-</section>
-
-
-<!-- ============================================================
-     PAGE 03 — FEATURE 01 COVER
-============================================================ -->
-<section class="page feature-cover" id="f1" data-screen-label="03 F1 Cover">
-    <header class="page-header">
-        <div class="left">
-            <span class="doc-title">Hive Survivor / <b>Feature 01 · 장비 리롤 + 락 시스템</b></span>
-        </div>
-    </header>
-
-    <main class="page-main">
-        <div>
-            <div class="sub-eyebrow">
-                <span class="num">01</span>
-                <span class="eyebrow-doc">FEATURE · 장비 리롤 + 락 시스템</span>
-            </div>
-            <h2 class="sub-title">한 번 뽑은 장비를<br>버리지 않고 다듬어 갑니다.</h2>
-            <p class="one-liner">원하는 옵션은 잠금해 보존하고, 나머지 옵션만 다시 굴리는 방식으로 <br><span class="hl-blue">버려지는 장비 없이</span> 자신만의
-                장비를 만들 수 있도록 구현했습니다.</p>
-        </div>
-
-        <div class="why">
-            <div class="l">구현 배경<br><span
-                    style="color:var(--fg-4); font:500 11px/1.4 var(--font-mono); letter-spacing:0.06em; text-transform:none;">Why this feature?</span>
-            </div>
-            <div class="body">
-                <p>초기 증강 시스템 도입으로 다양한 스탯 강화가 가능했으나, 무작위 증강에만 의존하여 원하는 빌드 구성이 어렵다는 한계가 있었습니다.</p>
-                <p><span class="hl-blue">해결 방향</span> : 플레이어가 <b>확정적으로 스탯을 확보</b>할 수 있도록 <b>장비 시스템</b>을 도입해 운적 요소를 보완했습니다. 장비를 통한 <b>확정적 스탯 획득</b>으로 <b>빌드 계획성</b>을 높이고, <b>증강과 장비의 조합</b>으로 균형 잡힌 성장 시스템을 구축해 <b>랜덤성 의존도</b>를 낮췄습니다.</p>
-            </div>
-        </div>
-
-        <div class="pages-hint">
-            <div class="ph-card">
-                <div class="lbl">p.04 · STRUCTURE</div>
-                <div class="ttl">EquipmentEnchant 클래스 구조와 데이터 흐름</div>
-            </div>
-            <div class="ph-card">
-                <div class="lbl">p.05·06 · DETAIL</div>
-                <div class="ttl">리롤·락 로직, 비용 테이블, 코드 스니펫</div>
-            </div>
-        </div>
-    </main>
-
-    <footer class="page-footer">
-        <span></span>
-        <span class="pn"><b>03</b> / 08</span>
-    </footer>
-</section>
-
-
-<!-- ============================================================
-     PAGE 04 — FEATURE 01 STRUCTURE
-============================================================ -->
-<section class="page structure-page" data-screen-label="04 F1 Structure">
-    <header class="page-header">
-        <div class="left">
-            <span class="doc-title">Hive Survivor / Feature 01 / <b>Structure</b></span>
-        </div>
-    </header>
-
-    <main class="page-main">
-        <div class="eyebrow-doc">CORE STRUCTURE — 클래스 다이어그램</div>
-        <h2 class="section-title" style="font-size:24px; margin-bottom:14px;">장비 리롤 + 락 시스템 구조</h2>
-
-        <div class="layout" style="height: 590px">
-            <div class="diagram-wrap">
-                <img src="assets/P1_F1_UML.png" alt="Equipment UML 클래스 다이어그램"
-                     style="width:100%; height:100%; object-fit:contain; border-radius:var(--r-2); border:1px solid var(--line);" />
-            </div>
-
-            <div class="notes">
-                <div class="item">
-                    <h4>설계 의도</h4>
-                    <p>랜덤 증강을 보완할 <b>확정적 스탯 획득 수단</b>으로 장비 시스템을 설계했습니다. <code class="inline">Equipment</code> 인터페이스로 장비 타입을 통일하고, <code class="inline">EquipmentManager</code> 싱글톤이 인벤토리·장착 상태·재화를 중앙 관리합니다.</p>
-                </div>
-
-                <div class="item">
-                    <h4>핵심 클래스 5개</h4>
-                    <p><b>Equipment (interface)</b>:<br>공통 스탯 계약을 정의합니다. 새 장비도 구현체 추가로 편입됩니다.</p>
-                    <p style="margin-top:6px;"><b>WeaponContainer / ArmorContainer / BootsContainer</b><br><code class="inline">Equipment</code> 구현체입니다. 장비별 <code class="inline">optionPool</code>을 분리합니다.</p>
-                    <p style="margin-top:6px;"><b>EquipmentManager (Singleton)</b><br>인벤토리·장착 상태·마나스톤 파편을 중앙 관리합니다.</p>
-                    <p style="margin-top:6px;"><b>LobbyUI (UI Package)</b><br>가챠·인벤토리·인챈트·리롤 UI 흐름을 묶습니다.</p>
-                    <p style="margin-top:6px;"><b>PlayerState</b><br>장착 장비를 읽어 플레이어 스탯에 반영합니다.</p>
-                </div>
-
-                <div class="callout">
-                    <span class="ic">추상화</span>
-                    <p><code class="inline">Equipment</code> 인터페이스 추상화로 새 장비 슬롯 추가 시 기존 클래스 수정 없이 구현체만 확장 가능합니다.</p>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <footer class="page-footer">
-        <span></span>
-        <span class="pn"><b>04</b> / 08</span>
-    </footer>
-</section>
-
-
-<!-- ============================================================
-     PAGE 05 — FEATURE 01 DETAIL (1 / 2)
-     이미지 · DECISION · Choice
-============================================================ -->
-<section class="page detail-page" data-screen-label="05 F1 Detail · 1">
-    <header class="page-header">
-        <div class="left">
-            <span class="doc-title">Hive Survivor / Feature 01 / <b>Detail · 1</b></span>
-        </div>
-    </header>
-
-        <main class="page-main">
-        <div class="eyebrow-doc">FEATURE DETAIL — 1 / 2</div>
-        <h2 class="section-title" style="font-size:22px; margin-bottom:10px;">장비 추상화 선택과 트레이드오프</h2>
-
-        <div class="grid" style="grid-template-rows: 1fr 1fr; height: 560px;">
-            <div style="grid-row: 1 / span 2; height: 100%;">
-                <img src="assets/P1_F1_Detail1.png" alt="Equipment 인터페이스 기반 장비 구조"
-                     style="width:100%; height:100%; object-fit:contain; border-radius:var(--r-2); border:1px solid var(--line);" />
-            </div>
-
-            <div class="card">
-                <div class="card-head">
-                    <h4 class="ttl" style="font:700 16px/1.3 var(--font-sans);">1 · 장비 리롤 + 락 시스템의 2가지 대안</h4>
-                    <span class="badge">DECISION</span>
-                </div>
-                <div style="display:flex; flex-direction:column; gap: 20px;">
-                    <div>
-                        <p style="font:700 16px/1.35 var(--font-sans);">A안 · 단일 Equipment 클래스 + equipmentType 분기</p>
-                        <p style="margin-top:7px; font:400 16px/1.55 var(--font-sans);"><b>장점:</b> 초기 구현이 빠르고 구조가 단순합니다.</p>
-                        <p style="margin-top:5px; font:400 16px/1.55 var(--font-sans);"><b>단점:</b> 장비가 늘수록 분기와 전용 필드가 한 클래스에 누적됩니다.</p>
-                    </div>
-
-                    <div>
-                        <p style="font:700 16px/1.35 var(--font-sans);">B안 · Equipment 인터페이스 + 장비별 Container 구현</p>
-                        <p style="margin-top:7px; font:400 16px/1.55 var(--font-sans);"><b>장점:</b> 공통 계약은 유지하고 장비별 옵션 풀은 분리할 수 있습니다.</p>
-                        <p style="margin-top:5px; font:400 16px/1.55 var(--font-sans);"><b>단점:</b> 초기 인터페이스 구조와 반복 프로퍼티가 추가됩니다.</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card accent-bar">
-                <div class="card-head">
-                    <h4 class="ttl" style="font:700 16px/1.3 var(--font-sans);">2 · 선택한 안 — 장비별 컨테이너 구현</h4>
-                    <span class="badge b-blue">CHOICE</span>
-                </div>
-                <p style="font:400 16px/1.55 var(--font-sans);">무기·방어구·신발은 옵션 풀이 다르지만, <code class="inline">UI</code>와 스탯 적용은 같은 방식으로 처리되어야 했습니다.</p>
-                <p style="margin-top:8px; font:400 16px/1.55 var(--font-sans);">그래서 공통 스탯 계약은 <code class="inline">Equipment</code>로 묶고, 장비별 구현은 <code class="inline">Container</code>로 분리했습니다.</p>
-                <p style="margin-top:8px; font:400 16px/1.55 var(--font-sans);">초기 구조는 조금 복잡해졌지만, 타입 분기 증가를 줄이고 확장 책임을 명확히 했습니다.</p>
-            </div>
-        </div>
-    </main>
-
-    <footer class="page-footer">
-        <span></span>
-        <span class="pn"><b>05</b> / 08</span>
-    </footer>
-</section>
-
-
-<!-- ============================================================
-     PAGE 06 — FEATURE 01 DETAIL (2 / 2)
-     CODE · RESULT  (※ 하단 여백은 추후 보강)
-============================================================ -->
-<section class="page detail-page" data-screen-label="06 F1 Detail · 2">
-    <header class="page-header">
-        <div class="left">
-            <span class="doc-title">Hive Survivor / Feature 01 / <b>Detail · 2</b></span>
-        </div>
-    </header>
-
-    <main class="page-main">
-        <div class="eyebrow-doc">FEATURE DETAIL — 2 / 2</div>
-        <h2 class="section-title" style="font-size:22px; margin-bottom:10px;">장비 추상화와 리롤 코드</h2>
-
-        <div class="grid"
-             style="grid-template-columns: minmax(0,1fr) minmax(0,1fr); grid-template-rows: 1fr 116px; height: 615px;">
-            <div style="height: 100%; min-height: 0;">
-                <img src="assets/P1_F1_Detail2.gif" alt="장비 리롤과 락 시스템 코드 설명"
-                     style="width:100%; height:100%; object-fit:contain; border-radius:var(--r-2); border:1px solid var(--line);" />
-            </div>
-
-            <div class="card detail-code-card">
-                <div class="card-head">
-                    <h4 class="ttl">3 · 장비 계약과 리롤 옵션 재할당</h4>
-                    <span class="badge">CODE</span>
-                </div>
-
-                <div class="code vs-code" data-code-tabs="equipment-detail">
-                    <div class="code-head"><span class="file" data-code-file>Equipment.cs</span><span class="lang">CSHARP</span></div>
-                    <pre><span class="ln" data-code-lines>1</span><code data-code-panel></code></pre>
-                    <div class="code-tabs">
-                        <button type="button" class="active" data-code-key="equipment">Equipment</button>
-                        <button type="button" data-code-key="weapon">WeaponContainer</button>
-                        <button type="button" data-code-key="reroll">OptionReassignment</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card span2">
-                <div class="card-head">
-                    <h4 class="ttl">4 · 결과</h4>
-                    <span class="badge b-good">RESULT</span>
-                </div>
-                <p>장비 타입별 옵션 풀을 분리하면서도 <code class="inline">UI</code>와 스탯 적용은 <code class="inline">Equipment</code> 계약 하나만 참조하게 정리했습니다. 리롤 시 락된 옵션은 유지하고, 이미 보유한 옵션을 후보에서 제외해 중복 옵션 생성을 방지했습니다.</p>
-            </div>
-        </div>
-    </main>
-
-    <footer class="page-footer">
-        <span></span>
-        <span class="pn"><b>06</b> / 08</span>
-    </footer>
-</section>
-
-
-
-
-
-
-
-
-
-
-<!-- ============================================================
-     PAGE 07 — TROUBLESHOOTING · TS-01 (Feature 01)
-============================================================ -->
-<section class="page ts-page" data-screen-label="07 TS-01 · F1">
-    <header class="page-header">
-        <div class="left">
-            <span class="doc-title">Hive Survivor / Troubleshooting / <b>TS-01 · Feature 01</b></span>
-        </div>
-    </header>
-
-    <main class="page-main">
-        <div class="eyebrow-doc">TROUBLESHOOTING — TS-01</div>
-        <h2 class="section-title" style="font-size:22px; margin-bottom:6px;">Wave 4 진입 시 16ms 스파이크</h2>
-        <p class="section-sub">90마리 적이 동시에 같은 플레이어를 향해 경로 재계산을 요청하면서 메인 스레드 1프레임을 통째로 점유.</p>
-
-        <div class="timeline">
-            <div class="stack">
-                <div class="step-l"><span class="num">01</span>SYMPTOM</div>
-                <div class="card">
-                    <p>Wave 4 진입 직후 <b>0.5초간 16~22ms 스파이크</b>가 매 프레임 발생. Profiler 상 <code class="inline">HexAStar.FindPath</code>가
-                        한 프레임 내에 90회 호출됨.</p>
-                </div>
-            </div>
-
-            <div class="stack">
-                <div class="step-l"><span class="num">02</span>ROOT CAUSE</div>
-                <div class="card sunk">
-                    <p>적 AI가 <code class="inline">FixedUpdate</code>마다 길찾기를 호출하도록 작성되어 있었고, 적 풀이 한꺼번에 활성화되면서 같은 프레임에 모두
-                        1차 경로를 요구. 캐시는 비어 있는 상태였음.</p>
-                </div>
-            </div>
-
-            <div class="stack">
-                <div class="step-l"><span class="num">03</span>FIX</div>
-                <div class="card accent-bar">
-                    <p><b>(a)</b> 경로 요청을 큐로 받고, 한 프레임 당 <b>최대 16개</b>만 처리하도록 throttle. <b>(b)</b> 적 활성화 시점을 8프레임에 걸쳐 분산.
-                        <b>(c)</b> 적 spawn 시 부모(보스)의 경로를 미리 계산해 캐시 워밍.</p>
-                    <div class="code" style="margin-top:10px;">
-                        <div class="code-head"><span class="file">PathRequestQueue.cs</span><span
-                                class="lang">CSHARP</span></div>
-                        <pre><span class="ln">1
-2
-3
-4
-5
-6
-7
-8
-9</span><code><span class="tk-k">private</span> <span class="tk-k">const</span> <span class="tk-t">int</span> <span
-                                class="tk-a">MaxPerFrame</span> = <span class="tk-n">16</span>;
-
-<span class="tk-k">public</span> <span class="tk-k">void</span> <span class="tk-f">Tick</span>()
-{
-    <span class="tk-k">var</span> budget = <span class="tk-a">MaxPerFrame</span>;
-    <span class="tk-k">while</span> (budget-- &gt; <span class="tk-n">0</span> &amp;&amp; _q.<span class="tk-f">TryDequeue</span>(<span
-                                    class="tk-k">out</span> <span class="tk-k">var</span> req))
-        req.<span class="tk-f">Resolve</span>(_pathfinder.<span class="tk-f">FindPath</span>(req.From, req.Goal));
-    <span class="tk-c">// remaining requests roll over to next frame</span>
-}</code></pre>
-                    </div>
-                </div>
-            </div>
-
-            <div class="stack">
-                <div class="step-l"><span class="num">04</span>RESULT</div>
-                <div class="card" style="background: var(--good-bg); border-color: #BBE5C7;">
-                    <div class="metric-row" style="border:0;">
-                        <div class="m">
-                            <div class="v">22<span class="small">ms</span><span class="delta">→ 4.3ms</span></div>
-                            <div class="l">Worst-case main thread</div>
-                        </div>
-                        <div class="m">
-                            <div class="v">90<span class="small">→ 16</span></div>
-                            <div class="l">A* calls / frame</div>
-                        </div>
-                        <div class="m">
-                            <div class="v">0<span class="delta">held</span></div>
-                            <div class="l">Visible AI delay</div>
-                        </div>
-                        <div class="m">
-                            <div class="v">60<span class="small">FPS</span></div>
-                            <div class="l">Wave 4 hold</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <footer class="page-footer">
-        <span></span>
-        <span class="pn"><b>07</b> / 08</span>
-    </footer>
-</section>
-
-
-
-
-<!-- ============================================================
-     PAGE 08 — RETROSPECTIVE
-============================================================ -->
-<section class="page retro-page" data-screen-label="08 Retrospective">
-    <header class="page-header">
-        <div class="left">
-            <span class="doc-title">Hive Survivor / <b>Retrospective</b></span>
-        </div>
-    </header>
-
-    <main class="page-main">
-        <div class="eyebrow-doc">RETROSPECTIVE — KEEP · PROBLEM · TRY</div>
-        <h2 class="section-title" style="font-size:28px;">3개월의 끝에서, 다음에는 더 잘하고 싶은 것.</h2>
-
-        <div class="grid" style="margin-top:14px;">
-            <div class="pillar accent">
-                <h4>Keep <span class="num">잘했다고 생각하는 것</span></h4>
-                <p><b>측정 후 결정.</b> 모든 최적화는 Profiler 캡쳐 → 가설 → 코드 변경 → 재측정 순서를 지켰습니다. 추측으로 손대지 않은 덕분에 실패 횟수가 0이었습니다.</p>
-                <p style="margin-top:6px;"><b>인터페이스 분리.</b> 길찾기·풀·디렉터 모두 인터페이스로 추상화한 덕에, 이후 다른 프로젝트에서 거의 그대로 이식할 수
-                    있었습니다.</p>
-            </div>
-
-            <div class="pillar">
-                <h4>Problem <span class="num">아쉬웠던 것</span></h4>
-                <p><b>테스트가 늦었다.</b> 풀 누수 트러블슈팅은 unit test가 있었다면 더 빨리 잡혔을 사례입니다. 다음 프로젝트는 <code
-                        class="inline">Pool</code> 같은 기반 시스템부터 테스트를 깔고 시작합니다.</p>
-                <p style="margin-top:6px;"><b>아트 파이프라인 미숙.</b> Addressables 그룹 설계를 늦게 시작해 빌드 사이즈를 한 번 더 줄일 기회를 놓쳤습니다.
-                </p>
-            </div>
-
-            <div class="pillar" style="grid-column: 1 / -1;">
-                <h4>Try <span class="num">다음 프로젝트에서 시도할 것</span></h4>
-                <div class="split-3">
-                    <div>
-                        <p><b>1 · ECS / Burst 도입</b></p>
-                        <p style="margin-top:4px;">투사체 1500개 시뮬레이션은 ECS의 좋은 후보. Hex 좌표 산술도 Burst 친화적입니다.</p>
-                    </div>
-                    <div>
-                        <p><b>2 · Editor 도구의 정착</b></p>
-                        <p style="margin-top:4px;">PoolInspector를 시작점으로, 게임 도메인 전용 검사 도구를 의식적으로 더 만들어 봅니다.</p>
-                    </div>
-                    <div>
-                        <p><b>3 · Telemetry</b></p>
-                        <p style="margin-top:4px;">출시 후 디바이스별 FPS·세션 길이 데이터를 수집하는 파이프라인을 처음부터 설계합니다.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <footer class="page-footer">
-        <span></span>
-        <span class="pn"><b>08</b> / 08 · END</span>
-    </footer>
-</section>
-
-
-<!-- ============================================================
-     SCRIPTS — 외부 유틸리티 (Phase C)
-     로드 순서: data → csharpHighlight → codeTabs → pageIndicator → responsiveScale → init
-============================================================ -->
 <script src="techdoc.data.js"></script>
 <script src="components/techdoc/utils/csharpHighlight.js"></script>
-<script src="components/techdoc/utils/codeTabs.js"></script>
 <script src="components/techdoc/utils/pageIndicator.js"></script>
 <script src="components/techdoc/utils/responsiveScale.js"></script>
-<script>
-    (function () {
-        const utils = window.TechDocUtils;
-        utils.initPageIndicator();
-        utils.initResponsiveScale();
-        utils.initCodeTabs();
-    })();
+
+<script type="text/babel" src="components/techdoc/TechDocAtoms.jsx"></script>
+<script type="text/babel" src="components/techdoc/CoverPage.jsx"></script>
+<script type="text/babel" src="components/techdoc/OverviewPage.jsx"></script>
+<script type="text/babel" src="components/techdoc/FeatureCoverPage.jsx"></script>
+<script type="text/babel" src="components/techdoc/StructurePage.jsx"></script>
+<script type="text/babel" src="components/techdoc/DetailDecisionPage.jsx"></script>
+<script type="text/babel" src="components/techdoc/DetailCodePage.jsx"></script>
+<script type="text/babel" src="components/techdoc/TroubleshootPage.jsx"></script>
+<script type="text/babel" src="components/techdoc/RetrospectivePage.jsx"></script>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel" data-presets="react">
+const RENDERERS = {
+    cover:        function (p, t) { return <CoverPage          key={p.id} page={p} total={t} />; },
+    overview:     function (p, t) { return <OverviewPage       key={p.id} page={p} total={t} />; },
+    featureCover: function (p, t) { return <FeatureCoverPage   key={p.id} page={p} total={t} />; },
+    structure:    function (p, t) { return <StructurePage      key={p.id} page={p} total={t} />; },
+    decision:     function (p, t) { return <DetailDecisionPage key={p.id} page={p} total={t} />; },
+    codeTabs:     function (p, t) { return <DetailCodePage     key={p.id} page={p} total={t} />; },
+    troubleshoot: function (p, t) { return <TroubleshootPage   key={p.id} page={p} total={t} />; },
+    retro:        function (p, t) { return <RetrospectivePage  key={p.id} page={p} total={t} />; },
+};
+
+function App() {
+    const { meta, pages } = window.TECHDOC;
+    const total = pages.length;
+    React.useEffect(function () {
+        window.TechDocUtils.initPageIndicator();
+        window.TechDocUtils.initResponsiveScale();
+    }, []);
+    return (
+        <React.Fragment>
+            <TDUtilityBar meta={meta} />
+            {pages.map(function (page) {
+                var render = RENDERERS[page.type];
+                return render ? render(page, total) : null;
+            })}
+        </React.Fragment>
+    );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
 </script>
 
 </body>
