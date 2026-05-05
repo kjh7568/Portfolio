@@ -1,0 +1,32 @@
+/* ============================================================
+   Tech Document — A4 landscape (297 × 210mm @ 96dpi = 1123 × 794px)
+   ============================================================ */
+:root {
+    --page-w: 1123px;
+    --page-h: 794px;
+    --pad-x: 64px;
+    --pad-y: 56px;
+
+    /* GitHub Light code colors */
+    --code-bg: #F6F8FA;
+    --code-border: #D0D7DE;
+    --code-fg: #1F2328;
+    --code-comment: #6E7781;
+    --code-keyword: #CF222E;
+    --code-string: #0A3069;
+    --code-number: #0550AE;
+    --code-fn: #8250DF;
+    --code-type: #953800;
+    --code-attr: #116329;
+    --code-line: #57606A;
+    --code-gutter-bg: #EAEEF2;
+
+    /* Doc-specific */
+    --tag-bg: #F1F4F9;
+    --callout-bg: var(--blue-50);
+    --callout-border: var(--blue-700);
+    --warn-bg: #FFF8E6;
+    --warn-border: #B45309;
+    --good-bg: #ECFDF3;
+    --good-border: #15803D;
+}
