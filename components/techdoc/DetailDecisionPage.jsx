@@ -18,18 +18,16 @@ function DetailDecisionPage({ page, total }) {
 
                     <div className="card">
                         <div className="card-head">
-                            <h4 className="ttl" style={{ font: '700 16px/1.3 var(--font-sans)' }}>
-                                {decisionCard.num} · {decisionCard.heading}
-                            </h4>
+                            <h4 className="ttl">{decisionCard.num} · {decisionCard.heading}</h4>
                             <span className="badge">{decisionCard.badge}</span>
                         </div>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                             {decisionCard.options.map(function (opt) {
                                 return (
                                     <div key={opt.name}>
-                                        <p style={{ font: '700 16px/1.35 var(--font-sans)' }}>{opt.name}</p>
-                                        <p style={{ marginTop: '7px', font: '400 16px/1.55 var(--font-sans)' }}><b>장점:</b> {opt.pros}</p>
-                                        <p style={{ marginTop: '5px', font: '400 16px/1.55 var(--font-sans)' }}><b>단점:</b> {opt.cons}</p>
+                                        <p style={{ fontWeight: 700 }}>{opt.name}</p>
+                                        <p style={{ marginTop: '4px' }}><b>장점:</b> {opt.pros}</p>
+                                        <p style={{ marginTop: '3px' }}><b>단점:</b> {opt.cons}</p>
                                     </div>
                                 );
                             })}
@@ -38,15 +36,13 @@ function DetailDecisionPage({ page, total }) {
 
                     <div className="card accent-bar">
                         <div className="card-head">
-                            <h4 className="ttl" style={{ font: '700 16px/1.3 var(--font-sans)' }}>
-                                {choiceCard.num} · {choiceCard.heading}
-                            </h4>
+                            <h4 className="ttl">{choiceCard.num} · {choiceCard.heading}</h4>
                             <span className="badge b-blue">{choiceCard.badge}</span>
                         </div>
                         {choiceCard.paragraphs_html.map(function (para, i) {
                             return (
                                 <p key={i}
-                                   style={i > 0 ? { marginTop: '8px', font: '400 16px/1.55 var(--font-sans)' } : { font: '400 16px/1.55 var(--font-sans)' }}
+                                   style={i > 0 ? { marginTop: '6px' } : {}}
                                    dangerouslySetInnerHTML={{ __html: para }} />
                             );
                         })}
