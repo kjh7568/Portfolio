@@ -24,7 +24,7 @@ const mimes = {
 const server = http.createServer((req, res) => {
   const requestUrl = new URL(req.url, `http://${req.headers.host}`);
   const requestedPath = decodeURIComponent(requestUrl.pathname);
-  const relativePath = requestedPath === '/' ? 'Portfolio.html' : requestedPath.replace(/^\/+/, '');
+  const relativePath = requestedPath === '/' ? 'index.html' : requestedPath.replace(/^\/+/, '');
   const filePath = path.resolve(root, relativePath);
 
   if (!filePath.startsWith(root)) {

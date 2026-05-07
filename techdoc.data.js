@@ -15,7 +15,7 @@ const TECHDOC = {
         title:         'Hive Survivor — 기술문서',
         projectLabel:  'PROJECT 01',
         docTitle:      'Hive Survivor',
-        backHref:      'Portfolio.html',
+        backHref:      'index.html',
         backLabel:     '← 포트폴리오',
     },
 
