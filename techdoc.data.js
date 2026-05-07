@@ -592,216 +592,314 @@ public void SelectAction(int num)
         },
 
         /* ====================================================
-           PAGE 11 — FEATURE 02 COVER
+           PAGE 11 — FEATURE 03 COVER
         ==================================================== */
         {
             type: 'featureCover',
-            id:   'f2-copy',
+            id: 'f3',
             pageNum: '11',
-            screenLabel: '11 F2 Cover',
+            screenLabel: '11 F3 Cover',
 
-            header_html: 'Hive Survivor / <b>Feature 02 · 9종 패시브 증강 시스템</b>',
-            num:         '02',
-            eyebrow:     'FEATURE · 9종 패시브 증강 시스템',
-            title:       '레벨업마다 3개,\n내 빌드는 내가 고릅니다.',
-            oneLiner_html: '9종의 패시브 중 매 레벨업마다 무작위 3개가 추천되고, 하나를 골라 <br><span class="hl-blue">즉시 빌드에 반영</span>합니다. 같은 캐릭터로 시작해도 매 판의 빌드 결이 달라집니다.',
+            header_html: 'Hive Survivor / <b>Feature 03 · 한 판 안에서 진화하는 빌드</b>',
+            num: '03',
+            eyebrow: 'FEATURE · 한 판 안에서 진화하는 빌드',
+            title: '스킬에 갇히지 않는\n런타임 빌드 선택',
+            oneLiner_html:
+                '적을 잡아 모은 마나석 조각으로 전투 중에도 <span class="hl-blue">스킬을 제작하고 교체</span>해, 한 런 안에서 빌드 방향을 다시 설계할 수 있게 했습니다.',
 
             why: {
                 label: '구현 배경',
                 labelSub: 'Why this feature?',
                 body: [
-                    '무작위 증강에만 의존하면 빌드 방향이 플레이어 의도와 무관하게 결정되어 "내 빌드를 만드는 재미"가 반감됩니다.',
-                    // 인라인 <b> 포함
-                    '해결 방향 : <code class="inline">IAugmentation</code> 인터페이스로 9종을 균일하게 관리하고, 레벨업마다 랜덤 3종을 추천해 선택권을 주되 <b>최대 5회 중첩 제한</b>으로 깊이도 확보했습니다. 원하는 패시브가 없으면 마나를 일부 환원해 다음 기회를 노릴 수 있습니다.',
+                    '런 시작 전에 고른 스킬 조합이 끝까지 고정되면, 플레이어는 전투 상황이 바뀌어도 빌드를 수정하기 어렵습니다. 특히 생존형 게임에서는 적 밀도와 성장 속도가 계속 달라지기 때문에, 초반 선택 하나가 후반 경험을 지나치게 묶어버리는 문제가 생깁니다.',
+                    '해결 방향 : <b>런 중 획득한 마나석 조각을 즉시 소비하는 스킬 제작 UI</b>를 도입했습니다. 플레이어는 스페이스 키로 전투를 멈추고 현재 스킬 슬롯을 확인한 뒤, 비용을 지불해 새 스킬을 추가하거나 기존 스킬을 갈아 끼울 수 있습니다.',
                 ],
             },
 
             pagesHint: [
-                { lbl: 'p.12 · STRUCTURE', ttl: 'IAugmentation 인터페이스와 9종 구현체 구조' },
-                { lbl: 'p.13·14 · DETAIL', ttl: '추천 알고리즘, 중첩 관리, 코드 스니펫' },
+                { lbl: 'p.12 · STRUCTURE', ttl: '런 전용 재화, 제작 UI, 스킬 실행 루프가 만나는 구조' },
+                { lbl: 'p.13·14 · DETAIL', ttl: '고정 로드아웃 대신 런타임 교체를 선택한 이유와 구현 코드' },
             ],
         },
 
         /* ====================================================
-           PAGE 12 — F2 STRUCTURE
+           PAGE 12 — F3 STRUCTURE
         ==================================================== */
         {
             type: 'structure',
-            id:   'f2-copy-struct',
+            id: 'f3-struct',
             pageNum: '12',
-            screenLabel: '12 F2 Structure',
+            screenLabel: '12 F3 Structure',
 
-            header_html: 'Hive Survivor / Feature 02 / <b>Structure</b>',
+            header_html: 'Hive Survivor / Feature 03 / <b>Structure</b>',
             eyebrow: 'CORE STRUCTURE — 클래스 다이어그램',
-            title:   '9종 패시브 증강 시스템 구조',
+            title: '한 판 안에서 진화하는 빌드 구조',
 
-            umlSrc: 'assets/P1_F2_UML.png',
-            umlAlt: 'IAugmentation 클래스 다이어그램',
+            umlSrc: 'assets/P1_F3_UML.png',
+            umlAlt: '추후 제작 예정: 한 판 안에서 진화하는 빌드 UML 클래스 다이어그램',
 
-            // notes — 각 item은 h4 + 단락 배열. callout은 별도 type.
             notes: [
                 {
                     type: 'item',
                     h4: '설계 의도',
-                    // <code class="inline"> 포함
-                    body_html: '<code class="inline">IAugmentation</code> 인터페이스로 9종을 통일해, <code class="inline">SetAugmentation</code>이 구체 타입을 몰라도 <code class="inline">List&lt;IAugmentation&gt;</code>으로 전체를 순회·추천·적용합니다. 신규 패시브는 구현체 추가만으로 기존 코드 수정 없이 풀에 자동 편입됩니다.',
+                    body_html:
+                        '영구 재화와 런 전용 재화를 분리하고, 전투 중에는 <code class="inline">usingSkill</code>만 갱신해 스킬 실행 루프를 다시 구성합니다.',
                 },
                 {
                     type: 'item',
-                    h4: '핵심 클래스 4개',
+                    h4: '핵심 클래스 5개',
                     paragraphs_html: [
-                        '<b>IAugmentation (interface)</b>:<br>이름·설명·중첩 횟수·최대 중첩·<code class="inline">Action()</code> 계약을 정의합니다.',
-                        '<b>Health / Fortitude / Intelligence … (9개 구현체)</b>:<br>각 패시브의 스탯 로직을 캡슐화합니다. <code class="inline">IAugmentation</code>만 구현하면 추가 완료.',
-                        '<b>SetAugmentation</b>:<br>레벨업 시 랜덤 3종 추출, UI 갱신, 선택 적용을 담당합니다.',
-                        '<b>PlayerState</b>:<br><code class="inline">Action()</code> 결과를 받아 실제 스탯에 반영합니다.',
+                        '<b>GameManager</b><br><code class="inline">instansManaStoneFragment</code>를 런 단위로 관리하고, 마나석 UI 진입을 처리합니다.',
+                        '<b>EnemyController / ScarabController</b><br>적 사망 시 경험치와 마나석 조각을 지급합니다.',
+                        '<b>CreateManaStoneUI</b><br>스킬 슬롯 상태에 따라 제작 또는 교체 버튼을 보여줍니다.',
+                        '<b>GemListUI</b><br>비용과 중복 여부를 검사하고 <code class="inline">usingSkill</code>을 갱신합니다.',
+                        '<b>SkillManager</b><br><code class="inline">ResetCoroutine()</code>으로 최신 스킬 목록의 자동 시전 루프를 다시 시작합니다.',
                     ],
                 },
                 {
                     type: 'callout',
-                    ic: '중첩 제한',
-                    body_html: '<code class="inline">augmentationMaxCount: 5</code> 한도로 단일 패시브 편중을 막습니다. 후보가 모두 한도에 도달한 경우 마나 환원 선택지로 대체합니다.',
+                    ic: '런타임',
+                    body_html: '핵심은 스킬 프리팹 자체를 새로 설계하는 것이 아니라, 현재 런의 <code class="inline">usingSkill</code> 목록을 바꾸고 실행 루프를 재기동하는 데 있습니다.',
                 },
             ],
         },
 
         /* ====================================================
-           PAGE 13 — F2 DETAIL 1 (의사결정 카드)
+           PAGE 13 — F3 DETAIL 1
         ==================================================== */
         {
             type: 'decision',
-            id:   'f2-copy-d1',
+            id: 'f3-d1',
             pageNum: '13',
-            screenLabel: '13 F2 Detail · 1',
+            screenLabel: '13 F3 Detail · 1',
 
-            header_html: 'Hive Survivor / Feature 02 / <b>Detail · 1</b>',
+            header_html: 'Hive Survivor / Feature 03 / <b>Detail · 1</b>',
             eyebrow: 'FEATURE DETAIL — 1 / 2',
-            title:   '패시브 추상화와 추천 구조',
+            title: '고정 로드아웃과 런타임 교체의 선택',
 
-            imgSrc: 'assets/P1_F2_Detail1.png',
-            imgAlt: 'IAugmentation 인터페이스 기반 패시브 구조',
+            imgSrc: 'assets/P1_F3_Detail1.png',
+            imgAlt: '추후 제작 예정: 인게임 마나석 제작 UI와 스킬 슬롯 교체 흐름',
 
             decisionCard: {
                 num: '1',
-                heading: '패시브 9종 관리 구조의 2가지 선택지',
+                heading: '빌드 변경 방식의 2가지 선택지',
                 badge: 'DECISION',
                 options: [
                     {
-                        name: 'A안 · 단일 PassiveManager 클래스 + enum 분기',
-                        pros: '초기 구현이 빠르고, 모든 패시브 로직을 한 파일에서 확인할 수 있습니다.',
-                        cons: '패시브가 늘수록 <code class="inline">switch</code> 분기와 무관 필드가 함께 증가합니다.',
+                        name: 'A안 · 런 시작 전 고정 로드아웃',
+                        pros: '구현이 단순하고 스킬 코루틴을 런 도중 다시 구성하지 않아도 됩니다.',
+                        cons: '플레이어가 전투 상황에 맞춰 빌드를 바꿀 수 없어 한 판의 성장감이 약해집니다.',
                     },
                     {
-                        name: 'B안 · IAugmentation 인터페이스 + 9개 구현체 분리',
-                        pros: '<code class="inline">SetAugmentation</code>은 <code class="inline">List&lt;IAugmentation&gt;</code>만 참조. 신규 패시브는 파일 추가만으로 끝납니다.',
-                        cons: '클래스 파일이 9개 생기고, 공통 PlayerState 접근 방식 규칙이 필요합니다.',
+                        name: 'B안 · 런 중 마나석 제작과 교체',
+                        pros: '적 처치 보상이 즉시 선택지로 이어져 한 런 안에서도 빌드가 계속 진화합니다.',
+                        cons: '중복 장착, 비용 검사, 코루틴 재시작처럼 런타임 상태를 맞춰야 할 책임이 늘어납니다.',
                     },
                 ],
             },
 
             choiceCard: {
                 num: '2',
-                heading: '선택한 구조: IAugmentation 계약 + 구현체 분리',
+                heading: '선택한 구조: 런 전용 재화로 즉시 빌드 갱신',
                 badge: 'CHOICE',
-                // <code class="inline"> 포함
                 paragraphs_html: [
-                    '패시브 9종은 영향 스탯이 달랐지만, 레벨업 UI는 "이름 / 설명 / 아이콘" 3가지만 필요했습니다.',
-                    '그래서 공통 표현은 <code class="inline">IAugmentation</code>으로 묶고, 스탯 적용 로직은 각 구현체(Health, Intelligence …)에 캡슐화했습니다.',
-                    '<code class="inline">SetAugmentation</code>은 <code class="inline">List&lt;IAugmentation&gt;</code>에서 인덱스 3개만 뽑으면 구체 타입 없이 UI를 채울 수 있습니다.',
+                    '적 처치로 얻은 <code class="inline">instansManaStoneFragment</code>를 전투 중 스킬 제작 비용으로 바로 쓰게 했습니다. 덕분에 플레이어는 한 런 안에서도 빌드를 다시 선택할 수 있습니다.',
+                    '<code class="inline">GemListUI.CreateGemButton()</code>은 비용을 차감한 뒤 <code class="inline">SkillManager.usingSkill</code>을 추가 또는 교체합니다. 이후 <code class="inline">ResetCoroutine()</code>을 호출해 변경된 스킬 목록으로 자동 시전 루프를 다시 시작합니다.',
                 ],
             },
         },
 
         /* ====================================================
-           PAGE 14 — F2 DETAIL 2 (코드 탭)
+           PAGE 14 — F3 DETAIL 2
         ==================================================== */
         {
             type: 'codeTabs',
-            id:   'f2-copy-d2',
+            id: 'f3-d2',
             pageNum: '14',
-            screenLabel: '14 F2 Detail · 2',
+            screenLabel: '14 F3 Detail · 2',
 
-            header_html: 'Hive Survivor / Feature 02 / <b>Detail · 2</b>',
+            header_html: 'Hive Survivor / Feature 03 / <b>Detail · 2</b>',
             eyebrow: 'FEATURE DETAIL — 2 / 2',
-            title:   '패시브 계약과 레벨업 추천 코드',
+            title: '제작 즉시 스킬 루프를 다시 짜는 코드',
 
-            imgSrc: 'assets/P1_F2_Detail2.gif',
-            imgAlt: '레벨업 패시브 선택 UI',
+            imgSrc: 'assets/P1_F3_Detail2.gif',
+            imgAlt: '추후 제작 예정: 마나석 조각으로 스킬을 제작하고 슬롯을 교체하는 실행 화면',
 
-            codeCardTitle: '3 · IAugmentation 계약과 레벨업 추천 알고리즘',
+            codeCardTitle: '3 · 스킬 제작에서 루프 재시작까지',
 
-            // PUML + 분석 문서 기반 재구성 스니펫
             tabs: [
                 {
-                    key: 'iaugmentation',
-                    label: 'IAugmentation',
-                    file: 'IAugmentation.cs',
+                    key: 'createmanastone',
+                    label: 'CreateManaStoneUI',
+                    file: 'CreateManaStoneUI.cs',
                     lang: 'CSHARP',
-                    code:
-`public interface IAugmentation
+                    code: `public void SetObject()
 {
-    // 레벨업 UI가 구체 타입 없이 이름·설명을 표시하기 위한 공통 계약입니다.
-    string augmentationName    { get; set; }
-    string augmentationComment { get; set; }
+    SkillManager skillManager;
+    GameObject.Find("SkillManager").TryGetComponent(out skillManager);
 
-    // 중첩 횟수와 한도를 함께 보관해 중복 추천 방지에 사용합니다.
-    int augmentationCount    { get; set; }
-    int augmentationMaxCount { get; set; }
-
-    // 패시브 선택 시 호출 — 구현체가 PlayerState 스탯을 직접 올립니다.
-    void Action();
-}`,
-                },
-                {
-                    key: 'intelligence',
-                    label: 'Intelligence',
-                    file: 'Intelligence.cs',
-                    lang: 'CSHARP',
-                    code:
-`public class Intelligence : IAugmentation
-{
-    public string augmentationName    { get; set; } = "지능";
-    public string augmentationComment { get; set; } = "주문력이 상승합니다.";
-    public int    augmentationCount   { get; set; } = 0;
-    public int    augmentationMaxCount{ get; set; } = 5;
-
-    private PlayerState _player;
-    public Intelligence(PlayerState player) { _player = player; }
-
-    public void Action()
+    for (int i = 0; i < slotButtons.Length; i++)
     {
-        // 중첩 횟수를 기록해 SetAugmentation이 한도 도달 여부를 판단합니다.
-        augmentationCount++;
-        _player.spellPowerFlat += 10f;
+        // 현재 usingSkill 개수로 슬롯이 비어 있는지 판단합니다.
+        bool hasSkill = i < skillManager.usingSkill.Count;
+
+        // 빈 슬롯은 제작 대상, 채워진 슬롯은 교체 대상으로 보여줍니다.
+        skillIcons[i].gameObject.SetActive(hasSkill);
+        emptyLabels[i].SetActive(!hasSkill);
+        slotButtons[i].interactable = true;
     }
-}`,
-                },
-                {
-                    key: 'setaugmentation',
-                    label: 'SetAugmentation',
-                    file: 'SetAugmentation.cs',
-                    lang: 'CSHARP',
-                    code:
-`private void SelectKey()
-{
-    randomNumber.Clear();
-    while (randomNumber.Count < 3)
-    {
-        int rand = Random.Range(0, augmentations.Count);
-        // 이미 뽑혔거나 중첩 한도에 도달한 패시브는 제외합니다.
-        if (randomNumber.Contains(rand)) continue;
-        if (augmentations[rand].augmentationCount >=
-            augmentations[rand].augmentationMaxCount) continue;
-        randomNumber.Add(rand);
-    }
-    for (int i = 0; i < 3; i++) key[i] = randomNumber[i];
-    SetUI();
 }
 
-public void SelectAction(int num)
+public void SelectSlot(int index)
 {
-    // 플레이어가 선택한 슬롯의 인덱스로 Action()을 호출합니다.
-    augmentations[key[num]].Action();
+    // GemListUI가 이 인덱스를 기준으로 추가 또는 교체를 수행합니다.
+    idx = index;
+    gemListUI.SetActive(true);
+}`,
+                },
+                {
+                    key: 'gemlist',
+                    label: 'GemListUI',
+                    file: 'GemListUI.cs',
+                    lang: 'CSHARP',
+                    code: `public void SelectGemButton(int num)
+{
+    SkillManager skillManager;
+    GameObject.Find("SkillManager").TryGetComponent(out skillManager);
+
+    selectNum = num;
+
+    string key = "";
+
+    switch (num)
+    {
+        case 0:
+            key = "FireBall";
+            break;
+        case 1:
+            key = "FreezingPulse";
+            break;
+        case 2:
+            key = "OrbOfStorms";
+            break;
+    }
+
+    cost = skillManager.skillDataDict[key].makeCost;
+
+    // 이미 장착 중인 스킬은 중복 제작하지 못하게 막습니다.
+    if (skillManager.usingSkill.Contains(EquipmentManager.instance.skillArray[selectNum]))
+    {
+        createButton.interactable = false;
+        createButtonText.text = "이미 장착 중입니다.";
+    }
+    else
+    {
+        createButtonText.text = $"제작(필요 파편: {cost})";
+
+        if (GameManager.GM.instansManaStoneFragment >= cost)
+        {
+            createButton.interactable = true;
+        }
+        else
+        {
+            createButton.interactable = false;
+        }
+    }
+}
+
+public void CreateGemButton()
+{
+    GameObject.Find("SkillManager").TryGetComponent(out SkillManager skillManager);
+
+    GameManager.GM.instansManaStoneFragment -= cost;
+
+    // 기존 슬롯을 선택했다면 교체하고, 빈 슬롯이면 새 스킬을 추가합니다.
+    try
+    {
+        skillManager.usingSkill[idx] = EquipmentManager.instance.skillArray[selectNum];
+    }
+    catch
+    {
+        skillManager.usingSkill.Add(EquipmentManager.instance.skillArray[selectNum]);
+    }
+
+    // UI와 실제 자동 시전 루프를 모두 최신 스킬 목록으로 맞춥니다.
+    createManaStoneUI.SetObject();
+    skillManager.ResetCoroutine();
+
+    FragmentText.text = $": {GameManager.GM.instansManaStoneFragment}";
+
     gameObject.SetActive(false);
+}`,
+                },
+                {
+                    key: 'skillmanager',
+                    label: 'SkillManager',
+                    file: 'SkillManager.cs',
+                    lang: 'CSHARP',
+                    code: `public class SkillManager : MonoBehaviour
+{
+    [SerializeField] private Sprite[] gemImages;
+    public Dictionary<string, Sprite> gemDic;
+
+    [SerializeField] private List<GameObject> skillArray;
+    public Dictionary<string, SkillData> skillDataDict;
+    private bool[] isSkillUse;
+    public List<GameObject> usingSkill;
+
+    private void Awake()
+    {
+        // 장착 스킬 목록은 EquipmentManager의 런타임 목록을 참조합니다.
+        usingSkill = EquipmentManager.instance.usingSkill;
+        skillArray = EquipmentManager.instance.skillArray;
+        skillDataDict = EquipmentManager.instance.skillDataDict;
+
+        SetGemDictionary();
+
+        isSkillUse = new bool[skillArray.Count];
+
+        for (int i = 0; i < skillArray.Count; i++)
+        {
+            isSkillUse[i] = false;
+        }
+    }
+
+    private void Start()
+    {
+        // 런 시작 시 현재 장착된 스킬만 자동 시전 루프로 등록합니다.
+        for (int i = 0; i < usingSkill.Count; i++)
+        {
+            usingSkill[i].TryGetComponent(out SkillInfoInterface SI);
+
+            StartCoroutine(SkillCoolDown_Co(SI));
+        }
+    }
+
+    public IEnumerator SkillCoolDown_Co(SkillInfoInterface usedSkill)
+    {
+        while (true)
+        {
+            if (Vector2.Distance(GameManager.GM.playerController.transform.position, GetClosestEnemy()) < 10f)
+            {
+                usedSkill.UseSkill(skillDataDict[usedSkill.skillKey].skillCoolTime);
+            }
+
+            yield return new WaitForSeconds(usedSkill.skillCoolTime);
+        }
+    }
+
+    public void ResetCoroutine()
+    {
+        // 제작 또는 교체 후 이전 루프를 끊고 새 목록으로 다시 등록합니다.
+        StopAllCoroutines();
+
+        for (int i = 0; i < usingSkill.Count; i++)
+        {
+            usingSkill[i].TryGetComponent(out SkillInfoInterface SI);
+
+            StartCoroutine(SkillCoolDown_Co(SI));
+        }
+    }
 }`,
                 },
             ],
@@ -809,72 +907,95 @@ public void SelectAction(int num)
             resultCard: {
                 num: '4',
                 badge: 'RESULT',
-                // <code class="inline"> 포함
-                body_html: '<code class="inline">SetAugmentation</code>은 <code class="inline">IAugmentation</code> 목록만 순회하면 되며, 패시브 9종 중 어떤 것이 뽑혔는지 알 필요가 없습니다. 중첩 한도 체크(<code class="inline">augmentationCount &gt;= augmentationMaxCount</code>)도 인터페이스 필드 두 개로 처리해 타입별 조건 분기 없이 통일됩니다.',
+                body_html:
+                    '이 구현은 <code class="inline">instansManaStoneFragment</code>를 소비해 <code class="inline">usingSkill</code>을 갱신하고, <code class="inline">ResetCoroutine()</code>으로 최신 스킬 목록만 자동 시전되도록 보장합니다. 덕분에 플레이어가 전투 중 선택한 빌드 변경이 별도 재시작 없이 즉시 전투 흐름에 반영됩니다.',
             },
         },
-
         /* ====================================================
            PAGE 15 — TROUBLESHOOTING TS-01
         ==================================================== */
         {
             type: 'troubleshoot',
-            id:   'ts-01',
+            id: 'ts-01',
             pageNum: '15',
-            screenLabel: '15 TS-01 · F1',
+            screenLabel: '15 TS-01 · F3',
 
-            header_html: 'Hive Survivor / Troubleshooting / <b>TS-01 · Feature 01</b>',
+            header_html: 'Hive Survivor / Troubleshooting / <b>TS-01 · Feature 03</b>',
             eyebrow: 'TROUBLESHOOTING — TS-01',
-            title:   'Wave 4 진입 시 16ms 스파이크',
-            subtitle: '90마리 적이 동시에 같은 플레이어를 향해 경로 재계산을 요청하면서 메인 스레드 1프레임을 통째로 점유.',
+            title: '몬스터 생성마다 프레임이 떨어진다',
+            subtitle: '반복적인 Instantiate 호출이 GC 스파이크를 유발했고, 장시간 플레이 시 프레임이 급격히 하락했습니다.',
 
             steps: [
                 {
                     n: '01',
-                    label: 'SYMPTOM',
+                    label: '문제인식',
                     cardType: 'default',
-                    body_html: 'Wave 4 진입 직후 <b>0.5초간 16~22ms 스파이크</b>가 매 프레임 발생. Profiler 상 <code class="inline">HexAStar.FindPath</code>가 한 프레임 내에 90회 호출됨.',
+                    body_html:
+                        '몬스터가 계속 생성되는 구간에서 <b>프레임 드랍과 GC 스파이크</b>가 반복적으로 발생했습니다. 특히 생존 시간이 길어질수록 화면에 등장하는 몬스터 수가 늘어나며 프레임이 눈에 띄게 흔들렸습니다.',
                 },
                 {
                     n: '02',
-                    label: 'ROOT CAUSE',
+                    label: '원인 분석',
                     cardType: 'sunk',
-                    body_html: '적 AI가 <code class="inline">FixedUpdate</code>마다 길찾기를 호출하도록 작성되어 있었고, 적 풀이 한꺼번에 활성화되면서 같은 프레임에 모두 1차 경로를 요구. 캐시는 비어 있는 상태였음.',
+                    body_html:
+                        '기존 방식은 필요한 순간마다 몬스터를 새로 만들고, 사용이 끝난 객체를 파괴하는 구조였습니다. 이 방식은 구현은 단순하지만 런타임 할당과 해제가 반복되어 GC 부담을 만들고, 몬스터 수가 늘어나는 후반부에서 프레임 안정성을 해쳤습니다.',
                 },
                 {
                     n: '03',
-                    label: 'FIX',
+                    label: '문제 해결',
                     cardType: 'accent-bar',
-                    body_html: '<b>(a)</b> 경로 요청을 큐로 받고, 한 프레임 당 <b>최대 16개</b>만 처리하도록 throttle. <b>(b)</b> 적 활성화 시점을 8프레임에 걸쳐 분산. <b>(c)</b> 적 spawn 시 부모(보스)의 경로를 미리 계산해 캐시 워밍.',
-                    // 이 단계에는 인라인 코드 블록이 있음 — 이미 손-하이라이팅 처리됨
+                    body_html:
+                        '<b>(a)</b> 게임 시작 시 적 종류별 <code class="inline">Queue&lt;GameObject&gt;</code> 풀을 미리 생성했습니다. <b>(b)</b> 스폰 시 새 객체를 만드는 대신 큐에서 꺼내 <code class="inline">SetActive(true)</code>로 재사용했습니다. <b>(c)</b> 적이 죽거나 플레이어와 너무 멀어지면 파괴하지 않고 <code class="inline">DequeueEnemy()</code>를 통해 풀로 반환했습니다.',
                     inlineCode: {
-                        file: 'PathRequestQueue.cs',
+                        file: 'EnemySpawner.cs',
                         lang: 'CSHARP',
-                        // <span class="tk-*"> 수동 마크업이 포함된 HTML
-                        // Phase D에서 csharpHighlight.js로 대체하거나 그대로 사용
-                        lines: '1\n2\n3\n4\n5\n6\n7\n8\n9',
+                        lines: '1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n14\n15\n16\n17\n18\n19\n20\n21\n22\n23\n24\n25\n26\n27\n28\n29\n30\n31\n32\n33',
                         highlighted_html:
-`<span class="tk-k">private</span> <span class="tk-k">const</span> <span class="tk-t">int</span> <span class="tk-a">MaxPerFrame</span> = <span class="tk-n">16</span>;
+`<span class="tk-k">private</span> <span class="tk-t">List</span>&lt;<span class="tk-t">Queue</span>&lt;<span class="tk-t">GameObject</span>&gt;&gt; <span class="tk-a">enemysQueueList</span>;
+<span class="tk-k">private</span> <span class="tk-t">int</span> <span class="tk-a">enemyQueueInitialSize</span>;
 
-<span class="tk-k">public</span> <span class="tk-k">void</span> <span class="tk-f">Tick</span>()
+<span class="tk-k">void</span> <span class="tk-f">Start</span>()
 {
-    <span class="tk-k">var</span> budget = <span class="tk-a">MaxPerFrame</span>;
-    <span class="tk-k">while</span> (budget-- &gt; <span class="tk-n">0</span> &amp;&amp; _q.<span class="tk-f">TryDequeue</span>(<span class="tk-k">out</span> <span class="tk-k">var</span> req))
-        req.<span class="tk-f">Resolve</span>(_pathfinder.<span class="tk-f">FindPath</span>(req.From, req.Goal));
-    <span class="tk-c">// remaining requests roll over to next frame</span>
+    <span class="tk-c">// 적 종류별로 재사용할 큐를 준비합니다.</span>
+    enemysQueueList = <span class="tk-k">new</span> <span class="tk-t">List</span>&lt;<span class="tk-t">Queue</span>&lt;<span class="tk-t">GameObject</span>&gt;&gt;();
+
+    <span class="tk-k">for</span> (<span class="tk-t">int</span> i = <span class="tk-n">0</span>; i &lt; enemy.Length; i++)
+    {
+        enemysQueueList.<span class="tk-f">Add</span>(<span class="tk-k">new</span> <span class="tk-t">Queue</span>&lt;<span class="tk-t">GameObject</span>&gt;());
+
+        <span class="tk-c">// 런타임 생성 비용을 줄이기 위해 시작 시 미리 생성합니다.</span>
+        <span class="tk-k">for</span> (<span class="tk-t">int</span> a = <span class="tk-n">0</span>; a &lt; enemyQueueInitialSize; a++)
+        {
+            <span class="tk-t">GameObject</span> temp = <span class="tk-f">Instantiate</span>(enemy[i]);
+            temp.<span class="tk-f">SetActive</span>(<span class="tk-k">false</span>);
+            enemysQueueList[i].<span class="tk-f">Enqueue</span>(temp);
+        }
+    }
+}
+
+<span class="tk-k">public</span> <span class="tk-k">void</span> <span class="tk-f">SpawnEnemy</span>()
+{
+    <span class="tk-c">// 풀이 비었을 때만 새 객체를 보충합니다.</span>
+    <span class="tk-k">if</span> (enemysQueueList[species].Count &lt;= <span class="tk-n">0</span>)
+        enemysQueueList[species].<span class="tk-f">Enqueue</span>(<span class="tk-f">Instantiate</span>(enemy[species]));
+
+    <span class="tk-t">GameObject</span> spawnedEnemy = enemysQueueList[species].<span class="tk-f">Dequeue</span>();
+    <span class="tk-c">// 생성 대신 비활성 객체를 꺼내 다시 활성화합니다.</span>
+    spawnedEnemy.<span class="tk-f">SetActive</span>(<span class="tk-k">true</span>);
+    spawnedEnemy.transform.position = spawnPosition;
 }`,
                     },
                 },
                 {
                     n: '04',
-                    label: 'RESULT',
+                    label: '결과',
                     cardType: 'good',
                     metrics: [
-                        { v: '22', small: 'ms', delta: '→ 4.3ms', l: 'Worst-case main thread' },
-                        { v: '90', small: '→ 16',                 l: 'A* calls / frame' },
-                        { v: '0',  delta: 'held',                 l: 'Visible AI delay' },
-                        { v: '60', small: 'FPS',                  l: 'Wave 4 hold' },
+                        { v: '0', small: 'B', l: 'GC Alloc / Frame' },
+                        { v: '58.7', small: 'FPS', l: '30분 연속 평균 프레임' },
                     ],
+                    result_html:
+                        '몬스터를 매번 생성·파괴하지 않고 풀에서 꺼내 재사용하도록 바꾸면서, 스폰 구간의 GC 할당과 프레임 흔들림을 줄였습니다.',
                 },
             ],
         },
@@ -890,46 +1011,45 @@ public void SelectAction(int num)
 
             header_html: 'Hive Survivor / <b>Retrospective</b>',
             eyebrow: 'RETROSPECTIVE — KEEP · PROBLEM · TRY',
-            title:   '3개월의 끝에서, 다음에는 더 잘하고 싶은 것.',
+            title:   '첫 프로젝트의 시작부터 끝에서, 다음에는 더 잘하고 싶은 것',
 
             keep: [
                 {
-                    h: '측정 후 결정.',
-                    p: '모든 최적화는 Profiler 캡쳐 → 가설 → 코드 변경 → 재측정 순서를 지켰습니다. 추측으로 손대지 않은 덕분에 실패 횟수가 0이었습니다.',
+                    h: '인터페이스 분리.',
+                    p: '스킬·장비·패시브의 공통 규칙을 인터페이스로 나누어, 새 기능을 추가할 때 기존 구조를 크게 바꾸지 않고 확장할 수 있었습니다.',
                 },
                 {
-                    h: '인터페이스 분리.',
-                    p: '길찾기·풀·디렉터 모두 인터페이스로 추상화한 덕에, 이후 다른 프로젝트에서 거의 그대로 이식할 수 있었습니다.',
+                    h: '데이터 분리 구조.',
+                    p: '스킬 수치와 제작 비용을 JSON으로 분리해 코드 수정 없이 밸런스를 조정하고, 데이터 추가 방식으로 확장할 수 있게 했습니다.',
                 },
             ],
 
             problem: [
                 {
-                    h: '테스트가 늦었다.',
-                    // <code class="inline"> 포함
-                    p_html: '풀 누수 트러블슈팅은 unit test가 있었다면 더 빨리 잡혔을 사례입니다. 다음 프로젝트는 <code class="inline">Pool</code> 같은 기반 시스템부터 테스트를 깔고 시작합니다.',
+                    h: '책임과 명명 규칙.',
+                    p: '일부 클래스가 여러 역할을 함께 맡았고, 클래스명 규칙도 일관되지 않아 구조와 가독성 면에서 아쉬움이 남았습니다.',
                 },
                 {
-                    h: '아트 파이프라인 미숙.',
-                    p: 'Addressables 그룹 설계를 늦게 시작해 빌드 사이즈를 한 번 더 줄일 기회를 놓쳤습니다.',
+                    h: '강한 의존성.',
+                    p: '싱글톤과 Find 사용이 많아 오브젝트 이름이나 초기화 순서에 영향을 받기 쉬웠고, 클래스 간 결합도가 높아졌습니다.',
                 },
             ],
 
             try: [
                 {
                     n: '1',
-                    h: 'ECS / Burst 도입',
-                    p: '투사체 1500개 시뮬레이션은 ECS의 좋은 후보. Hex 좌표 산술도 Burst 친화적입니다.',
+                    h: '이벤트 기반 UI 갱신',
+                    p: '값이 바뀌는 순간 이벤트로 UI를 갱신해, 화면 표시와 게임 로직의 결합도를 낮춰봅니다.',
                 },
                 {
                     n: '2',
-                    h: 'Editor 도구의 정착',
-                    p: 'PoolInspector를 시작점으로, 게임 도메인 전용 검사 도구를 의식적으로 더 만들어 봅니다.',
+                    h: '스탯 계산 시스템 분리',
+                    p: '장비·패시브·스킬 효과 계산을 한곳에서 관리해 스탯 흐름을 더 명확하게 만듭니다.',
                 },
                 {
                     n: '3',
-                    h: 'Telemetry',
-                    p: '출시 후 디바이스별 FPS·세션 길이 데이터를 수집하는 파이프라인을 처음부터 설계합니다.',
+                    h: '단일 책임 리팩토링',
+                    p: '장비 관리, 데이터 로딩, 재화 처리, UI 갱신처럼 섞인 역할을 분리해 수정 범위를 줄입니다.',
                 },
             ],
         },

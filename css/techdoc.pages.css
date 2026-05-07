@@ -450,18 +450,18 @@
 }
 
 .ts-page .stack .step-l {
-    font: 600 10px/1 var(--font-sans);
-    letter-spacing: 0.16em;
+    font: 700 13px/1.15 var(--font-sans);
+    letter-spacing: 0.04em;
     text-transform: uppercase;
     color: var(--accent);
-    padding-top: 4px;
+    padding-top: 2px;
     display: flex;
     align-items: center;
     gap: 10px;
 }
 
 .ts-page .stack .step-l .num {
-    font: 800 22px/1 var(--font-sans);
+    font: 800 24px/1 var(--font-sans);
     letter-spacing: -0.02em;
     color: var(--fg);
 }
@@ -470,6 +470,45 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
+}
+
+.ts-page .ts-inline-code {
+    display: flex;
+    flex-direction: column;
+    max-height: 170px;
+    margin-top: 10px;
+}
+
+.ts-page .ts-inline-code pre {
+    min-height: 0;
+    overflow: auto;
+    font-family: var(--font-sans);
+    font-size: 12px;
+    line-height: 1.55;
+    font-weight: 500;
+}
+
+.ts-page .ts-inline-code pre .ln,
+.ts-page .ts-inline-code pre code {
+    font-family: var(--font-sans);
+}
+
+.ts-page .ts-result {
+    display: grid;
+    grid-template-columns: minmax(260px, 0.82fr) 1fr;
+    gap: 20px;
+    align-items: center;
+}
+
+.ts-page .ts-result-metrics {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.ts-page .ts-result .result-copy {
+    margin: 0;
+    font: 600 13px/1.6 var(--font-sans);
+    color: var(--fg-2);
+    word-break: keep-all;
 }
 
 /* ============================================================
@@ -499,7 +538,7 @@
 }
 
 .retro-page .pillar h4 .num {
-    font: 500 11px/1 var(--font-mono);
+    font: 500 11px/1 var(--font-sans);
     color: var(--fg-4);
 }
 

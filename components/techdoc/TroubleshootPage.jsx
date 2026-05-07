@@ -10,25 +10,28 @@ function TroubleshootPage({ page, total }) {
                 <div className="step-l"><span className="num">{step.n}</span>{step.label}</div>
                 <div className={cardCls} style={cardStyle}>
                     {isGood ? (
-                        <div className="metric-row" style={{ border: 0 }}>
-                            {step.metrics.map(function (m) {
-                                return (
-                                    <div className="m" key={m.l}>
-                                        <div className="v">
-                                            {m.v}
-                                            {m.small && <span className="small">{m.small}</span>}
-                                            {m.delta && <span className="delta">{m.delta}</span>}
+                        <div className="ts-result">
+                            <div className="metric-row ts-result-metrics" style={{ border: 0 }}>
+                                {step.metrics.map(function (m) {
+                                    return (
+                                        <div className="m" key={m.l}>
+                                            <div className="v">
+                                                {m.v}
+                                                {m.small && <span className="small">{m.small}</span>}
+                                                {m.delta && <span className="delta">{m.delta}</span>}
+                                            </div>
+                                            <div className="l">{m.l}</div>
                                         </div>
-                                        <div className="l">{m.l}</div>
-                                    </div>
-                                );
-                            })}
+                                    );
+                                })}
+                            </div>
+                            {step.result_html && <p className="result-copy" dangerouslySetInnerHTML={{ __html: step.result_html }} />}
                         </div>
                     ) : (
                         <>
                             {step.body_html && <p dangerouslySetInnerHTML={{ __html: step.body_html }} />}
                             {step.inlineCode && (
-                                <div className="code" style={{ marginTop: '10px' }}>
+                                <div className="code ts-inline-code">
                                     <div className="code-head">
                                         <span className="file">{step.inlineCode.file}</span>
                                         <span className="lang">{step.inlineCode.lang}</span>

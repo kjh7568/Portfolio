@@ -33,7 +33,7 @@ function RetrospectivePage({ page, total }) {
                     </div>
 
                     <div className="pillar" style={{ gridColumn: '1 / -1' }}>
-                        <h4>Try <span className="num">다음 프로젝트에서 시도할 것</span></h4>
+                        <h4>Try <span className="num">다음에 시도할 것</span></h4>
                         <div className="split-3">
                             {page.try.map(function (item) {
                                 return (
