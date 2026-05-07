@@ -3,12 +3,21 @@ function CoverPage({ page, total }) {
     const titleLines = page.title.split('\n');
 
     function renderMetaV(item) {
+        if (item.tags) {
+            return (
+                <div className="v stack-tags">
+                    {item.tags.map(function (tag) {
+                        return <span key={tag}>{tag}</span>;
+                    })}
+                </div>
+            );
+        }
         if (item.v2) {
             return (
                 <div className="v">
                     <span className="mono">{item.v}</span>
                     <br />
-                    <span className="mono" style={{ color: 'var(--fg-3)' }}>{item.v2}</span>
+                    <span className="mono">{item.v2}</span>
                 </div>
             );
         }

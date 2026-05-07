@@ -37,13 +37,13 @@ const TECHDOC = {
             title:   'Hive\nSurvivor.',
 
             // 인라인 <b> 태그 포함 — Phase D에서 dangerouslySetInnerHTML
-            subtitle_html: '벌집 모양 셀 위에서 펼쳐지는 탑다운 서바이버 게임의 <b>클라이언트 구조와 핵심 기능</b>을 정리한 기술문서.',
+            subtitle_html: '장비 리롤, 패시브 증강, 런타임 스킬 제작으로 <b>한 판 안에서 빌드를 완성해 가는</b> 2D 탑다운 뱀서라이크 기술문서.',
 
             meta: [
-                { l: 'Genre',  v: '탑다운 · 서바이버' },
-                { l: 'Period', v: '2025.06 — 2025.09', v2: '3 months' },
-                { l: 'Team',   v: '4명 · 클라이언트 단독' },
-                { l: 'Stack',  v: 'Unity 2022.3 · C# 9 · URP · UniTask', mono: true },
+                { l: 'Genre',  v: '2D 탑다운 / 뱀서라이크' },
+                { l: 'Period', v: '2025.02.24 ~ 2025.03.10', v2: '(14일)' },
+                { l: 'Team',   v: '1인 (단독 개발)' },
+                { l: 'Stack', tags: ['Unity', 'C#', '인터페이스 기반 설계', 'JSON 데이터 드리븐', 'Object Pooling', 'Coroutine', 'SpriteRenderer / Animator', 'uGUI', 'Tilemap'] },
             ],
 
             author: {
@@ -60,12 +60,12 @@ const TECHDOC = {
             },
 
             toc: [
-                { n: '01', label: '표지 · 프로젝트 개요',   p: 'p.01' },
-                { n: 'F1', label: '장비 리롤 + 락 시스템',  p: 'p.03' },
-                { n: 'F2', label: '9종 패시브 증강 시스템',    p: 'p.07' },
-                { n: 'F3', label: 'Object Pool / Damage',  p: 'p.08' },
-                { n: 'F4', label: 'Skill Synergy Graph',   p: 'p.10' },
-                { n: '11', label: '회고 · 다음 개선',       p: 'p.11' },
+                { n: '01', label: '프로젝트 개요 · 게임 흐름',   p: 'p.02' },
+                { n: '02', label: '장비 리롤 + 락 시스템',  p: 'p.03' },
+                { n: '03', label: '9종 패시브 증강 시스템',    p: 'p.07' },
+                { n: '04', label: '인게임 스킬 생성',  p: 'p.11' },
+                { n: '05', label: '트러블슈팅 · 몬스터 생성 최적화',   p: 'p.15' },
+                { n: '06', label: '회고 · 다음 개선',       p: 'p.16' },
             ],
         },
 
@@ -91,30 +91,30 @@ const TECHDOC = {
             steps: [
                 {
                     n: '01',
-                    t: '스테이지 진입 · 초기 스폰',
-                    d: 'Hex Grid 위에서 캐릭터 배치, 첫 웨이브 디렉터가 스폰 곡선을 시드합니다.',
+                    t: '로비 준비 · 장비/스킬 세팅',
+                    d: '마석 조각으로 장비를 뽑고, 무기·방어구·신발과 사용할 마나스톤 스킬을 장착한 뒤 전투에 진입합니다.',
                 },
                 {
                     n: '02',
-                    t: '웨이브 진행 · 길찾기 + 전투',
-                    d: 'A* 길찾기로 적이 진입, 풀에서 투사체·데미지 객체를 재사용해 GC alloc 0을 유지합니다.',
+                    t: '전투 시작 · 이동 + 자동 스킬 발동',
+                    d: '플레이어는 방향키로 이동하고, 장착된 스킬은 주변 적을 감지해 쿨타임마다 자동으로 발동됩니다.',
                 },
                 {
                     n: '03',
-                    t: '스킬 선택 · 시너지 발현',
-                    d: '레벨업 시 스킬 그래프에서 시너지 가중치를 계산해 추천 후보를 제시합니다.',
+                    t: '웨이브 생존 · 적 스폰 + 성장',
+                    d: '플레이어 이동 방향을 기준으로 Swam과 Scarab이 스폰되며, 처치 시 경험치와 마석 조각을 획득합니다.',
                 },
                 {
                     n: '04',
-                    t: '클리어 · 통계 집계',
-                    d: '스테이지 종료 시 프레임/드로우콜/힙 사용량을 기록해 메트릭 페이지로 전송합니다.',
+                    t: '스테이지 클리어 · 보상 정산',
+                    d: '목표 시간까지 생존하거나 마지막 웨이브를 처치하면 스테이지가 종료되고, 획득한 마석 조각과 성장 결과를 정산해 로비로 돌아갑니다.',
                 },
             ],
 
             features: [
                 { n: '01', t: '장비 리롤 + 락 시스템', d: '한 번 뽑은 장비를 버리지 않고, 원하는 옵션은 잠금하고 나머지만 다시 굴립니다.',  href: '#f1', p: 'p.03 →' },
                 { n: '02', t: '9종 패시브 증강 시스템',  d: '레벨업마다 9종 중 무작위 3종 추천, 선택으로 즉시 빌드에 반영', href: '#f2', p: 'p.07 →' },
-                { n: '03', t: 'Object Pool & Damage', d: '투사체·데미지 풀링으로 GC alloc 0 유지',           href: '#f3', p: 'p.09 →' },
+                { n: '03', t: '인게임 스킬 생성', d: '전투 중 마나석 조각으로 스킬을 제작·교체해 빌드를 바꿉니다.', href: '#f3', p: 'p.11 →' },
             ],
         },
 
@@ -162,7 +162,7 @@ const TECHDOC = {
             eyebrow: 'CORE STRUCTURE — 클래스 다이어그램',
             title:   '장비 리롤 + 락 시스템 구조',
 
-            umlSrc: 'assets/P1_F1_UML.png',
+            umlSrc: 'assets/techdocs/hive-survivor/feature-1-uml.png',
             umlAlt: 'Equipment UML 클래스 다이어그램',
 
             // notes — 각 item은 h4 + 단락 배열. callout은 별도 type.
@@ -205,7 +205,7 @@ const TECHDOC = {
             eyebrow: 'FEATURE DETAIL — 1 / 2',
             title:   '장비 추상화와 리롤 구조',
 
-            imgSrc: 'assets/P1_F1_Detail1.png',
+            imgSrc: 'assets/techdocs/hive-survivor/feature-1-detail-1.png',
             imgAlt: 'Equipment 인터페이스 기반 장비 구조',
 
             decisionCard: {
@@ -253,7 +253,7 @@ const TECHDOC = {
             eyebrow: 'FEATURE DETAIL — 2 / 2',
             title:   '장비 추상화와 리롤 코드',
 
-            imgSrc: 'assets/P1_F1_Detail2.gif',
+            imgSrc: 'assets/techdocs/hive-survivor/feature-1-detail-2.gif',
             imgAlt: '장비 리롤과 락 시스템 코드 설명',
 
             codeCardTitle: '3 · 장비 계약과 리롤 옵션 재할당',
@@ -412,7 +412,7 @@ private void OptionReassignment()
             eyebrow: 'CORE STRUCTURE — 클래스 다이어그램',
             title:   '9종 패시브 증강 시스템 구조',
 
-            umlSrc: 'assets/P1_F2_UML.png',
+            umlSrc: 'assets/techdocs/hive-survivor/feature-2-uml.png',
             umlAlt: 'IAugmentation 클래스 다이어그램',
 
             // notes — 각 item은 h4 + 단락 배열. callout은 별도 type.
@@ -454,7 +454,7 @@ private void OptionReassignment()
             eyebrow: 'FEATURE DETAIL — 1 / 2',
             title:   '패시브 추상화와 추천 구조',
 
-            imgSrc: 'assets/P1_F2_Detail1.png',
+            imgSrc: 'assets/techdocs/hive-survivor/feature-2-detail-1.png',
             imgAlt: 'IAugmentation 인터페이스 기반 패시브 구조',
 
             decisionCard: {
@@ -501,7 +501,7 @@ private void OptionReassignment()
             eyebrow: 'FEATURE DETAIL — 2 / 2',
             title:   '패시브 계약과 레벨업 추천 코드',
 
-            imgSrc: 'assets/P1_F2_Detail2.gif',
+            imgSrc: 'assets/techdocs/hive-survivor/feature-2-detail-2.gif',
             imgAlt: '레벨업 패시브 선택 UI',
 
             codeCardTitle: '3 · IAugmentation 계약과 레벨업 추천 알고리즘',
@@ -600,9 +600,9 @@ public void SelectAction(int num)
             pageNum: '11',
             screenLabel: '11 F3 Cover',
 
-            header_html: 'Hive Survivor / <b>Feature 03 · 한 판 안에서 진화하는 빌드</b>',
+            header_html: 'Hive Survivor / <b>Feature 03 · 인게임 스킬 생성</b>',
             num: '03',
-            eyebrow: 'FEATURE · 한 판 안에서 진화하는 빌드',
+            eyebrow: 'FEATURE · 인게임 스킬 생성',
             title: '스킬에 갇히지 않는\n런타임 빌드 선택',
             oneLiner_html:
                 '적을 잡아 모은 마나석 조각으로 전투 중에도 <span class="hl-blue">스킬을 제작하고 교체</span>해, 한 런 안에서 빌드 방향을 다시 설계할 수 있게 했습니다.',
@@ -633,10 +633,10 @@ public void SelectAction(int num)
 
             header_html: 'Hive Survivor / Feature 03 / <b>Structure</b>',
             eyebrow: 'CORE STRUCTURE — 클래스 다이어그램',
-            title: '한 판 안에서 진화하는 빌드 구조',
+            title: '인게임 스킬 생성 구조',
 
-            umlSrc: 'assets/P1_F3_UML.png',
-            umlAlt: '추후 제작 예정: 한 판 안에서 진화하는 빌드 UML 클래스 다이어그램',
+            umlSrc: 'assets/techdocs/hive-survivor/feature-3-uml.png',
+            umlAlt: '추후 제작 예정: 인게임 스킬 생성 UML 클래스 다이어그램',
 
             notes: [
                 {
@@ -677,7 +677,7 @@ public void SelectAction(int num)
             eyebrow: 'FEATURE DETAIL — 1 / 2',
             title: '고정 로드아웃과 런타임 교체의 선택',
 
-            imgSrc: 'assets/P1_F3_Detail1.png',
+            imgSrc: 'assets/techdocs/hive-survivor/feature-3-detail-1.png',
             imgAlt: '추후 제작 예정: 인게임 마나석 제작 UI와 스킬 슬롯 교체 흐름',
 
             decisionCard: {
@@ -722,7 +722,7 @@ public void SelectAction(int num)
             eyebrow: 'FEATURE DETAIL — 2 / 2',
             title: '제작 즉시 스킬 루프를 다시 짜는 코드',
 
-            imgSrc: 'assets/P1_F3_Detail2.gif',
+            imgSrc: 'assets/techdocs/hive-survivor/feature-3-detail-2.gif',
             imgAlt: '추후 제작 예정: 마나석 조각으로 스킬을 제작하고 슬롯을 교체하는 실행 화면',
 
             codeCardTitle: '3 · 스킬 제작에서 루프 재시작까지',

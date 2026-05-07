@@ -14,7 +14,7 @@ function AboutPage({ pageIdx, total }) {
           {/* LEFT — photo + identity + contact */}
           <div className="about-left">
             <div className="about-photo">
-              <img src="assets/Profile%20photo.jpg" alt="김지훈" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+              <img src="assets/profile/photo.jpg" alt="김지훈" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
             </div>
             <div className="about-identity">
               <div className="ai-name-ko">김지훈</div>
