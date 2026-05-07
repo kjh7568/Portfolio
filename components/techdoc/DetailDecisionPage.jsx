@@ -1,4 +1,4 @@
-// DetailDecisionPage.jsx — PAGE 05 F1 Detail 1 (Phase D)
+// DetailDecisionPage.jsx — PAGE 05 F1 Detail 1 (Phase D) v3
 function DetailDecisionPage({ page, total }) {
     const { decisionCard, choiceCard } = page;
 
@@ -26,8 +26,8 @@ function DetailDecisionPage({ page, total }) {
                                 return (
                                     <div key={opt.name}>
                                         <p style={{ fontWeight: 700 }}>{opt.name}</p>
-                                        <p style={{ marginTop: '4px' }}><b>장점:</b> {opt.pros}</p>
-                                        <p style={{ marginTop: '3px' }}><b>단점:</b> {opt.cons}</p>
+                                        <p style={{ marginTop: '4px' }}><b>장점:</b> <span dangerouslySetInnerHTML={{ __html: opt.pros }} /></p>
+                                        <p style={{ marginTop: '3px' }}><b>단점:</b> <span dangerouslySetInnerHTML={{ __html: opt.cons }} /></p>
                                     </div>
                                 );
                             })}

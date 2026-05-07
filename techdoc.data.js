@@ -61,8 +61,8 @@ const TECHDOC = {
 
             toc: [
                 { n: '01', label: '표지 · 프로젝트 개요',   p: 'p.01' },
-                { n: 'F1', label: 'Hex Grid Pathfinding',  p: 'p.02' },
-                { n: 'F2', label: 'Wave Spawn System',     p: 'p.06' },
+                { n: 'F1', label: '장비 리롤 + 락 시스템',  p: 'p.03' },
+                { n: 'F2', label: '9종 패시브 증강 시스템',    p: 'p.07' },
                 { n: 'F3', label: 'Object Pool / Damage',  p: 'p.08' },
                 { n: 'F4', label: 'Skill Synergy Graph',   p: 'p.10' },
                 { n: '11', label: '회고 · 다음 개선',       p: 'p.11' },
@@ -112,8 +112,8 @@ const TECHDOC = {
             ],
 
             features: [
-                { n: '01', t: 'Hex Grid Pathfinding', d: '육각 셀 기반 A* — 100 유닛 동시 경로 16ms 이내',  href: '#f1', p: 'p.03 →' },
-                { n: '02', t: 'Wave Spawn System',    d: '시간·난이도 곡선 기반 데이터 드리븐 스폰',          href: '#f2', p: 'p.07 →' },
+                { n: '01', t: '장비 리롤 + 락 시스템', d: '한 번 뽑은 장비를 버리지 않고, 원하는 옵션은 잠금하고 나머지만 다시 굴립니다.',  href: '#f1', p: 'p.03 →' },
+                { n: '02', t: '9종 패시브 증강 시스템',  d: '레벨업마다 9종 중 무작위 3종 추천, 선택으로 즉시 빌드에 반영', href: '#f2', p: 'p.07 →' },
                 { n: '03', t: 'Object Pool & Damage', d: '투사체·데미지 풀링으로 GC alloc 0 유지',           href: '#f3', p: 'p.09 →' },
             ],
         },
@@ -203,38 +203,38 @@ const TECHDOC = {
 
             header_html: 'Hive Survivor / Feature 01 / <b>Detail · 1</b>',
             eyebrow: 'FEATURE DETAIL — 1 / 2',
-            title:   '장비 추상화 선택과 트레이드오프',
+            title:   '장비 추상화와 리롤 구조',
 
             imgSrc: 'assets/P1_F1_Detail1.png',
             imgAlt: 'Equipment 인터페이스 기반 장비 구조',
 
             decisionCard: {
                 num: '1',
-                heading: '장비 리롤 + 락 시스템의 2가지 대안',
+                heading: '장비 리롤 구조의 2가지 선택지',
                 badge: 'DECISION',
                 options: [
                     {
                         name: 'A안 · 단일 Equipment 클래스 + equipmentType 분기',
-                        pros: '초기 구현이 빠르고 구조가 단순합니다.',
-                        cons: '장비가 늘수록 분기와 전용 필드가 한 클래스에 누적됩니다.',
+                        pros: '초기 구현이 빠르고, 한 클래스에서 장비 데이터를 확인할 수 있습니다.',
+                        cons: '장비가 늘수록 사용하지 않는 필드와 타입 분기가 함께 증가합니다.',
                     },
                     {
                         name: 'B안 · Equipment 인터페이스 + 장비별 Container 구현',
-                        pros: '공통 계약은 유지하고 장비별 옵션 풀은 분리할 수 있습니다.',
-                        cons: '초기 인터페이스 구조와 반복 프로퍼티가 추가됩니다.',
+                        pros: 'UI는 공통 계약만 참조하고, 장비별 차이는 Container와 옵션 풀로 분리할 수 있습니다.',
+                        cons: '공통 필드 반복 구현과 옵션 ID 관리 규칙이 필요합니다.',
                     },
                 ],
             },
 
             choiceCard: {
                 num: '2',
-                heading: '선택한 안 — 장비별 컨테이너 구현',
+                heading: '선택한 구조: Equipment 계약 + 타입별 옵션 풀',
                 badge: 'CHOICE',
                 // <code class="inline"> 포함
                 paragraphs_html: [
-                    '무기·방어구·신발은 옵션 풀이 다르지만, <code class="inline">UI</code>와 스탯 적용은 같은 방식으로 처리되어야 했습니다.',
-                    '그래서 공통 스탯 계약은 <code class="inline">Equipment</code>로 묶고, 장비별 구현은 <code class="inline">Container</code>로 분리했습니다.',
-                    '초기 구조는 조금 복잡해졌지만, 타입 분기 증가를 줄이고 확장 책임을 명확히 했습니다.',
+                    '무기, 방어구, 신발은 스탯과 옵션 후보가 다르지만, 인벤토리와 리롤 UI에서는 모두 같은 "장비"로 다뤄야 했습니다.',
+                    '그래서 공통 필드는 <code class="inline">Equipment</code> 인터페이스로 묶고, 구현은 <code class="inline">WeaponContainer</code>, <code class="inline">ArmorContainer</code>, <code class="inline">BootsContainer</code>로 나눴습니다.',
+                    '옵션 후보는 <code class="inline">equipmentType</code>별 <code class="inline">optionPool</code>로 분리했습니다. 리롤 시 현재 옵션을 제외한 후보에서 다시 뽑아 중복을 막습니다.',
                 ],
             },
         },
@@ -364,18 +364,464 @@ private void OptionReassignment()
                 num: '4',
                 badge: 'RESULT',
                 // <code class="inline"> 포함
-                body_html: '장비 타입별 옵션 풀을 분리하면서도 <code class="inline">UI</code>와 스탯 적용은 <code class="inline">Equipment</code> 계약 하나만 참조하게 정리했습니다. 리롤 시 락된 옵션은 유지하고, 이미 보유한 옵션을 후보에서 제외해 중복 옵션 생성을 방지했습니다.',
+                body_html: '<code class="inline">optionPool</code>은 옵션 ID를, <code class="inline">optionDescription</code>은 UI 표시 문구를 맡도록 나눴습니다. 리롤 시 <code class="inline">equipmentType</code>에 맞는 후보에서 현재 옵션을 제외해 다시 뽑고, <code class="inline">isLock</code>된 옵션은 유지하도록 구성했습니다.',
             },
         },
 
         /* ====================================================
-           PAGE 07 — TROUBLESHOOTING TS-01
+           PAGE 07 — FEATURE 02 COVER
+        ==================================================== */
+        {
+            type: 'featureCover',
+            id:   'f2',
+            pageNum: '07',
+            screenLabel: '07 F2 Cover',
+
+            header_html: 'Hive Survivor / <b>Feature 02 · 9종 패시브 증강 시스템</b>',
+            num:         '02',
+            eyebrow:     'FEATURE · 9종 패시브 증강 시스템',
+            title:       '레벨업마다 3개,\n내 빌드는 내가 고릅니다.',
+            oneLiner_html: '9종의 패시브 중 매 레벨업마다 무작위 3개가 추천되고, 하나를 골라 <br><span class="hl-blue">즉시 빌드에 반영</span>합니다. 같은 캐릭터로 시작해도 매 판의 빌드 결이 달라집니다.',
+
+            why: {
+                label: '구현 배경',
+                labelSub: 'Why this feature?',
+                body: [
+                    '무작위 증강에만 의존하면 빌드 방향이 플레이어 의도와 무관하게 결정되어 "내 빌드를 만드는 재미"가 반감됩니다.',
+                    // 인라인 <b> 포함
+                    '해결 방향 : <code class="inline">IAugmentation</code> 인터페이스로 9종을 균일하게 관리하고, 레벨업마다 랜덤 3종을 추천해 선택권을 주되 <b>최대 5회 중첩 제한</b>으로 깊이도 확보했습니다. 원하는 패시브가 없으면 마나를 일부 환원해 다음 기회를 노릴 수 있습니다.',
+                ],
+            },
+
+            pagesHint: [
+                { lbl: 'p.08 · STRUCTURE', ttl: 'IAugmentation 인터페이스와 9종 구현체 구조' },
+                { lbl: 'p.09·10 · DETAIL', ttl: '추천 알고리즘, 중첩 관리, 코드 스니펫' },
+            ],
+        },
+
+        /* ====================================================
+           PAGE 08 — F2 STRUCTURE
+        ==================================================== */
+        {
+            type: 'structure',
+            id:   'f2-struct',
+            pageNum: '08',
+            screenLabel: '08 F2 Structure',
+
+            header_html: 'Hive Survivor / Feature 02 / <b>Structure</b>',
+            eyebrow: 'CORE STRUCTURE — 클래스 다이어그램',
+            title:   '9종 패시브 증강 시스템 구조',
+
+            umlSrc: 'assets/P1_F2_UML.png',
+            umlAlt: 'IAugmentation 클래스 다이어그램',
+
+            // notes — 각 item은 h4 + 단락 배열. callout은 별도 type.
+            notes: [
+                {
+                    type: 'item',
+                    h4: '설계 의도',
+                    // <code class="inline"> 포함
+                    body_html: '<code class="inline">IAugmentation</code> 인터페이스로 9종을 통일해, <code class="inline">SetAugmentation</code>이 구체 타입을 몰라도 <code class="inline">List&lt;IAugmentation&gt;</code>으로 전체를 순회·추천·적용합니다. 신규 패시브는 구현체 추가만으로 기존 코드 수정 없이 풀에 자동 편입됩니다.',
+                },
+                {
+                    type: 'item',
+                    h4: '핵심 클래스 4개',
+                    paragraphs_html: [
+                        '<b>IAugmentation (interface)</b>:<br>이름·설명·중첩 횟수·최대 중첩·<code class="inline">Action()</code> 계약을 정의합니다.',
+                        '<b>Health / Fortitude / Intelligence … (9개 구현체)</b>:<br>각 패시브의 스탯 로직을 캡슐화합니다. <code class="inline">IAugmentation</code>만 구현하면 추가 완료.',
+                        '<b>SetAugmentation</b>:<br>레벨업 시 랜덤 3종 추출, UI 갱신, 선택 적용을 담당합니다.',
+                        '<b>PlayerState</b>:<br><code class="inline">Action()</code> 결과를 받아 실제 스탯에 반영합니다.',
+                    ],
+                },
+                {
+                    type: 'callout',
+                    ic: '중첩 제한',
+                    body_html: '<code class="inline">augmentationMaxCount: 5</code> 한도로 단일 패시브 편중을 막습니다. 후보가 모두 한도에 도달한 경우 마나 환원 선택지로 대체합니다.',
+                },
+            ],
+        },
+
+        /* ====================================================
+           PAGE 09 — F2 DETAIL 1 (의사결정 카드)
+        ==================================================== */
+        {
+            type: 'decision',
+            id:   'f2-d1',
+            pageNum: '09',
+            screenLabel: '09 F2 Detail · 1',
+
+            header_html: 'Hive Survivor / Feature 02 / <b>Detail · 1</b>',
+            eyebrow: 'FEATURE DETAIL — 1 / 2',
+            title:   '패시브 추상화와 추천 구조',
+
+            imgSrc: 'assets/P1_F2_Detail1.png',
+            imgAlt: 'IAugmentation 인터페이스 기반 패시브 구조',
+
+            decisionCard: {
+                num: '1',
+                heading: '패시브 9종 관리 구조의 2가지 선택지',
+                badge: 'DECISION',
+                options: [
+                    {
+                        name: 'A안 · 단일 PassiveManager 클래스 + enum 분기',
+                        pros: '초기 구현이 빠르고, 모든 패시브 로직을 한 파일에서 확인할 수 있습니다.',
+                        cons: '패시브가 늘수록 <code class="inline">switch</code> 분기와 무관 필드가 함께 증가합니다.',
+                    },
+                    {
+                        name: 'B안 · IAugmentation 인터페이스 + 9개 구현체 분리',
+                        pros: '<code class="inline">SetAugmentation</code>은 <code class="inline">List&lt;IAugmentation&gt;</code>만 참조. 신규 패시브는 파일 추가만으로 끝납니다.',
+                        cons: '클래스 파일이 9개 생기고, 공통 PlayerState 접근 방식 규칙이 필요합니다.',
+                    },
+                ],
+            },
+
+            choiceCard: {
+                num: '2',
+                heading: '선택한 구조: IAugmentation 계약 + 구현체 분리',
+                badge: 'CHOICE',
+                // <code class="inline"> 포함
+                paragraphs_html: [
+                    '패시브 9종은 영향 스탯이 달랐지만, 레벨업 UI는 "이름 / 설명 / 아이콘" 3가지만 필요했습니다.',
+                    '그래서 공통 표현은 <code class="inline">IAugmentation</code>으로 묶고, 스탯 적용 로직은 각 구현체(Health, Intelligence …)에 캡슐화했습니다.',
+                    '<code class="inline">SetAugmentation</code>은 <code class="inline">List&lt;IAugmentation&gt;</code>에서 인덱스 3개만 뽑으면 구체 타입 없이 UI를 채울 수 있습니다.',
+                ],
+            },
+        },
+
+        /* ====================================================
+           PAGE 10 — F2 DETAIL 2 (코드 탭)
+        ==================================================== */
+        {
+            type: 'codeTabs',
+            id:   'f2-d2',
+            pageNum: '10',
+            screenLabel: '10 F2 Detail · 2',
+
+            header_html: 'Hive Survivor / Feature 02 / <b>Detail · 2</b>',
+            eyebrow: 'FEATURE DETAIL — 2 / 2',
+            title:   '패시브 계약과 레벨업 추천 코드',
+
+            imgSrc: 'assets/P1_F2_Detail2.gif',
+            imgAlt: '레벨업 패시브 선택 UI',
+
+            codeCardTitle: '3 · IAugmentation 계약과 레벨업 추천 알고리즘',
+
+            // PUML + 분석 문서 기반 재구성 스니펫
+            tabs: [
+                {
+                    key: 'iaugmentation',
+                    label: 'IAugmentation',
+                    file: 'IAugmentation.cs',
+                    lang: 'CSHARP',
+                    code:
+`public interface IAugmentation
+{
+    // 레벨업 UI가 구체 타입 없이 이름·설명을 표시하기 위한 공통 계약입니다.
+    string augmentationName    { get; set; }
+    string augmentationComment { get; set; }
+
+    // 중첩 횟수와 한도를 함께 보관해 중복 추천 방지에 사용합니다.
+    int augmentationCount    { get; set; }
+    int augmentationMaxCount { get; set; }
+
+    // 패시브 선택 시 호출 — 구현체가 PlayerState 스탯을 직접 올립니다.
+    void Action();
+}`,
+                },
+                {
+                    key: 'intelligence',
+                    label: 'Intelligence',
+                    file: 'Intelligence.cs',
+                    lang: 'CSHARP',
+                    code:
+`public class Intelligence : IAugmentation
+{
+    public string augmentationName    { get; set; } = "지능";
+    public string augmentationComment { get; set; } = "주문력이 상승합니다.";
+    public int    augmentationCount   { get; set; } = 0;
+    public int    augmentationMaxCount{ get; set; } = 5;
+
+    private PlayerState _player;
+    public Intelligence(PlayerState player) { _player = player; }
+
+    public void Action()
+    {
+        // 중첩 횟수를 기록해 SetAugmentation이 한도 도달 여부를 판단합니다.
+        augmentationCount++;
+        _player.spellPowerFlat += 10f;
+    }
+}`,
+                },
+                {
+                    key: 'setaugmentation',
+                    label: 'SetAugmentation',
+                    file: 'SetAugmentation.cs',
+                    lang: 'CSHARP',
+                    code:
+`private void SelectKey()
+{
+    randomNumber.Clear();
+    while (randomNumber.Count < 3)
+    {
+        int rand = Random.Range(0, augmentations.Count);
+        // 이미 뽑혔거나 중첩 한도에 도달한 패시브는 제외합니다.
+        if (randomNumber.Contains(rand)) continue;
+        if (augmentations[rand].augmentationCount >=
+            augmentations[rand].augmentationMaxCount) continue;
+        randomNumber.Add(rand);
+    }
+    for (int i = 0; i < 3; i++) key[i] = randomNumber[i];
+    SetUI();
+}
+
+public void SelectAction(int num)
+{
+    // 플레이어가 선택한 슬롯의 인덱스로 Action()을 호출합니다.
+    augmentations[key[num]].Action();
+    gameObject.SetActive(false);
+}`,
+                },
+            ],
+
+            resultCard: {
+                num: '4',
+                badge: 'RESULT',
+                // <code class="inline"> 포함
+                body_html: '<code class="inline">SetAugmentation</code>은 <code class="inline">IAugmentation</code> 목록만 순회하면 되며, 패시브 9종 중 어떤 것이 뽑혔는지 알 필요가 없습니다. 중첩 한도 체크(<code class="inline">augmentationCount &gt;= augmentationMaxCount</code>)도 인터페이스 필드 두 개로 처리해 타입별 조건 분기 없이 통일됩니다.',
+            },
+        },
+
+        /* ====================================================
+           PAGE 11 — FEATURE 02 COVER
+        ==================================================== */
+        {
+            type: 'featureCover',
+            id:   'f2-copy',
+            pageNum: '11',
+            screenLabel: '11 F2 Cover',
+
+            header_html: 'Hive Survivor / <b>Feature 02 · 9종 패시브 증강 시스템</b>',
+            num:         '02',
+            eyebrow:     'FEATURE · 9종 패시브 증강 시스템',
+            title:       '레벨업마다 3개,\n내 빌드는 내가 고릅니다.',
+            oneLiner_html: '9종의 패시브 중 매 레벨업마다 무작위 3개가 추천되고, 하나를 골라 <br><span class="hl-blue">즉시 빌드에 반영</span>합니다. 같은 캐릭터로 시작해도 매 판의 빌드 결이 달라집니다.',
+
+            why: {
+                label: '구현 배경',
+                labelSub: 'Why this feature?',
+                body: [
+                    '무작위 증강에만 의존하면 빌드 방향이 플레이어 의도와 무관하게 결정되어 "내 빌드를 만드는 재미"가 반감됩니다.',
+                    // 인라인 <b> 포함
+                    '해결 방향 : <code class="inline">IAugmentation</code> 인터페이스로 9종을 균일하게 관리하고, 레벨업마다 랜덤 3종을 추천해 선택권을 주되 <b>최대 5회 중첩 제한</b>으로 깊이도 확보했습니다. 원하는 패시브가 없으면 마나를 일부 환원해 다음 기회를 노릴 수 있습니다.',
+                ],
+            },
+
+            pagesHint: [
+                { lbl: 'p.12 · STRUCTURE', ttl: 'IAugmentation 인터페이스와 9종 구현체 구조' },
+                { lbl: 'p.13·14 · DETAIL', ttl: '추천 알고리즘, 중첩 관리, 코드 스니펫' },
+            ],
+        },
+
+        /* ====================================================
+           PAGE 12 — F2 STRUCTURE
+        ==================================================== */
+        {
+            type: 'structure',
+            id:   'f2-copy-struct',
+            pageNum: '12',
+            screenLabel: '12 F2 Structure',
+
+            header_html: 'Hive Survivor / Feature 02 / <b>Structure</b>',
+            eyebrow: 'CORE STRUCTURE — 클래스 다이어그램',
+            title:   '9종 패시브 증강 시스템 구조',
+
+            umlSrc: 'assets/P1_F2_UML.png',
+            umlAlt: 'IAugmentation 클래스 다이어그램',
+
+            // notes — 각 item은 h4 + 단락 배열. callout은 별도 type.
+            notes: [
+                {
+                    type: 'item',
+                    h4: '설계 의도',
+                    // <code class="inline"> 포함
+                    body_html: '<code class="inline">IAugmentation</code> 인터페이스로 9종을 통일해, <code class="inline">SetAugmentation</code>이 구체 타입을 몰라도 <code class="inline">List&lt;IAugmentation&gt;</code>으로 전체를 순회·추천·적용합니다. 신규 패시브는 구현체 추가만으로 기존 코드 수정 없이 풀에 자동 편입됩니다.',
+                },
+                {
+                    type: 'item',
+                    h4: '핵심 클래스 4개',
+                    paragraphs_html: [
+                        '<b>IAugmentation (interface)</b>:<br>이름·설명·중첩 횟수·최대 중첩·<code class="inline">Action()</code> 계약을 정의합니다.',
+                        '<b>Health / Fortitude / Intelligence … (9개 구현체)</b>:<br>각 패시브의 스탯 로직을 캡슐화합니다. <code class="inline">IAugmentation</code>만 구현하면 추가 완료.',
+                        '<b>SetAugmentation</b>:<br>레벨업 시 랜덤 3종 추출, UI 갱신, 선택 적용을 담당합니다.',
+                        '<b>PlayerState</b>:<br><code class="inline">Action()</code> 결과를 받아 실제 스탯에 반영합니다.',
+                    ],
+                },
+                {
+                    type: 'callout',
+                    ic: '중첩 제한',
+                    body_html: '<code class="inline">augmentationMaxCount: 5</code> 한도로 단일 패시브 편중을 막습니다. 후보가 모두 한도에 도달한 경우 마나 환원 선택지로 대체합니다.',
+                },
+            ],
+        },
+
+        /* ====================================================
+           PAGE 13 — F2 DETAIL 1 (의사결정 카드)
+        ==================================================== */
+        {
+            type: 'decision',
+            id:   'f2-copy-d1',
+            pageNum: '13',
+            screenLabel: '13 F2 Detail · 1',
+
+            header_html: 'Hive Survivor / Feature 02 / <b>Detail · 1</b>',
+            eyebrow: 'FEATURE DETAIL — 1 / 2',
+            title:   '패시브 추상화와 추천 구조',
+
+            imgSrc: 'assets/P1_F2_Detail1.png',
+            imgAlt: 'IAugmentation 인터페이스 기반 패시브 구조',
+
+            decisionCard: {
+                num: '1',
+                heading: '패시브 9종 관리 구조의 2가지 선택지',
+                badge: 'DECISION',
+                options: [
+                    {
+                        name: 'A안 · 단일 PassiveManager 클래스 + enum 분기',
+                        pros: '초기 구현이 빠르고, 모든 패시브 로직을 한 파일에서 확인할 수 있습니다.',
+                        cons: '패시브가 늘수록 <code class="inline">switch</code> 분기와 무관 필드가 함께 증가합니다.',
+                    },
+                    {
+                        name: 'B안 · IAugmentation 인터페이스 + 9개 구현체 분리',
+                        pros: '<code class="inline">SetAugmentation</code>은 <code class="inline">List&lt;IAugmentation&gt;</code>만 참조. 신규 패시브는 파일 추가만으로 끝납니다.',
+                        cons: '클래스 파일이 9개 생기고, 공통 PlayerState 접근 방식 규칙이 필요합니다.',
+                    },
+                ],
+            },
+
+            choiceCard: {
+                num: '2',
+                heading: '선택한 구조: IAugmentation 계약 + 구현체 분리',
+                badge: 'CHOICE',
+                // <code class="inline"> 포함
+                paragraphs_html: [
+                    '패시브 9종은 영향 스탯이 달랐지만, 레벨업 UI는 "이름 / 설명 / 아이콘" 3가지만 필요했습니다.',
+                    '그래서 공통 표현은 <code class="inline">IAugmentation</code>으로 묶고, 스탯 적용 로직은 각 구현체(Health, Intelligence …)에 캡슐화했습니다.',
+                    '<code class="inline">SetAugmentation</code>은 <code class="inline">List&lt;IAugmentation&gt;</code>에서 인덱스 3개만 뽑으면 구체 타입 없이 UI를 채울 수 있습니다.',
+                ],
+            },
+        },
+
+        /* ====================================================
+           PAGE 14 — F2 DETAIL 2 (코드 탭)
+        ==================================================== */
+        {
+            type: 'codeTabs',
+            id:   'f2-copy-d2',
+            pageNum: '14',
+            screenLabel: '14 F2 Detail · 2',
+
+            header_html: 'Hive Survivor / Feature 02 / <b>Detail · 2</b>',
+            eyebrow: 'FEATURE DETAIL — 2 / 2',
+            title:   '패시브 계약과 레벨업 추천 코드',
+
+            imgSrc: 'assets/P1_F2_Detail2.gif',
+            imgAlt: '레벨업 패시브 선택 UI',
+
+            codeCardTitle: '3 · IAugmentation 계약과 레벨업 추천 알고리즘',
+
+            // PUML + 분석 문서 기반 재구성 스니펫
+            tabs: [
+                {
+                    key: 'iaugmentation',
+                    label: 'IAugmentation',
+                    file: 'IAugmentation.cs',
+                    lang: 'CSHARP',
+                    code:
+`public interface IAugmentation
+{
+    // 레벨업 UI가 구체 타입 없이 이름·설명을 표시하기 위한 공통 계약입니다.
+    string augmentationName    { get; set; }
+    string augmentationComment { get; set; }
+
+    // 중첩 횟수와 한도를 함께 보관해 중복 추천 방지에 사용합니다.
+    int augmentationCount    { get; set; }
+    int augmentationMaxCount { get; set; }
+
+    // 패시브 선택 시 호출 — 구현체가 PlayerState 스탯을 직접 올립니다.
+    void Action();
+}`,
+                },
+                {
+                    key: 'intelligence',
+                    label: 'Intelligence',
+                    file: 'Intelligence.cs',
+                    lang: 'CSHARP',
+                    code:
+`public class Intelligence : IAugmentation
+{
+    public string augmentationName    { get; set; } = "지능";
+    public string augmentationComment { get; set; } = "주문력이 상승합니다.";
+    public int    augmentationCount   { get; set; } = 0;
+    public int    augmentationMaxCount{ get; set; } = 5;
+
+    private PlayerState _player;
+    public Intelligence(PlayerState player) { _player = player; }
+
+    public void Action()
+    {
+        // 중첩 횟수를 기록해 SetAugmentation이 한도 도달 여부를 판단합니다.
+        augmentationCount++;
+        _player.spellPowerFlat += 10f;
+    }
+}`,
+                },
+                {
+                    key: 'setaugmentation',
+                    label: 'SetAugmentation',
+                    file: 'SetAugmentation.cs',
+                    lang: 'CSHARP',
+                    code:
+`private void SelectKey()
+{
+    randomNumber.Clear();
+    while (randomNumber.Count < 3)
+    {
+        int rand = Random.Range(0, augmentations.Count);
+        // 이미 뽑혔거나 중첩 한도에 도달한 패시브는 제외합니다.
+        if (randomNumber.Contains(rand)) continue;
+        if (augmentations[rand].augmentationCount >=
+            augmentations[rand].augmentationMaxCount) continue;
+        randomNumber.Add(rand);
+    }
+    for (int i = 0; i < 3; i++) key[i] = randomNumber[i];
+    SetUI();
+}
+
+public void SelectAction(int num)
+{
+    // 플레이어가 선택한 슬롯의 인덱스로 Action()을 호출합니다.
+    augmentations[key[num]].Action();
+    gameObject.SetActive(false);
+}`,
+                },
+            ],
+
+            resultCard: {
+                num: '4',
+                badge: 'RESULT',
+                // <code class="inline"> 포함
+                body_html: '<code class="inline">SetAugmentation</code>은 <code class="inline">IAugmentation</code> 목록만 순회하면 되며, 패시브 9종 중 어떤 것이 뽑혔는지 알 필요가 없습니다. 중첩 한도 체크(<code class="inline">augmentationCount &gt;= augmentationMaxCount</code>)도 인터페이스 필드 두 개로 처리해 타입별 조건 분기 없이 통일됩니다.',
+            },
+        },
+
+        /* ====================================================
+           PAGE 15 — TROUBLESHOOTING TS-01
         ==================================================== */
         {
             type: 'troubleshoot',
             id:   'ts-01',
-            pageNum: '07',
-            screenLabel: '07 TS-01 · F1',
+            pageNum: '15',
+            screenLabel: '15 TS-01 · F1',
 
             header_html: 'Hive Survivor / Troubleshooting / <b>TS-01 · Feature 01</b>',
             eyebrow: 'TROUBLESHOOTING — TS-01',
@@ -434,13 +880,13 @@ private void OptionReassignment()
         },
 
         /* ====================================================
-           PAGE 08 — RETROSPECTIVE
+           PAGE 16 — RETROSPECTIVE
         ==================================================== */
         {
             type: 'retro',
             id:   'retro',
-            pageNum: '08',
-            screenLabel: '08 Retrospective',
+            pageNum: '16',
+            screenLabel: '16 Retrospective',
 
             header_html: 'Hive Survivor / <b>Retrospective</b>',
             eyebrow: 'RETROSPECTIVE — KEEP · PROBLEM · TRY',
