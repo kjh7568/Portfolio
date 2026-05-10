@@ -463,10 +463,36 @@
 /* ============================================================
    TROUBLESHOOTING PAGE
    ============================================================ */
+.ts-page .ts-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(230px, 1fr);
+    gap: 18px;
+    align-items: stretch;
+}
+
+.ts-page .ts-main-copy {
+    min-width: 0;
+}
+
+.ts-page .card {
+    min-width: 0;
+    overflow: hidden;
+}
+
+.ts-page .card p {
+    overflow-wrap: anywhere;
+}
+
+.ts-page code.inline {
+    white-space: normal;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+}
+
 .ts-page .stack {
     display: grid;
-    grid-template-columns: 220px 1fr;
-    gap: 16px;
+    grid-template-columns: 150px 1fr;
+    gap: 12px;
     align-items: start;
 }
 
@@ -490,14 +516,15 @@
 .ts-page .timeline {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 8px;
 }
 
 .ts-page .ts-inline-code {
     display: flex;
     flex-direction: column;
-    max-height: 170px;
+    max-height: 138px;
     margin-top: 10px;
+    min-width: 0;
 }
 
 .ts-page .ts-inline-code pre {
@@ -516,13 +543,55 @@
 
 .ts-page .ts-result {
     display: grid;
-    grid-template-columns: minmax(260px, 0.82fr) 1fr;
-    gap: 20px;
+    grid-template-columns: 1fr;
+    gap: 10px;
     align-items: center;
+    justify-items: center;
+    min-height: 68px;
+    height: 100%;
+}
+
+.ts-page .ts-result.has-metrics {
+    grid-template-columns: 145px 1fr;
+    gap: 18px;
+    justify-items: stretch;
+}
+
+.ts-page .ts-result.no-metrics {
+    place-items: center;
+    min-height: 76px;
 }
 
 .ts-page .ts-result-metrics {
-    grid-template-columns: repeat(2, 1fr);
+    display: grid;
+    grid-template-columns: 1fr;
+    place-items: center;
+    width: 100%;
+    border: 0;
+}
+
+.ts-page .ts-result-metrics .m {
+    display: grid;
+    place-items: center;
+    gap: 6px;
+    padding: 0;
+    border: 0;
+}
+
+.ts-page .ts-result-metrics .m:not(:first-child) {
+    padding-left: 16px;
+    margin-left: 16px;
+    border-left: 1px solid var(--line);
+}
+
+.ts-page .ts-result-metrics .m .v {
+    font-size: 28px;
+}
+
+.ts-page .ts-result-metrics .m .l {
+    margin-top: 0;
+    white-space: nowrap;
+    font-size: 10.5px;
 }
 
 .ts-page .ts-result .result-copy {
@@ -530,6 +599,44 @@
     font: 600 13px/1.6 var(--font-sans);
     color: var(--fg-2);
     word-break: keep-all;
+    width: 100%;
+    text-align: center;
+}
+
+.ts-page .ts-result.has-metrics .result-copy {
+    text-align: left;
+}
+
+.ts-page .ts-visuals {
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    gap: 12px;
+    min-height: 0;
+}
+
+.ts-page .ts-visual-slot {
+    border: 1px solid var(--line);
+    border-radius: var(--r-2);
+    background: var(--bg-alt);
+    padding: 12px;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    gap: 8px;
+    min-height: 0;
+}
+
+.ts-page .ts-visual-label {
+    font: 700 10px/1 var(--font-sans);
+    letter-spacing: 0.14em;
+    color: var(--accent);
+}
+
+.ts-page .ts-visual-slot img,
+.ts-page .ts-visual-slot .ph {
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    object-fit: cover;
 }
 
 /* ============================================================

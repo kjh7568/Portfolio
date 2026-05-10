@@ -835,9 +835,9 @@ public void EquipEquipment(Item item)
             type: 'troubleshoot',
             id: 'ts-01',
             pageNum: '15',
-            screenLabel: '15 TS-01 · 플레이어 컨트롤',
+            screenLabel: '15 TS-01 · 이동 좌표 문제',
 
-            header_html: 'Legend of Gem / Troubleshooting / <b>TS-01 · 플레이어 컨트롤</b>',
+            header_html: 'Legend of Gem / Troubleshooting / <b>TS-01 · 이동 좌표 문제</b>',
             eyebrow: 'TROUBLESHOOTING — TS-01',
             title: '카메라 기준이 빠진 채 월드 좌표로만 움직이고 있었습니다.',
             subtitle: 'WASD 입력이 화면 기준이 아닌 월드 축 기준으로 처리되어 의도와 다른 방향으로 이동했습니다.',
@@ -848,14 +848,14 @@ public void EquipEquipment(Item item)
                     label: '문제인식',
                     cardType: 'default',
                     body_html:
-                        '카메라 시점과 플레이어 이동 방향이 일치하지 않아, <b>W를 눌러도 화면 위가 아닌 월드 +Z 축으로 향하는 문제</b>가 발생했습니다. 카메라 회전 각도에 따라 플레이어가 의도와 전혀 다른 방향으로 움직였습니다.',
+                        '카메라 시점과 이동 방향이 어긋나, <b>W 입력이 화면 위가 아닌 월드 +Z 방향</b>으로 처리되었습니다.',
                 },
                 {
                     n: '02',
                     label: '원인 분석',
                     cardType: 'sunk',
                     body_html:
-                        '카메라/월드/로컬 좌표계의 매핑이 빠진 채 입력값을 월드 축에 직접 적용했기 때문이었습니다. 캐릭터는 자신의 로컬 좌표 기준으로 움직였지만, 카메라는 월드 좌표에서 캐릭터를 따라가기만 했기 때문에 두 좌표계가 어긋났습니다.',
+                        '입력값을 카메라 기준으로 변환하지 않고 월드 축에 직접 적용해, 화면 기준 이동과 실제 이동이 달라졌습니다.',
                 },
                 {
                     n: '03',
@@ -892,7 +892,7 @@ transform.<span class="tk-f">Translate</span>(direction * (RealStat.MovementSpee
                     cardType: 'good',
                     metrics: [],
                     result_html:
-                        'W → 화면 기준 위, A → 화면 기준 왼쪽으로 이동합니다. 카메라가 어떤 방향을 보고 있든 입력 의도와 화면 위 캐릭터의 이동 방향이 일치하게 되었습니다.',
+                        'W는 화면 위, A는 화면 왼쪽으로 이동합니다. 카메라 방향과 상관없이 입력 의도대로 움직입니다.',
                 },
             ],
         },
@@ -904,9 +904,9 @@ transform.<span class="tk-f">Translate</span>(direction * (RealStat.MovementSpee
             type: 'troubleshoot',
             id: 'ts-02',
             pageNum: '16',
-            screenLabel: '16 TS-02 · 플레이어 컨트롤',
+            screenLabel: '16 TS-02 · 블랜드 트리 문제',
 
-            header_html: 'Legend of Gem / Troubleshooting / <b>TS-02 · 플레이어 컨트롤</b>',
+            header_html: 'Legend of Gem / Troubleshooting / <b>TS-02 · 블랜드 트리 문제</b>',
             eyebrow: 'TROUBLESHOOTING — TS-02',
             title: '월드 좌표가 그대로 블렌드 트리에 들어가고 있었습니다.',
             subtitle: 'TS-01의 후속 — 이동 방향을 월드 좌표로 계산한 뒤 그대로 애니메이터 파라미터에 넘기면서 블렌드 트리가 오작동했습니다.',
@@ -917,14 +917,14 @@ transform.<span class="tk-f">Translate</span>(direction * (RealStat.MovementSpee
                     label: '문제인식',
                     cardType: 'default',
                     body_html:
-                        '기존에 로컬 좌표 기준으로 만들어둔 8방향 블렌드 트리에 월드 좌표 벡터가 입력되어, 캐릭터가 향한 방향과 무관하게 잘못된 방향의 이동 애니메이션이 재생되었습니다.',
+                        '로컬 기준 8방향 블렌드 트리에 월드 좌표가 들어가, 이동 애니메이션 방향이 어긋났습니다.',
                 },
                 {
                     n: '02',
                     label: '원인 분석',
                     cardType: 'sunk',
                     body_html:
-                        '블렌드 트리 매개변수는 <b>"플레이어 자신 기준 어느 방향으로 움직이는가"</b>를 나타내는 로컬 벡터를 기대하는데, TS-01 해결 직후에는 카메라 기준 월드 벡터가 그대로 흘러 들어갔기 때문이었습니다.',
+                        '블렌드 트리는 플레이어 기준 방향값을 기대하지만, 카메라 기준 월드 방향값을 그대로 넘기고 있었습니다.',
                 },
                 {
                     n: '03',
@@ -958,7 +958,7 @@ lastPosition = transform.position;`,
                     cardType: 'good',
                     metrics: [],
                     result_html:
-                        '8방향 블렌드 트리가 의도대로 동작합니다. 캐릭터가 어디를 보고 있든 A 키 입력 시 항상 "왼쪽으로 이동" 애니메이션이, W 입력 시 항상 "전진" 애니메이션이 재생됩니다.',
+                        '8방향 블렌드 트리가 입력 의도대로 동작합니다. A는 왼쪽, W는 전진 애니메이션으로 재생됩니다.',
                 },
             ],
         },
@@ -970,9 +970,9 @@ lastPosition = transform.position;`,
             type: 'troubleshoot',
             id: 'ts-03',
             pageNum: '17',
-            screenLabel: '17 TS-03 · Feature 03',
+            screenLabel: '17 TS-03 · 몬스터 플레이어 인식 문제',
 
-            header_html: 'Legend of Gem / Troubleshooting / <b>TS-03 · Feature 03</b>',
+            header_html: 'Legend of Gem / Troubleshooting / <b>TS-03 · 몬스터 플레이어 인식 문제</b>',
             eyebrow: 'TROUBLESHOOTING — TS-03',
             title: '직선거리만 보고 벽 너머의 플레이어까지 인식하고 있었습니다.',
             subtitle: 'Distance로만 인식 범위를 판정하면, 벽을 사이에 둔 플레이어도 인식 범위 안에 들어옵니다.',
@@ -983,14 +983,14 @@ lastPosition = transform.position;`,
                     label: '문제인식',
                     cardType: 'default',
                     body_html:
-                        '벽 뒤에 있는 몬스터가 플레이어를 인식한 뒤 <b>벽을 끼고 멀리 우회해 다가오는 문제</b>가 발생했습니다. 플레이어 입장에서는 보이지 않는 곳에서 갑자기 적이 나타나는 경험이었습니다.',
+                        '벽 뒤 몬스터가 플레이어를 인식하고 <b>멀리 우회해 다가오는 문제</b>가 발생했습니다.',
                 },
                 {
                     n: '02',
                     label: '원인 분석',
                     cardType: 'sunk',
                     body_html:
-                        '몬스터의 인식 범위를 단순 <code class="inline">Vector3.Distance</code>로 계산해, 실제 이동 가능한 경로 길이가 아닌 직선거리로 판단했기 때문이었습니다. 직선거리 기준에서는 벽이 어떤 영향도 주지 않습니다.',
+                        '인식 범위를 직선거리로만 판단해, 벽으로 막힌 실제 이동 경로를 반영하지 못했습니다.',
                 },
                 {
                     n: '03',
@@ -1039,7 +1039,7 @@ lastPosition = transform.position;`,
                         { v: '0.5', small: 's', l: '갱신 주기 (코루틴)' },
                     ],
                     result_html:
-                        '벽 너머의 플레이어는 실제 이동 거리가 인식 범위를 초과해 인식 대상에서 제외됩니다. 매 프레임 호출 대신 0.5초 코루틴으로 갱신해 NavMesh 경로 계산 부담도 함께 줄였습니다.',
+                        '벽 너머 대상은 실제 이동 거리가 길면 제외됩니다. 0.5초마다 갱신해 경로 계산 부담도 줄였습니다.',
                 },
             ],
         },
@@ -1051,9 +1051,9 @@ lastPosition = transform.position;`,
             type: 'troubleshoot',
             id: 'ts-04',
             pageNum: '18',
-            screenLabel: '18 TS-04 · Feature 03',
+            screenLabel: '18 TS-04 · 다중 타격 문제',
 
-            header_html: 'Legend of Gem / Troubleshooting / <b>TS-04 · Feature 03</b>',
+            header_html: 'Legend of Gem / Troubleshooting / <b>TS-04 · 다중 타격 문제</b>',
             eyebrow: 'TROUBLESHOOTING — TS-04',
             title: '콜라이더가 켜져 있는 동안 매 프레임 피격이 누적되고 있었습니다.',
             subtitle: '공격 판정을 콜라이더 충돌로 구현했지만, 콜라이더가 켜진 시간 전체에서 다중 히트가 발생했습니다.',
@@ -1064,14 +1064,14 @@ lastPosition = transform.position;`,
                     label: '문제인식',
                     cardType: 'default',
                     body_html:
-                        '한 번의 공격 모션에서 무기 콜라이더에 닿은 대상이 <b>여러 번 피격당하는 문제</b>가 발생했습니다. 한 대 휘둘렀는데 체력이 한 번에 크게 깎이는 현상이었습니다.',
+                        '한 번의 공격 모션에서 대상이 <b>여러 번 피격되는 문제</b>가 발생했습니다.',
                 },
                 {
                     n: '02',
                     label: '원인 분석',
                     cardType: 'sunk',
                     body_html:
-                        '기본 공격을 콜라이더 충돌로 구현했기 때문에, 콜라이더가 활성화된 시간 동안 <b>매 프레임 충돌 판정이 반복 발생</b>했습니다. 공격 모션 전체 시간 동안 콜라이더가 켜져 있어 다중 히트가 누적되었습니다.',
+                        '콜라이더가 켜진 동안 매 프레임 충돌 판정이 반복되어, 한 공격에 여러 히트가 누적되었습니다.',
                 },
                 {
                     n: '03',
@@ -1131,7 +1131,7 @@ lastPosition = transform.position;`,
                         { v: '1', small: '회', l: '공격 1회당 피격 횟수' },
                     ],
                     result_html:
-                        '한 번의 공격 모션에서 정확히 타격 구간만 콜라이더가 켜져, 다중 히트 없이 1회 피격만 발생합니다. 인스펙터에서 시작·종료 시점을 조정하면 무기마다 다른 타격 타이밍을 만들 수 있습니다.',
+                        '타격 구간에만 콜라이더가 켜져, 공격 1회당 피격도 1회만 발생합니다.',
                 },
             ],
         },
@@ -1147,27 +1147,27 @@ lastPosition = transform.position;`,
 
             header_html: 'Legend of Gem / <b>Retrospective</b>',
             eyebrow: 'RETROSPECTIVE — KEEP · PROBLEM · TRY',
-            title:   '조작은 한 가지로 묶고, 검증은 도구화가 숙제.',
+            title:   '스킬 조합은 확장했고, 다음에는 검증을 더 단단하게.',
 
             keep: [
                 {
                     h: '드래그 앤 드롭 중심의 인벤토리 경험.',
-                    p: '인벤토리·장비·젬·상점·필드 드롭을 모두 같은 드래그&드롭 한 가지 방식으로 통일했습니다. 기능이 늘어도 플레이어가 익혀야 할 조작이 늘지 않아 이동·장착·구매·획득 흐름을 자연스럽게 연결할 수 있었습니다.',
+                    p: '인벤토리·장비·젬·상점·필드 드롭을 같은 드래그 방식으로 통일했습니다. 기능이 늘어도 조작 학습 부담을 늘리지 않았습니다.',
                 },
                 {
-                    h: 'DI로 구성한 스킬 시스템.',
-                    p: '스킬을 매번 새로 만들기보다 필요한 효과를 컴포넌트로 주입하는 방식을 택했습니다. 덕분에 투사체 속도·범위·다중 투사체 같은 변화를 기존 코드 수정 없이 유연하게 추가할 수 있었습니다.',
+                    h: '보조 젬을 분리한 스킬 구조.',
+                    p: '스킬 본체와 보조 젬 효과를 분리했습니다. 새 효과를 추가해도 기존 스킬 코드를 크게 바꾸지 않아도 됐습니다.',
                 },
             ],
 
             problem: [
                 {
                     h: '씬 이동 시 데이터 유지 방식이 불안정함.',
-                    p: '인벤토리·장비·젬·스킬 상태를 별도 동기화 오브젝트로 유지했지만, 저장 시점이 명확하지 않아 초기화 순서나 파괴 타이밍에 영향을 받았습니다. 데이터가 어디에서 최종 확정되는지 흐름을 더 분명히 했어야 했습니다.',
+                    p: '인벤토리·장비·젬·스킬 상태를 유지했지만 저장 시점이 명확하지 않았습니다. 초기화 순서와 파괴 타이밍에 영향을 받았습니다.',
                 },
                 {
                     h: '검증이 대부분 플레이 테스트에 의존함.',
-                    p: '장비·젬·스킬·구매처럼 서로 연결된 기능을 대부분 직접 플레이로 확인했습니다. 한 곳을 수정했을 때 다른 흐름이 깨졌는지 자동 확인할 수단이 없어 후반으로 갈수록 수정 부담이 커졌습니다.',
+                    p: '장비·젬·스킬·구매 흐름을 대부분 직접 플레이로 확인했습니다. 후반으로 갈수록 수정 후 재확인 비용이 커졌습니다.',
                 },
             ],
 
@@ -1175,17 +1175,17 @@ lastPosition = transform.position;`,
                 {
                     n: '1',
                     h: '디버그 도구 / 검증 패널 만들기',
-                    p: '인벤토리 슬롯·장착 장비·젬 세트·스킬 풀·최종 스탯을 한 화면에서 확인하는 개발용 패널을 만들어 문제 원인을 빠르게 찾습니다.',
+                    p: '인벤토리, 장비, 젬 세트, 스킬 풀, 최종 스탯을 한 화면에서 확인해 문제 원인을 빠르게 찾습니다.',
                 },
                 {
                     n: '2',
                     h: '상태 머신 도입',
-                    p: '이동·공격·스킬 시전·귀환을 명시적 상태 머신으로 관리해 애니메이션 문자열 체크와 조건 분기를 줄이고, 전환 흐름을 안정적으로 만듭니다.',
+                    p: '이동, 공격, 스킬 시전, 귀환을 상태 머신으로 관리해 조건 분기와 애니메이션 의존을 줄입니다.',
                 },
                 {
                     n: '3',
                     h: '씬 전환 데이터 생명주기 명확화',
-                    p: '씬 이동 전 저장 / 씬 로드 후 복원 / 게임 종료 시 정리로 처리 시점을 분명히 나눕니다. <code class="inline">OnDestroy</code>나 초기화 순서에 의존하는 구조를 줄여 데이터 흐름을 예측 가능하게 만듭니다.',
+                    p: '씬 이동 전 저장, 로드 후 복원, 종료 시 정리로 시점을 나눕니다. 데이터 흐름을 예측 가능하게 만듭니다.',
                 },
             ],
         },
