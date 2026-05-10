@@ -34,7 +34,7 @@ const PROJECTS = [
     engine: "Unity 22.3.16f1 LTS\nJetBrains Rider\nGitHub Desktop",
     platform: "PC",
     intent: "이 프로젝트의 목표는 플레이어가 스킬은 '주어진 것'이 아닌 '직접 설계하는 것'으로 느끼게 하는 것이었습니다. 메인 젬을 슬롯에 끼워 스킬을 만들고 보조 젬을 추가로 조합해 동작 방식을 실시간으로 바꾸는 구조를 통해, '내가 만든 빌드로 던전을 돌파하는 재미'를 만들고자 했습니다. 여기에 드랍 시점마다 옵션이 새로 결정되는 장비 시스템을 더해, 더 좋은 빌드를 완성하려는 반복 사냥 동기가 자연스럽게 이어지도록 설계했습니다.",
-    links: { git: "https://github.com/kjh7568/3D_Project", video: "https://www.youtube.com/watch?v=SoBuGS457F0", doc: "#" },
+    links: { git: "https://github.com/kjh7568/3D_Project", video: "https://www.youtube.com/watch?v=SoBuGS457F0", doc: "LegendOfGem_Tech_Doc.html" },
     titleImg: "assets/projects/legend-of-gem/title.png",
     tags: ["Unity", "C#", "URP", "NavMesh", "ScriptableObject", "CSV 데이터 드리븐", "uGUI 드래그&드롭"],
     features: [
