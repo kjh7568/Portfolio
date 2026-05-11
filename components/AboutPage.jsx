@@ -110,9 +110,6 @@ function AboutPage({ pageIdx, total }) {
                     <span className="intro-key-desc">기획 · UI · 데이터 · 문서 · 빌드까지</span>
                   </div>
                 </div>
-                <div className="intro-stats">
-                  7 PROJECTS · 367 SCRIPTS · 46 BRANCHES · 1 APK SHIPPED
-                </div>
               </div>
             </div>
           </div>
