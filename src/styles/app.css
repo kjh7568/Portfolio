@@ -10,6 +10,8 @@ body {
   color: var(--fg);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
+  word-break: keep-all;
+  overflow-wrap: break-word;
 }
 
 /* ---------- Page chrome ---------- */
@@ -424,31 +426,149 @@ body {
   display: grid;
   grid-template-columns: 1fr 320px;
   gap: 64px;
-  align-items: end;
+  align-items: start;
 }
 .hero-left { display: flex; flex-direction: column; gap: 32px; }
 .hero-slogan {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 8px;
+  margin: 0;
+  color: var(--fg);
 }
+.hero-slogan-line { display: block; }
+.hero-tagline {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 620px;
+}
+.hero-tagline p { margin: 0; }
 .hero-meta-row {
   display: flex;
-  gap: 32px;
+  gap: 48px;
   padding-top: 24px;
   border-top: 1px solid var(--line);
+  flex-wrap: wrap;
 }
 .hero-meta-item {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  min-width: 140px;
+  min-width: 180px;
 }
+.hero-meta-value {
+  font: var(--body-sm);
+  color: var(--fg);
+  text-decoration: none;
+}
+a.hero-meta-value:hover { color: var(--accent); }
 .hero-right {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: center;
+  gap: 20px;
+}
+.hero-portrait {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid var(--line);
+  background: var(--bg-sunk);
+}
+.hero-identity {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.hero-identity-name {
+  font: var(--h2);
+  letter-spacing: -0.015em;
+  color: var(--fg);
+}
+.hero-identity-name-en {
+  font: var(--body-sm);
+  color: var(--fg-3);
+  letter-spacing: 0.02em;
+}
+.hero-identity-role {
+  font: var(--mono-sm);
+  color: var(--accent);
+  margin-top: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* ---------- Hero · Education timeline ---------- */
+.hero-edu {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
   gap: 16px;
+  margin-top: 16px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+.edu-timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.edu-timeline::before {
+  content: "";
+  position: absolute;
+  top: 8px;
+  bottom: 8px;
+  left: 5px;
+  width: 1px;
+  background: var(--line);
+}
+.edu-item {
+  position: relative;
+  display: grid;
+  grid-template-columns: 11px 1fr;
+  gap: 14px;
+  align-items: start;
+}
+.edu-dot {
+  position: relative;
+  margin-top: 6px;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--bg);
+  border: 1.5px solid var(--fg-4);
+  box-shadow: 0 0 0 2px var(--bg);
+}
+.edu-item.is-active .edu-dot {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.edu-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.edu-date {
+  color: var(--fg-3);
+  font-size: 11px;
+}
+.edu-school {
+  font: 600 14px/1.4 var(--font-sans);
+  color: var(--fg);
+  letter-spacing: -0.005em;
+}
+.edu-item.is-active .edu-school { color: var(--accent); }
+.edu-major {
+  font: var(--body-sm);
+  color: var(--fg-3);
 }
 
 /* ---------- TechStack ---------- */
@@ -460,8 +580,8 @@ body {
 .stack-group {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  padding: 24px;
+  gap: 24px;
+  padding: 28px 24px;
   border: 1px solid var(--line);
   border-radius: var(--r-2);
   background: var(--bg);
@@ -469,14 +589,90 @@ body {
 .stack-group-head {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding-bottom: 16px;
+  gap: 10px;
+  padding-bottom: 20px;
   border-bottom: 1px solid var(--line);
+}
+.stack-group-desc {
+  font: var(--body-sm);
+  color: var(--fg-3);
+  /* reserve 2 lines so all cards align regardless of desc length */
+  min-height: calc(14px * 1.55 * 2);
 }
 .stack-chips {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
+}
+/* Stack item rhythm — identical across all columns.
+   - .stack-items gap        : space between item groups (Level 2 ↔ Level 2)
+   - .stack-item gap         : Hero/Sub heading ↔ its bullets (Level → Level 3)
+   - .stack-usages gap       : between sibling bullets
+*/
+.stack-items {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.stack-item {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Heading — shared base */
+.stack-item-head {
+  align-self: flex-start;
+  letter-spacing: -0.005em;
+}
+
+/* Level 1 — Hero skill (1 per column, accent bar + accent color) */
+.stack-item-head--hero {
+  position: relative;
+  padding-left: 12px;
+  font: 700 17px/1.35 var(--font-sans);
+  color: var(--accent);
+  letter-spacing: -0.01em;
+}
+.stack-item-head--hero::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 4px;
+  bottom: 4px;
+  width: 3px;
+  background: var(--accent);
+  border-radius: 2px;
+}
+
+/* Level 2 — Secondary skill (uniform sub-heading across columns) */
+.stack-item-head--sub {
+  font: 600 13.5px/1.4 var(--font-sans);
+  color: var(--fg);
+}
+
+/* Level 3 — Supporting bullets (uniform everywhere) */
+.stack-usages {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.stack-usage {
+  position: relative;
+  padding-left: 12px;
+  font: 400 13px/1.75 var(--font-sans);
+  color: var(--fg-3);
+}
+.stack-usage::before {
+  content: "·";
+  position: absolute;
+  left: 2px;
+  top: -1px;
+  color: var(--fg-4);
+  font-weight: 700;
 }
 
 /* ---------- Project Nav ---------- */
@@ -485,39 +681,119 @@ body {
   flex-direction: column;
   gap: 0;
 }
+.proj-nav-lede {
+  margin: -28px 0 24px;
+}
 .proj-nav-item {
   display: grid;
   grid-template-columns: 80px 1fr 320px auto;
-  align-items: center;
+  align-items: start;
   gap: 32px;
-  padding: 32px 24px;
+  padding: 28px 24px;
   border-top: 1px solid var(--line);
   cursor: pointer;
   transition: background var(--dur) var(--ease);
   text-decoration: none;
   color: inherit;
+  position: relative;
 }
 .proj-nav-item:last-child { border-bottom: 1px solid var(--line); }
 .proj-nav-item:hover { background: var(--bg-alt); }
 .proj-nav-num {
-  font: 800 48px/1 var(--font-sans);
-  letter-spacing: -0.02em;
-  color: var(--accent);
+  font: 800 28px/1 var(--font-sans);
+  letter-spacing: -0.01em;
+  color: var(--fg-3);
 }
 .proj-nav-text {
+  position: relative;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 6px;
+  padding-left: 16px;
+}
+.proj-nav-text::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 4px;
+  bottom: 4px;
+  width: 3px;
+  background: var(--accent);
+  border-radius: 2px;
+}
+.proj-nav-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font: 600 11px/1.2 var(--font-sans);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  margin-bottom: 2px;
+}
+.proj-nav-genre { color: var(--accent); }
+.proj-nav-sep { color: var(--fg-4); }
+.proj-nav-year { color: var(--fg-3); letter-spacing: 0.02em; }
+.proj-nav-title {
+  margin: 0;
+  font: 700 22px/1.25 var(--font-sans);
+  letter-spacing: -0.015em;
+  color: var(--fg);
+}
+.proj-nav-desc {
+  margin: 0;
+  font: var(--body-sm);
+  color: var(--fg-3);
 }
 .proj-nav-tags {
   display: flex;
-  gap: 6px;
   flex-wrap: wrap;
+  gap: 6px;
+  justify-content: flex-end;
+  align-content: center;
+  align-self: center;
+}
+
+/* ---------- Other projects (4-column grid below proj-nav) ---------- */
+.proj-other {
+  margin-top: 56px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.proj-other-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+.proj-other-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 20px 20px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-2);
+  background: var(--bg);
+}
+.proj-other-year {
+  color: var(--fg-3);
+  letter-spacing: 0.02em;
+}
+.proj-other-genre {
+  font: var(--body-sm);
+  color: var(--fg-3);
+}
+.proj-other-name {
+  font: 700 16px/1.3 var(--font-sans);
+  letter-spacing: -0.01em;
+  color: var(--fg);
+  margin-top: 2px;
 }
 .proj-nav-arrow {
   width: 32px;
   height: 32px;
   color: var(--fg-4);
+  align-self: center;
   transition: transform var(--dur) var(--ease), color var(--dur) var(--ease);
 }
 .proj-nav-item:hover .proj-nav-arrow {

@@ -9,40 +9,66 @@ function Hero() {
           {/* eyebrow */}
           <Eyebrow>SECTION 00 — INTRO</Eyebrow>
 
-          {/* slogan (display title, 2 lines) */}
-          <div className="hero-slogan">
-            <SkelDisplay w="78%" h={72} />
-            <SkelDisplay w="58%" h={72} accent={false} />
-          </div>
+          {/* slogan (display title, 3 lines) */}
+          <h1 className="hero-slogan display-3">
+            <span className="hero-slogan-line">문제의 원인을 <span className="fg-2">추적</span>하고,</span>
+            <span className="hero-slogan-line"><span className="hl-blue">구조</span>로 해결하고,</span>
+            <span className="hero-slogan-line">수치로 <span className="fg-2">증명</span>합니다.</span>
+          </h1>
 
           {/* short tagline */}
-          <div className="stack gap-3" style={{ maxWidth: 560 }}>
-            <SkelLine w="92%" h={14} />
-            <SkelLine w="64%" h={14} />
+          <div className="hero-tagline">
+            <p className="body-lg fg">구조를 먼저 세우고, 경험을 먼저 그립니다.</p>
+            <p className="body fg-3">
+              데이터 흐름과 책임 소재를 정의한 뒤, 인터페이스와 시스템으로 그 경험을 재현하는 Unity 클라이언트 개발자 김지훈입니다.
+            </p>
           </div>
 
-          {/* contact / github / meta row */}
+          {/* contact / github / phone */}
           <div className="hero-meta-row">
             <div className="hero-meta-item">
-              <SkelLine w={56} h={9} />
-              <SkelBlock h={36} label="EMAIL" w="100%" />
+              <span className="section-eyebrow">EMAIL</span>
+              <a className="hero-meta-value" href="mailto:rwrwg159@gmail.com">rwrwg159@gmail.com</a>
             </div>
             <div className="hero-meta-item">
-              <SkelLine w={56} h={9} />
-              <SkelBlock h={36} label="GITHUB" w="100%" />
+              <span className="section-eyebrow">GITHUB</span>
+              <a className="hero-meta-value" href="https://github.com/kjh7568" target="_blank" rel="noreferrer">github.com/kjh7568</a>
             </div>
             <div className="hero-meta-item">
-              <SkelLine w={56} h={9} />
-              <SkelBlock h={36} label="BLOG" w="100%" />
+              <span className="section-eyebrow">PHONE</span>
+              <span className="hero-meta-value mono">010-5717-0115</span>
             </div>
           </div>
         </div>
 
         <div className="hero-right">
-          <SkelAvatar size={160} />
-          <div className="stack gap-2" style={{ alignItems: "flex-end" }}>
-            <SkelLine w={120} h={10} />
-            <SkelLine w={80} h={10} />
+          <img className="hero-portrait" src="./asset/photo.jpg" alt="김지훈 프로필" />
+          <div className="hero-identity">
+            <div className="hero-identity-name">김지훈</div>
+            <div className="hero-identity-name-en">Jeehoon Kim</div>
+            <div className="hero-identity-role">Unity Client Developer</div>
+          </div>
+
+          <div className="hero-edu">
+            <Eyebrow>학력 · EDUCATION</Eyebrow>
+            <ol className="edu-timeline">
+              <li className="edu-item">
+                <span className="edu-dot" aria-hidden />
+                <div className="edu-body">
+                  <div className="edu-date mono-sm">2019.03 — 2026.08</div>
+                  <div className="edu-school">강원대학교</div>
+                  <div className="edu-major">컴퓨터과학전공</div>
+                </div>
+              </li>
+              <li className="edu-item is-active">
+                <span className="edu-dot" aria-hidden />
+                <div className="edu-body">
+                  <div className="edu-date mono-sm">2025.01 — 2025.08</div>
+                  <div className="edu-school">경일게임아카데미</div>
+                  <div className="edu-major">클라이언트 개발자 과정</div>
+                </div>
+              </li>
+            </ol>
           </div>
         </div>
       </div>
@@ -54,26 +80,38 @@ function Hero() {
 // SECTION 1 — Tech Stack
 // =========================================================
 function TechStack() {
-  const groups = ["GROUP 01", "GROUP 02", "GROUP 03", "GROUP 04"];
+  const groups = window.TECH_STACK || [];
   return (
     <Section
       id="stack"
       eyebrow="SECTION 01"
-      title={<><SkelDisplay w={420} h={40} /></>}
+      title="Tech Stack"
       meta="기술 스택 / TECH STACK"
       label="01 Tech Stack"
     >
       <div className="stack-grid">
-        {groups.map((g, i) => (
-          <div key={i} className="stack-group">
+        {groups.map((g) => (
+          <div key={g.eyebrow} className="stack-group">
             <div className="stack-group-head">
-              <Eyebrow>{g}</Eyebrow>
-              <SkelLine w="70%" h={14} />
+              <Eyebrow>{g.eyebrow}</Eyebrow>
+              <span className="stack-group-desc">{g.desc}</span>
             </div>
-            <div className="stack-chips">
-              {Array.from({ length: 4 + (i % 3) }).map((_, j) => (
-                <SkelChip key={j} w={48 + ((i + j) % 4) * 16} />
-              ))}
+            <div className="stack-items">
+              {g.items.map((it, i) => {
+                const level = it.level === "hero" ? "hero" : "sub";
+                return (
+                  <div key={i} className={"stack-item stack-item--" + level}>
+                    <span className={"stack-item-head stack-item-head--" + level}>
+                      {it.name}
+                    </span>
+                    <ul className="stack-usages">
+                      {it.usages.map((u, j) => (
+                        <li key={j} className="stack-usage">{u}</li>
+                      ))}
+                    </ul>
+                  </div>
+                );
+              })}
             </div>
           </div>
         ))}
@@ -86,11 +124,12 @@ function TechStack() {
 // SECTION 2 — Project Navigation
 // =========================================================
 function ProjectNav({ projects, onJump }) {
+  const others = window.OTHER_PROJECTS || [];
   return (
     <Section
       id="projects"
       eyebrow="SECTION 02"
-      title={<SkelDisplay w={520} h={40} />}
+      title="Project"
       meta="대표 프로젝트 / FEATURED WORK"
       label="02 Project Navigation"
     >
@@ -104,21 +143,42 @@ function ProjectNav({ projects, onJump }) {
           >
             <div className="proj-nav-num">0{i + 1}</div>
             <div className="proj-nav-text">
-              <SkelLine w="32%" h={10} />
-              <SkelTitle w="74%" h={28} />
-              <SkelLine w="56%" h={10} />
+              <div className="proj-nav-eyebrow">
+                <span className="proj-nav-genre">{p.genre}</span>
+                <span className="proj-nav-sep">·</span>
+                <span className="proj-nav-year mono-sm">{p.year}</span>
+              </div>
+              <h3 className="proj-nav-title">{p.name}</h3>
+              <p className="proj-nav-desc">{p.desc}</p>
             </div>
-            <div className="proj-nav-tags">
-              {Array.from({ length: 4 }).map((_, j) => (
-                <SkelChip key={j} w={52 + (j * 6) % 24} />
-              ))}
-            </div>
+            {p.tags && p.tags.length > 0 && (
+              <div className="proj-nav-tags">
+                {p.tags.map((t, j) => (
+                  <span key={j} className="chip">{t}</span>
+                ))}
+              </div>
+            )}
             <svg className="proj-nav-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
               <path d="M5 12h14M13 6l6 6-6 6" />
             </svg>
           </a>
         ))}
       </div>
+
+      {others.length > 0 && (
+        <div className="proj-other">
+          <Eyebrow>그 외 프로젝트 · OTHER WORK</Eyebrow>
+          <div className="proj-other-grid">
+            {others.map((o, i) => (
+              <div key={i} className="proj-other-item">
+                <div className="proj-other-year mono-sm">{o.year}</div>
+                <div className="proj-other-genre">{o.genre}</div>
+                <div className="proj-other-name">{o.name}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </Section>
   );
 }
