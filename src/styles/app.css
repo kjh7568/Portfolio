@@ -359,6 +359,11 @@ body {
   gap: 24px;
   margin-bottom: 40px;
 }
+/* When the tag is omitted, collapse the 80px column so the title
+   doesn't get squeezed into it (causing mid-phrase wrapping). */
+.subsection-head:not(:has(.subsection-tag)) {
+  grid-template-columns: 1fr auto;
+}
 .subsection-tag {
   font: var(--mono-sm);
   letter-spacing: 0.12em;
@@ -820,39 +825,91 @@ a.hero-meta-value:hover { color: var(--accent); }
   gap: 8px;
 }
 
-/* ---------- Features (Section B) ---------- */
-.features-grid {
+/* ---------- Features (Section B) — 40 / 60 split ---------- */
+.features-split {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: auto auto;
-  gap: 24px;
+  grid-template-columns: 40fr 60fr;
+  gap: 32px;
+  align-items: start;
 }
-.feature-card { display: flex; flex-direction: column; gap: 16px; }
-.feature-card.lead {
-  grid-column: 1 / -1;
-  grid-row: 1;
+.features-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.feature-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-2);
+  background: var(--bg);
+}
+.feature-card-media {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: var(--r-1);
+  background: var(--bg-sunk);
+  display: block;
+}
+.feature-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 .feature-card-head {
   display: flex;
-  align-items: baseline;
-  gap: 16px;
-  margin-top: 16px;
+  flex-direction: column;
+  gap: 4px;
 }
 .feature-card-num {
-  font: var(--mono);
+  font: var(--mono-sm);
   color: var(--accent);
   letter-spacing: 0.08em;
+}
+.feature-card-title {
+  margin: 0;
+  font: 700 17px/1.3 var(--font-sans);
+  letter-spacing: -0.01em;
+  color: var(--fg);
+}
+.feature-card-desc {
+  margin: 0;
+  font: var(--body-sm);
+  color: var(--fg-3);
+  line-height: 1.7;
+}
+
+/* Right column — single video, sticky to keep visible while
+   the user scrolls through the three feature cards on the left. */
+.features-video {
+  position: sticky;
+  top: 96px;          /* nav (64px) + breathing room */
+  align-self: start;
+  display: flex;
+}
+.features-video > * { width: 100%; }
+.features-video-player {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 0;
+  border-radius: var(--r-2);
+  background: #000;
+  display: block;
 }
 
 /* ---------- Challenge (Section C/D) ---------- */
 .challenge {
   display: grid;
-  grid-template-columns: 1fr 1.1fr;
+  grid-template-columns: 1fr 1fr;
   gap: 64px;
-  align-items: start;
+  align-items: stretch;
 }
 .challenge.reverse {
-  grid-template-columns: 1.1fr 1fr;
+  grid-template-columns: 1fr 1fr;
 }
 .challenge.reverse > .challenge-text { order: 2; }
 
@@ -860,6 +917,7 @@ a.hero-meta-value:hover { color: var(--accent); }
   display: flex;
   flex-direction: column;
   gap: 32px;
+  min-width: 0;
 }
 .challenge-block {
   display: flex;
@@ -870,13 +928,175 @@ a.hero-meta-value:hover { color: var(--accent); }
 }
 .challenge-block.is-solution { border-left-color: var(--accent); }
 .challenge-block-label {
-  font: var(--mono-sm);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  font: 700 12px/1.4 var(--font-sans);
+  letter-spacing: 0.04em;
   color: var(--fg-3);
 }
 .challenge-block.is-solution .challenge-block-label { color: var(--accent); }
-.challenge-code { display: flex; flex-direction: column; gap: 16px; }
+.challenge-block-body {
+  margin: 0;
+  font: 400 14px/1.75 var(--font-sans);
+  color: var(--fg-2);
+}
+
+/* RESULT — metric trio rendered from data */
+.challenge-results {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+.challenge-result {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-1);
+  background: var(--bg);
+}
+.challenge-result-metric {
+  font: 700 16px/1.25 var(--font-sans);
+  letter-spacing: -0.01em;
+  color: var(--accent);
+}
+.challenge-result-label {
+  font: var(--body-sm);
+  color: var(--fg-3);
+}
+@media (max-width: 720px) {
+  .challenge-results { grid-template-columns: 1fr; }
+}
+.challenge-code {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+  min-height: 0;
+}
+/* CodeBlock should fill the available row height set by the text column. */
+.challenge-code .code-block {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+.challenge-code .code-block-body {
+  flex: 1;
+  min-height: 0;
+  max-height: none;
+}
+
+/* ---------- SOLUTION block — internal expansion ----------
+   Structure (vertical):
+     1) eyebrow label "SOLUTION" (existing .challenge-block-label)
+     2) .solution-alts        — two ALT cards, equal weight
+     3) .solution-why-line    — inline "Why?" + one-line body
+     4) .solution-tradeoff-line — visual pair with Why
+*/
+.solution-alts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.solution-alt {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-1);
+  background: var(--bg);
+}
+.solution-alt.is-chosen { border-color: var(--accent); }
+.solution-alt-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+.solution-alt-label {
+  font: var(--mono-sm);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+}
+.solution-alt.is-chosen .solution-alt-label { color: var(--accent); }
+.solution-alt-pick {
+  font: 600 11px/1 var(--font-sans);
+  letter-spacing: 0.02em;
+  color: var(--accent);
+}
+.solution-alt-title {
+  margin: 0;
+  font: 600 14px/1.4 var(--font-sans);
+  letter-spacing: -0.005em;
+  color: var(--fg);
+}
+.solution-alt-body {
+  margin: 0;
+  font: var(--body-sm);
+  color: var(--fg-3);
+}
+
+/* Why? / Trade-off — paired blocks. Label on top, body below.
+   Same structure, only the left accent bar color differs. */
+.solution-why-line,
+.solution-tradeoff-line {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 4px 0 4px 12px;
+  border-left: 4px solid var(--accent);
+}
+.solution-tradeoff-line { border-left-color: var(--warn); }
+.solution-why-label,
+.solution-tradeoff-label {
+  font: 700 13px/1.55 var(--font-sans);
+}
+.solution-why-label { color: var(--accent); }
+.solution-tradeoff-label { color: var(--warn); }
+.solution-why-body {
+  font: var(--body-sm);
+  color: var(--fg-2);
+}
+.solution-tradeoff-body {
+  font: var(--body-sm);
+  color: var(--fg-3);
+}
+
+/* Bullet lists under Why / Trade-off — leading "*" head marker */
+.solution-why-list,
+.solution-tradeoff-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.solution-why-list li,
+.solution-tradeoff-list li {
+  position: relative;
+  padding-left: 14px;
+  font: var(--body-sm);
+}
+.solution-why-list li { color: var(--fg-2); }
+.solution-tradeoff-list li { color: var(--fg-3); }
+.solution-why-list li::before,
+.solution-tradeoff-list li::before {
+  content: "*";
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-weight: 700;
+}
+.solution-why-list li::before { color: var(--accent); }
+.solution-tradeoff-list li::before { color: var(--warn); }
+
+/* Narrow viewport — stack the two ALT cards vertically */
+@media (max-width: 720px) {
+  .solution-alts { grid-template-columns: 1fr; }
+}
 
 /* ---------- Result (Section E) ---------- */
 .result-metrics {
@@ -1126,6 +1346,21 @@ a.hero-meta-value:hover { color: var(--accent); }
   font: 600 16px/1.3 var(--font-sans);
   color: var(--fg);
 }
+.link-card-value {
+  font: 600 15px/1.3 var(--font-sans);
+  color: var(--fg);
+}
+
+/* Real image variant of the key visual */
+.overview-keyvisual {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: var(--r-2);
+  border: 1px solid var(--line);
+  background: var(--bg-sunk);
+  display: block;
+}
 .link-card-arrow {
   width: 20px;
   height: 20px;
@@ -1165,7 +1400,10 @@ a.hero-meta-value:hover { color: var(--accent); }
 .meta-item-value {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
+  font: 600 14px/1.5 var(--font-sans);
+  color: var(--fg);
+  letter-spacing: -0.005em;
 }
 
 .intent-box {
@@ -1191,6 +1429,36 @@ a.hero-meta-value:hover { color: var(--accent); }
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--fg-4);
+}
+.intent-box-body {
+  margin: 0;
+  font: 400 14px/1.75 var(--font-sans);
+  color: var(--fg-2);
+}
+
+/* Intent as label / one-line value list (Option A format) */
+.intent-list {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.intent-row {
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  gap: 16px;
+  align-items: baseline;
+}
+.intent-row-label {
+  font: 700 12px/1.4 var(--font-sans);
+  letter-spacing: 0.02em;
+  color: var(--accent);
+}
+.intent-row-value {
+  margin: 0;
+  font: 500 14px/1.6 var(--font-sans);
+  color: var(--fg);
+  letter-spacing: -0.005em;
 }
 
 .tech-chips {

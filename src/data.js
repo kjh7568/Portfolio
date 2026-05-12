@@ -11,6 +11,105 @@ window.PROJECTS = [
     year: "2026",
     desc: "혼자서 둘이 되는 시간차 협력 퍼즐 플랫포머",
     tags: ["URP 2D", "Physics2D", "DOTween", "Unity Input System"],
+    overview: {
+      subtitle: "혼자서 둘이 되는 시간차 협력 퍼즐 플랫포머",
+      keyVisual: "./asset/clone-puzzle/title.png",
+      links: {
+        repository: "",   // 소스 코드 URL
+        gameplay: "",     // 플레이 영상 URL
+      },
+      meta: {
+        genre: "퍼즐 플랫포머",
+        duration: "2026.04.15 ~ 2026.04.27 (13일)",
+        team: "1인 (단독 개발)",
+        environment: ["Unity 6 (6000.3.6f1)", "JetBrains Rider", "Fork"],
+      },
+      intent: [
+        { label: "목표",       value: "혼자서도 협력 퍼즐의 쾌감을 느낄 수 있는 경험을 만드는 것입니다." },
+        { label: "핵심 구조",  value: "플레이어의 행동을 프레임 단위로 녹화해, 클론으로 재생되는 시간차 협력을 구현했습니다." },
+        { label: "디자인",     value: "기믹 조합으로 매 스테이지마다 \"어떻게 써야 하지?\"라는 발견을 반복하게 했습니다." },
+        { label: "의도된 감정", value: "정답을 스스로 설계하는 과정에서 창작의 성취감이 남도록 의도했습니다." },
+      ],
+      techChips: [
+        "Unity 6",
+        "URP 2D",
+        "Physics2D",
+        "DOTween",
+        "ScriptableObject",
+        "Interface-driven Architecture",
+        "Unity Input System",
+      ],
+    },
+    features: [
+      {
+        num: 1,
+        title: "내 행동이 클론이 됩니다",
+        desc: "한 번의 플레이가 녹화되어 클론으로 재생됩니다. 과거의 내가 지금의 나를 돕는 시간차 협력 구조입니다.",
+        image: "./asset/clone-puzzle/feature-1.gif",
+      },
+      {
+        num: 2,
+        title: "매 스테이지, 새로운 발견",
+        desc: "저울 · 버튼 · 물체 등 기믹마다 규칙이 다릅니다. 매 스테이지마다 새로운 조합을 발견하는 즐거움이 있습니다.",
+        image: "./asset/clone-puzzle/feature-2.gif",
+      },
+      {
+        num: 3,
+        title: "내가 직접 짜는 팀 전략",
+        desc: "클론과 나의 행동 순서를 직접 설계합니다. 정답이 주어지지 않는, 풀이 설계의 성취감을 의도했습니다.",
+        image: "./asset/clone-puzzle/feature-3.gif",
+      },
+    ],
+    featuresVideo: "https://youtu.be/FbooNqqnYjU?si=GmteqdsE2sP1CjBy",
+    // Section C / D — Technical Challenges.
+    // Each entry follows the new SOLUTION block model:
+    //   alternatives: [{ label, title, body }, { label, title, body, chosen: true }]
+    //   why:      한 줄 (자연 줄바꿈으로 2줄까지)
+    //   tradeoff: 한 줄, 영문 placeholder
+    challenges: [
+      {
+        // SECTION C — Technical Challenge 01
+        title: "저울/도르레 스택 무게 합산",
+        problem:
+          "박스를 쌓아도 저울이 맨 아래 무게만 인식하고, 플레이어나 다른 물체가 박스 위에 오르는 경우 모두에서 위쪽 무게가 누락됐습니다.",
+        cause:
+          "각 무게 소스가 바로 아래 ScalePlatform에만 등록하는 1뎁스 검사 구조여서, 본질이 수직 스택인데 위쪽 박스·클론·플레이어의 무게가 측정되지 않았습니다.",
+        alternatives: [
+          {
+            label: "ALT 01",
+            title: "접촉 이벤트 그래프",
+            body: "박스 접촉 이벤트로 '얹힘/떨어짐' 그래프를 유지하고, 루트가 따라가며 무게를 합산.",
+          },
+          {
+            label: "ALT 02",
+            title: "위쪽 OverlapBox 후 합산",
+            body: "저울에 닿은 박스만 위쪽 OverlapBox로 무게를 더해 Register 호출. FixedUpdate마다 폴링.",
+            chosen: true,
+          },
+        ],
+        why: [
+          "이벤트 손실이 구조적으로 없는 폴링 구조이기 때문입니다.",
+          "코드 변경 없이 스택·소스 종류를 자유롭게 확장할 수 있기 때문입니다.",
+        ],
+        tradeoff: [
+          "FixedUpdate마다 OverlapBoxAll 2회 호출.",
+          "2단 스택까지만 정확 — 2단 이상 적재할 상황이 없다는 전제로 감수했습니다.",
+        ],
+        results: [
+          { metric: "1단 → 2단",   label: "스택 시 무게 인식" },
+          { metric: "0 줄",        label: "ScalePlatform 코드 변경" },
+          { metric: "+1 컴포넌트", label: "새 무게 소스 추가 비용" },
+        ],
+      },
+      {
+        alternatives: [
+          { label: "ALT 01", title: "", body: "" },
+          { label: "ALT 02", title: "", body: "", chosen: true },
+        ],
+        why: "",
+        tradeoff: "",
+      },
+    ],
   },
   {
     id: "p2",

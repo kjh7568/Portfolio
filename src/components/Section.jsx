@@ -31,7 +31,7 @@ function SubSection({ tag, title, meta, children }) {
   return (
     <div className="subsection">
       <div className="subsection-head">
-        <div className="subsection-tag">{tag}</div>
+        {tag ? <div className="subsection-tag">{tag}</div> : null}
         <h3 className="subsection-title">{title}</h3>
         {meta ? <div className="subsection-meta">{meta}</div> : null}
       </div>

@@ -5,9 +5,15 @@
 
 // ---------- A. Overview (hero layout) ----------
 function ProjectOverview({ p, index }) {
+  const ov = p.overview || {};
+  const meta = ov.meta || {};
+  const links = ov.links || {};
+  const envLines = Array.isArray(meta.environment)
+    ? meta.environment
+    : (meta.environment ? [meta.environment] : null);
+
   return (
     <SubSection
-      tag="SECTION A"
       title={null}
       meta="OVERVIEW"
     >
@@ -15,18 +21,32 @@ function ProjectOverview({ p, index }) {
         {/* Header — eyebrow row, big title, subtitle */}
         <header className="overview-hero-head">
           <div className="overview-hero-eyebrow-row">
-            <Eyebrow>PROJECT 0{index + 1} / YEAR</Eyebrow>
+            <Eyebrow>PROJECT 0{index + 1} / {p.year || "YEAR"}</Eyebrow>
           </div>
-          <SkelDisplay w="62%" h={64} />
-          <SkelLine w="44%" h={14} />
+          {p.name
+            ? <h2 className="overview-hero-title">{p.name}</h2>
+            : <SkelDisplay w="62%" h={64} />}
+          {ov.subtitle || p.desc
+            ? <p className="overview-hero-subtitle">{ov.subtitle || p.desc}</p>
+            : <SkelLine w="44%" h={14} />}
         </header>
 
         {/* Two-column body */}
         <div className="overview-hero-grid">
-          {/* LEFT — key visual + 2 link cards */}
+          {/* LEFT — key visual + link cards */}
           <div className="overview-left">
-            <SkelMedia aspect="16x9" label="KEY VISUAL · 16:9" />
-            <a className="link-card" href="#" onClick={(e) => e.preventDefault()}>
+            {ov.keyVisual
+              ? <img className="overview-keyvisual" src={ov.keyVisual} alt={p.name + " key visual"} />
+              : <SkelMedia aspect="16x9" label="KEY VISUAL · 16:9" />}
+
+            {/* Repository */}
+            <a
+              className="link-card"
+              href={links.repository || "#"}
+              target={links.repository ? "_blank" : undefined}
+              rel={links.repository ? "noreferrer" : undefined}
+              onClick={links.repository ? undefined : (e) => e.preventDefault()}
+            >
               <span className="link-card-icon">
                 <svg viewBox="0 0 24 24" fill="currentColor">
                   <path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56 0-.28-.01-1.02-.02-2-3.2.69-3.87-1.54-3.87-1.54-.52-1.33-1.27-1.68-1.27-1.68-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.76 2.68 1.25 3.34.96.1-.74.4-1.25.73-1.54-2.56-.29-5.26-1.28-5.26-5.7 0-1.26.45-2.29 1.18-3.1-.12-.29-.51-1.46.11-3.04 0 0 .97-.31 3.18 1.18a11 11 0 015.79 0c2.2-1.49 3.17-1.18 3.17-1.18.62 1.58.23 2.75.11 3.04.74.81 1.18 1.84 1.18 3.1 0 4.43-2.7 5.41-5.27 5.7.41.36.78 1.06.78 2.14 0 1.54-.01 2.78-.01 3.16 0 .31.21.68.8.56C20.21 21.38 23.5 17.08 23.5 12 23.5 5.65 18.35.5 12 .5z"/>
@@ -34,13 +54,21 @@ function ProjectOverview({ p, index }) {
               </span>
               <div className="link-card-text">
                 <span className="link-card-eyebrow">REPOSITORY</span>
-                <SkelLine w={140} h={12} />
+                <span className="link-card-value">소스 코드 보기</span>
               </div>
               <svg className="link-card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                 <path d="M5 12h14M13 6l6 6-6 6" />
               </svg>
             </a>
-            <a className="link-card" href="#" onClick={(e) => e.preventDefault()}>
+
+            {/* Gameplay */}
+            <a
+              className="link-card"
+              href={links.gameplay || "#"}
+              target={links.gameplay ? "_blank" : undefined}
+              rel={links.gameplay ? "noreferrer" : undefined}
+              onClick={links.gameplay ? undefined : (e) => e.preventDefault()}
+            >
               <span className="link-card-icon">
                 <svg viewBox="0 0 24 24" fill="currentColor">
                   <path d="M8 5v14l11-7z" />
@@ -48,28 +76,37 @@ function ProjectOverview({ p, index }) {
               </span>
               <div className="link-card-text">
                 <span className="link-card-eyebrow">GAMEPLAY</span>
-                <SkelLine w={120} h={12} />
+                <span className="link-card-value">플레이 영상</span>
               </div>
               <svg className="link-card-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                 <path d="M5 12h14M13 6l6 6-6 6" />
               </svg>
             </a>
+
           </div>
 
           {/* RIGHT — meta grid + intent + tech */}
           <div className="overview-right">
             <div className="meta-grid">
               {[
-                { label: "GENRE · 장르" },
-                { label: "DURATION · 기간" },
-                { label: "TEAM · 인원" },
-                { label: "ENVIRONMENT · 개발 환경" },
+                { label: "GENRE · 장르",              value: meta.genre },
+                { label: "DURATION · 기간",           value: meta.duration },
+                { label: "TEAM · 인원",               value: meta.team },
+                { label: "ENVIRONMENT · 개발 환경",   value: envLines },
               ].map((m, i) => (
                 <div key={i} className="meta-item">
                   <span className="meta-item-label">{m.label}</span>
                   <div className="meta-item-value">
-                    <SkelLine w="80%" h={14} />
-                    <SkelLine w="56%" h={14} />
+                    {Array.isArray(m.value) ? (
+                      m.value.map((line, k) => <div key={k}>{line}</div>)
+                    ) : m.value ? (
+                      <div>{m.value}</div>
+                    ) : (
+                      <>
+                        <SkelLine w="80%" h={14} />
+                        <SkelLine w="56%" h={14} />
+                      </>
+                    )}
                   </div>
                 </div>
               ))}
@@ -80,16 +117,26 @@ function ProjectOverview({ p, index }) {
                 <span className="intent-box-label">개발 의도</span>
                 <span className="intent-box-sub">INTENT</span>
               </div>
-              <SkelParagraph
-                lines={5}
-                widths={["100%", "96%", "98%", "92%", "62%"]}
-              />
+              {Array.isArray(ov.intent) ? (
+                <dl className="intent-list">
+                  {ov.intent.map((it, i) => (
+                    <div key={i} className="intent-row">
+                      <dt className="intent-row-label">{it.label}</dt>
+                      <dd className="intent-row-value">{it.value}</dd>
+                    </div>
+                  ))}
+                </dl>
+              ) : ov.intent ? (
+                <p className="intent-box-body">{ov.intent}</p>
+              ) : (
+                <SkelParagraph lines={5} widths={["100%", "96%", "98%", "92%", "62%"]} />
+              )}
             </div>
 
             <div className="tech-chips">
-              {Array.from({ length: 10 }).map((_, i) => (
-                <SkelChip key={i} w={48 + ((i * 17) % 48)} />
-              ))}
+              {ov.techChips && ov.techChips.length > 0
+                ? ov.techChips.map((t, i) => <span key={i} className="chip">{t}</span>)
+                : Array.from({ length: 10 }).map((_, i) => <SkelChip key={i} w={48 + ((i * 17) % 48)} />)}
             </div>
           </div>
         </div>
@@ -98,72 +145,197 @@ function ProjectOverview({ p, index }) {
   );
 }
 
+// Convert a YouTube URL or ID into an embed URL, or return null
+// if the input isn't a YouTube reference.
+function toYouTubeEmbed(src) {
+  if (!src) return null;
+  const s = String(src).trim();
+  // Bare 11-char id
+  if (/^[A-Za-z0-9_-]{11}$/.test(s)) {
+    return "https://www.youtube.com/embed/" + s + "?rel=0&modestbranding=1";
+  }
+  // youtu.be/<id>
+  let m = s.match(/youtu\.be\/([A-Za-z0-9_-]{11})/);
+  if (m) return "https://www.youtube.com/embed/" + m[1] + "?rel=0&modestbranding=1";
+  // youtube.com/watch?v=<id> or /embed/<id> or /shorts/<id>
+  m = s.match(/youtube\.com\/(?:watch\?v=|embed\/|shorts\/)([A-Za-z0-9_-]{11})/);
+  if (m) return "https://www.youtube.com/embed/" + m[1] + "?rel=0&modestbranding=1";
+  return null;
+}
+
 // ---------- B. Features ----------
 function ProjectFeatures({ p }) {
+  const features = (p.features && p.features.length > 0)
+    ? p.features
+    : [1, 2, 3].map((n) => ({ num: n }));
   return (
     <SubSection
-      tag="SECTION B"
-      title={<SkelTitle w={420} h={36} />}
+      title="기능 소개"
       meta="FEATURES · 3"
     >
-      <div className="features-grid">
-        {/* Feature 01 — featured, larger */}
-        <article className="feature-card lead">
-          <SkelMedia aspect="21x9" label="FEATURE 01 · MEDIA" />
-          <div className="feature-card-head">
-            <span className="feature-card-num">FEATURE 01</span>
-            <SkelTitle w={360} h={26} />
-          </div>
-          <SkelParagraph lines={3} widths={["94%", "88%", "62%"]} />
-        </article>
+      <div className="features-split">
+        {/* LEFT (40%) — 3 stacked feature cards, equal size */}
+        <div className="features-stack">
+          {features.slice(0, 3).map((f, i) => {
+            const n = f.num || i + 1;
+            return (
+              <article key={i} className="feature-card">
+                {f.image
+                  ? <img className="feature-card-media" src={f.image} alt={"feature " + n} />
+                  : <SkelMedia aspect="16x9" label={"FEATURE 0" + n + " · MEDIA"} />}
+                <div className="feature-card-body">
+                  <div className="feature-card-head">
+                    <span className="feature-card-num">{"FEATURE 0" + n}</span>
+                    {f.title
+                      ? <h4 className="feature-card-title">{f.title}</h4>
+                      : <SkelTitle w={220} h={22} />}
+                  </div>
+                  {f.desc
+                    ? <p className="feature-card-desc">{f.desc}</p>
+                    : <SkelParagraph lines={2} widths={["94%", "70%"]} />}
+                </div>
+              </article>
+            );
+          })}
+        </div>
 
-        {/* Feature 02 + 03 */}
-        {[2, 3].map((n) => (
-          <article key={n} className="feature-card">
-            <SkelMedia aspect="16x9" label={"FEATURE 0" + n + " · MEDIA"} />
-            <div className="feature-card-head">
-              <span className="feature-card-num">{"FEATURE 0" + n}</span>
-              <SkelTitle w={240} h={22} />
-            </div>
-            <SkelParagraph lines={2} widths={["92%", "70%"]} />
-          </article>
-        ))}
+        {/* RIGHT (60%) — single video area, sticky on scroll */}
+        <aside className="features-video">
+          {(() => {
+            const src = p.featuresVideo;
+            const yt = toYouTubeEmbed(src);
+            if (yt) {
+              return (
+                <iframe
+                  className="features-video-player"
+                  src={yt}
+                  title="Features video"
+                  loading="lazy"
+                  allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                />
+              );
+            }
+            if (src) {
+              return (
+                <video
+                  className="features-video-player"
+                  src={src}
+                  controls
+                  playsInline
+                />
+              );
+            }
+            return <SkelMedia aspect="16x9" label="FEATURES · VIDEO" video />;
+          })()}
+        </aside>
       </div>
     </SubSection>
   );
 }
 
 // ---------- C / D. Technical Challenge ----------
-function ProjectChallenge({ index, reverse, seed }) {
-  const tag = index === 1 ? "SECTION C" : "SECTION D";
+function ProjectChallenge({ index, reverse, seed, challenge }) {
   const subtitle = "TECHNICAL CHALLENGE · 0" + index;
   return (
     <SubSection
-      tag={tag}
-      title={<SkelTitle w={520} h={36} />}
+      title={
+        challenge && challenge.title
+          ? challenge.title
+          : <SkelTitle w={520} h={36} />
+      }
       meta={subtitle}
     >
       <div className={"challenge" + (reverse ? " reverse" : "")}>
         <div className="challenge-text">
           <div className="challenge-block">
-            <span className="challenge-block-label">PROBLEM</span>
-            <SkelParagraph lines={3} widths={["96%", "84%", "62%"]} />
+            <span className="challenge-block-label">문제 인식</span>
+            {challenge && challenge.problem
+              ? <p className="challenge-block-body">{challenge.problem}</p>
+              : <SkelParagraph lines={3} widths={["96%", "84%", "62%"]} />}
           </div>
           <div className="challenge-block">
-            <span className="challenge-block-label">CAUSE</span>
-            <SkelParagraph lines={2} widths={["92%", "70%"]} />
+            <span className="challenge-block-label">원인 분석</span>
+            {challenge && challenge.cause
+              ? <p className="challenge-block-body">{challenge.cause}</p>
+              : <SkelParagraph lines={2} widths={["92%", "70%"]} />}
           </div>
           <div className="challenge-block is-solution">
-            <span className="challenge-block-label">SOLUTION</span>
-            <SkelParagraph lines={3} widths={["94%", "88%", "76%"]} />
+            <span className="challenge-block-label">해결책</span>
+
+            {/* Two alternatives, side by side. Second is chosen by default. */}
+            <div className="solution-alts">
+              {[0, 1].map((i) => {
+                const alt = challenge && challenge.alternatives ? challenge.alternatives[i] : null;
+                const chosen = alt ? !!alt.chosen : i === 1;
+                return (
+                  <article
+                    key={i}
+                    className={"solution-alt" + (chosen ? " is-chosen" : "")}
+                  >
+                    <div className="solution-alt-head">
+                      <span className="solution-alt-label">
+                        {(alt && alt.label) || ("ALT 0" + (i + 1))}
+                      </span>
+                      {chosen && <span className="solution-alt-pick">선택됨</span>}
+                    </div>
+                    {alt && alt.title
+                      ? <h5 className="solution-alt-title">{alt.title}</h5>
+                      : <SkelTitle w="76%" h={18} />}
+                    {alt && alt.body
+                      ? <p className="solution-alt-body">{alt.body}</p>
+                      : <SkelParagraph lines={2} widths={["94%", "70%"]} />}
+                  </article>
+                );
+              })}
+            </div>
+
+            {/* Why? — label + bullet list (2 items), blue accent bar */}
+            <div className="solution-why-line">
+              <span className="solution-why-label">Why?</span>
+              {Array.isArray(challenge && challenge.why) ? (
+                <ul className="solution-why-list">
+                  {challenge.why.map((w, i) => <li key={i}>{w}</li>)}
+                </ul>
+              ) : challenge && challenge.why ? (
+                <span className="solution-why-body">{challenge.why}</span>
+              ) : (
+                <SkelLine w="86%" h={12} />
+              )}
+            </div>
+
+            {/* Trade-off — same shape as Why, warn accent bar */}
+            <div className="solution-tradeoff-line">
+              <span className="solution-tradeoff-label">Trade-off:</span>
+              {Array.isArray(challenge && challenge.tradeoff) ? (
+                <ul className="solution-tradeoff-list">
+                  {challenge.tradeoff.map((t, i) => <li key={i}>{t}</li>)}
+                </ul>
+              ) : challenge && challenge.tradeoff ? (
+                <span className="solution-tradeoff-body">{challenge.tradeoff}</span>
+              ) : (
+                <SkelLine w="78%" h={12} />
+              )}
+            </div>
           </div>
           <div className="challenge-block">
-            <span className="challenge-block-label">RESULT</span>
-            <div className="row gap-3" style={{ flexWrap: "wrap" }}>
-              <SkelBlock w={140} h={56} label="METRIC" />
-              <SkelBlock w={140} h={56} label="METRIC" />
-              <SkelBlock w={140} h={56} label="METRIC" />
-            </div>
+            <span className="challenge-block-label">결과</span>
+            {challenge && challenge.results && challenge.results.length > 0 ? (
+              <div className="challenge-results">
+                {challenge.results.map((r, i) => (
+                  <div key={i} className="challenge-result">
+                    <div className="challenge-result-metric">{r.metric}</div>
+                    <div className="challenge-result-label">{r.label}</div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="row gap-3" style={{ flexWrap: "wrap" }}>
+                <SkelBlock w={140} h={56} label="METRIC" />
+                <SkelBlock w={140} h={56} label="METRIC" />
+                <SkelBlock w={140} h={56} label="METRIC" />
+              </div>
+            )}
           </div>
         </div>
         <div className="challenge-code">
@@ -184,62 +356,10 @@ function ProjectChallenge({ index, reverse, seed }) {
   );
 }
 
-// ---------- E. Result ----------
-function ProjectResult({ p }) {
-  return (
-    <SubSection
-      tag="SECTION E"
-      title={<SkelTitle w={360} h={36} />}
-      meta="RESULT"
-    >
-      {/* metric trio — first one featured */}
-      <div className="result-metrics">
-        {[true, false, false].map((featured, i) => (
-          <div key={i} className={"metric-card" + (featured ? " featured" : "")}>
-            <SkelDisplay
-              w="70%"
-              h={56}
-              accent={false}
-              style={featured ? { background: "rgba(255,255,255,0.95)" } : { background: "var(--fg)" }}
-            />
-            <SkelLine
-              w="60%"
-              h={10}
-              style={featured ? { background: "rgba(255,255,255,0.4)" } : {}}
-            />
-            <span className="metric-card-label">METRIC 0{i + 1}</span>
-          </div>
-        ))}
-      </div>
-
-      {/* architecture placeholder */}
-      <div className="result-arch">
-        <div className="row gap-3" style={{ alignItems: "center", justifyContent: "space-between" }}>
-          <Eyebrow>ARCHITECTURE</Eyebrow>
-          <span className="caption">시스템 다이어그램 영역</span>
-        </div>
-        <SkelBlock h={320} label="ARCHITECTURE DIAGRAM" w="100%">
-          <span className="skel-label center">SYSTEM DIAGRAM PLACEHOLDER</span>
-        </SkelBlock>
-      </div>
-
-      {/* video media (YouTube placeholder) */}
-      <div className="stack gap-3">
-        <div className="row gap-3" style={{ alignItems: "center", justifyContent: "space-between" }}>
-          <Eyebrow>PLAYTHROUGH</Eyebrow>
-          <span className="caption">YouTube 영상 영역 (placeholder)</span>
-        </div>
-        <SkelMedia aspect="16x9" label="YOUTUBE PLAYER · 16:9" video={true} />
-      </div>
-    </SubSection>
-  );
-}
-
 // ---------- F. Retrospective (KPT) ----------
 function Retrospective() {
   return (
     <SubSection
-      tag="SECTION F"
       title={<SkelTitle w={400} h={36} />}
       meta="RETROSPECTIVE · KPT"
     >
@@ -308,9 +428,8 @@ function Project({ p, index }) {
       <div className="section-inner">
         <ProjectOverview p={p} index={index} />
         <ProjectFeatures p={p} />
-        <ProjectChallenge index={1} reverse={false} seed={p.seed} />
-        <ProjectChallenge index={2} reverse={true}  seed={p.seed + 7} />
-        <ProjectResult p={p} />
+        <ProjectChallenge index={1} reverse={false} seed={p.seed}     challenge={p.challenges && p.challenges[0]} />
+        <ProjectChallenge index={2} reverse={true}  seed={p.seed + 7} challenge={p.challenges && p.challenges[1]} />
         <Retrospective />
       </div>
     </section>
@@ -319,5 +438,5 @@ function Project({ p, index }) {
 
 Object.assign(window, {
   ProjectOverview, ProjectFeatures, ProjectChallenge,
-  ProjectResult, Retrospective, Project,
+  Retrospective, Project,
 });
