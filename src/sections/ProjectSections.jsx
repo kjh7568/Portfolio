@@ -122,12 +122,12 @@ function ProjectOverview({ p, index }) {
                   {ov.intent.map((it, i) => (
                     <div key={i} className="intent-row">
                       <dt className="intent-row-label">{it.label}</dt>
-                      <dd className="intent-row-value">{it.value}</dd>
+                      <dd className="intent-row-value">{hl(it.value)}</dd>
                     </div>
                   ))}
                 </dl>
               ) : ov.intent ? (
-                <p className="intent-box-body">{ov.intent}</p>
+                <p className="intent-box-body">{hl(ov.intent)}</p>
               ) : (
                 <SkelParagraph lines={5} widths={["100%", "96%", "98%", "92%", "62%"]} />
               )}
@@ -249,7 +249,8 @@ function hl(text) {
 
 // ---------- C / D. Technical Challenge ----------
 function ProjectChallenge({ index, reverse, seed, challenge }) {
-  const sectionMeta = "TECHNICAL CHALLENGE · 0" + index;
+  const sectionMeta = "TROUBLESHOOTING · 0" + index;
+  const [isCodeOpen, setIsCodeOpen] = React.useState(false);
   // Match the right-column (code) height to the left-column (text) height
   // so long code snippets scroll internally rather than stretching the row.
   const textRef = React.useRef(null);
@@ -351,8 +352,8 @@ function ProjectChallenge({ index, reverse, seed, challenge }) {
               <div className="challenge-results">
                 {challenge.results.map((r, i) => (
                   <div key={i} className="challenge-result">
-                    <div className="challenge-result-metric">{r.metric}</div>
                     <div className="challenge-result-label">{r.label}</div>
+                    <div className="challenge-result-metric">{r.metric}</div>
                   </div>
                 ))}
               </div>
@@ -369,28 +370,77 @@ function ProjectChallenge({ index, reverse, seed, challenge }) {
           className="challenge-code"
           style={textHeight ? { height: textHeight } : undefined}
         >
-          <CodeBlock
-            files={challenge && challenge.code && challenge.code.files}
-            body={challenge && challenge.code && challenge.code.body}
-            filename={challenge && challenge.code && challenge.code.filename}
-            language={challenge && challenge.code && challenge.code.language}
-            highlightLines={challenge && challenge.code && challenge.code.highlightLines}
-            name={index === 1 ? "OptimizationManager.cs" : "AsyncLoader.cs"}
-            lang="C#"
-            lines={index === 1 ? 28 : 36}
-            height={420}
-            seed={seed}
-          />
-          {challenge && challenge.code && challenge.code.caption ? (
-            <div className="row gap-3" style={{ alignItems: "center" }}>
-              <span className="caption">{challenge.code.caption}</span>
+          {challenge && challenge.media && (challenge.media.before || challenge.media.after) ? (
+            <div className="challenge-media-stack">
+              {[challenge.media.before, challenge.media.after].map((item, i) => item && (
+                <figure key={i} className="challenge-media">
+                  <div className="challenge-media-frame">
+                    <img
+                      className="challenge-media-img"
+                      src={item.src}
+                      alt={item.alt || challenge.title || "troubleshooting media"}
+                    />
+                    <span className="challenge-media-label">{item.label || (i === 0 ? "해결 전" : "해결 후")}</span>
+                    {item.note && (
+                      <span className={"challenge-media-note" + (i === 0 ? " is-before" : " is-after")}>
+                        {item.note}
+                      </span>
+                    )}
+                  </div>
+                  {item.caption && (
+                    <figcaption className="challenge-media-caption">
+                      {item.caption}
+                    </figcaption>
+                  )}
+                </figure>
+              ))}
+              <button
+                type="button"
+                className="challenge-code-toggle"
+                onClick={() => setIsCodeOpen((v) => !v)}
+                aria-expanded={isCodeOpen}
+              >
+                {isCodeOpen ? "구현 코드 닫기" : "구현 코드 보기"}
+              </button>
             </div>
           ) : (
-            <div className="row gap-3" style={{ justifyContent: "space-between", alignItems: "center" }}>
-              <span className="caption">CODE BLOCK · placeholder</span>
-              <SkelLine w={120} h={10} />
+            <div className="challenge-media-stack">
+              <SkelMedia aspect="16x9" label="PROBLEM · MEDIA" />
+              <SkelMedia aspect="16x9" label="RESULT · MEDIA" />
+              <button
+                type="button"
+                className="challenge-code-toggle"
+                onClick={() => setIsCodeOpen((v) => !v)}
+                aria-expanded={isCodeOpen}
+              >
+                {isCodeOpen ? "구현 코드 닫기" : "구현 코드 보기"}
+              </button>
             </div>
           )}
+          <div className={"challenge-code-panel" + (isCodeOpen ? " is-open" : "")}>
+            <CodeBlock
+              files={challenge && challenge.code && challenge.code.files}
+              body={challenge && challenge.code && challenge.code.body}
+              filename={challenge && challenge.code && challenge.code.filename}
+              language={challenge && challenge.code && challenge.code.language}
+              highlightLines={challenge && challenge.code && challenge.code.highlightLines}
+              name={index === 1 ? "OptimizationManager.cs" : "AsyncLoader.cs"}
+              lang="C#"
+              lines={index === 1 ? 28 : 36}
+              height={420}
+              seed={seed}
+            />
+            {challenge && challenge.code && challenge.code.caption ? (
+              <div className="row gap-3" style={{ alignItems: "center" }}>
+                <span className="caption">{challenge.code.caption}</span>
+              </div>
+            ) : (
+              <div className="row gap-3" style={{ justifyContent: "space-between", alignItems: "center" }}>
+                <span className="caption">CODE BLOCK · placeholder</span>
+                <SkelLine w={120} h={10} />
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </SubSection>
@@ -398,11 +448,25 @@ function ProjectChallenge({ index, reverse, seed, challenge }) {
 }
 
 // ---------- F. Retrospective (KPT) ----------
-function Retrospective() {
+function Retrospective({ retrospective }) {
+  const keep = retrospective && retrospective.keep;
+  const problem = retrospective && retrospective.problem;
+  const tries = retrospective && retrospective.try;
+  const renderKptBody = (body) => {
+    if (Array.isArray(body)) {
+      return (
+        <ul className="kpt-item-list">
+          {body.map((line, i) => <li key={i}>{hl(line)}</li>)}
+        </ul>
+      );
+    }
+    return <p className="kpt-item-body">{hl(body)}</p>;
+  };
+
   return (
     <SubSection
-      title={<SkelTitle w={400} h={36} />}
-      meta="RETROSPECTIVE · KPT"
+      title={retrospective ? "회고" : <SkelTitle w={400} h={36} />}
+      meta="RETROSPECTIVE"
     >
       <div className="retro-kpt">
         {/* Keep */}
@@ -412,14 +476,21 @@ function Retrospective() {
             <span className="kpt-subtitle">잘했다고 생각하는 것</span>
           </div>
           <div className="kpt-items">
-            {[0, 1].map((i) => (
-              <div key={i} className="kpt-item">
-                <div className="kpt-item-title">
-                  <SkelTitle w={180 - i * 30} h={16} />
-                </div>
-                <SkelParagraph lines={2} widths={["96%", "78%"]} />
-              </div>
-            ))}
+            {Array.isArray(keep)
+              ? keep.map((item, i) => (
+                  <div key={i} className="kpt-item">
+                    <h5 className="kpt-item-title-text">{item.title}</h5>
+                    {renderKptBody(item.body)}
+                  </div>
+                ))
+              : [0, 1].map((i) => (
+                  <div key={i} className="kpt-item">
+                    <div className="kpt-item-title">
+                      <SkelTitle w={180 - i * 30} h={16} />
+                    </div>
+                    <SkelParagraph lines={2} widths={["96%", "78%"]} />
+                  </div>
+                ))}
           </div>
         </article>
 
@@ -430,14 +501,21 @@ function Retrospective() {
             <span className="kpt-subtitle">아쉬웠던 것</span>
           </div>
           <div className="kpt-items">
-            {[0, 1].map((i) => (
-              <div key={i} className="kpt-item">
-                <div className="kpt-item-title">
-                  <SkelTitle w={200 - i * 20} h={16} />
-                </div>
-                <SkelParagraph lines={2} widths={["98%", "82%"]} />
-              </div>
-            ))}
+            {Array.isArray(problem)
+              ? problem.map((item, i) => (
+                  <div key={i} className="kpt-item">
+                    <h5 className="kpt-item-title-text">{item.title}</h5>
+                    {renderKptBody(item.body)}
+                  </div>
+                ))
+              : [0, 1].map((i) => (
+                  <div key={i} className="kpt-item">
+                    <div className="kpt-item-title">
+                      <SkelTitle w={200 - i * 20} h={16} />
+                    </div>
+                    <SkelParagraph lines={2} widths={["98%", "82%"]} />
+                  </div>
+                ))}
           </div>
         </article>
 
@@ -448,13 +526,26 @@ function Retrospective() {
             <span className="kpt-subtitle">다음에 시도할 것</span>
           </div>
           <div className="try-grid">
-            {[1, 2, 3].map((n) => (
-              <div key={n} className="try-item">
-                <span className="try-item-num">{n} · TRY ITEM</span>
-                <SkelTitle w="78%" h={16} />
-                <SkelParagraph lines={2} widths={["96%", "70%"]} />
-              </div>
-            ))}
+            {Array.isArray(tries)
+              ? tries.map((item, i) => {
+                  const n = item.num || i + 1;
+                  return (
+                    <div key={i} className="try-item">
+                      <h5 className="try-item-title">
+                        <span className="try-item-num">{n} · </span>
+                        {item.title}
+                      </h5>
+                      <p className="try-item-body">{hl(item.body)}</p>
+                    </div>
+                  );
+                })
+              : [1, 2, 3].map((n) => (
+                  <div key={n} className="try-item">
+                    <span className="try-item-num">{n} · TRY ITEM</span>
+                    <SkelTitle w="78%" h={16} />
+                    <SkelParagraph lines={2} widths={["96%", "70%"]} />
+                  </div>
+                ))}
           </div>
         </article>
       </div>
@@ -471,7 +562,7 @@ function Project({ p, index }) {
         <ProjectFeatures p={p} />
         <ProjectChallenge index={1} reverse={false} seed={p.seed}     challenge={p.challenges && p.challenges[0]} />
         <ProjectChallenge index={2} reverse={true}  seed={p.seed + 7} challenge={p.challenges && p.challenges[1]} />
-        <Retrospective />
+        <Retrospective retrospective={p.retrospective} />
       </div>
     </section>
   );

@@ -15,9 +15,6 @@
 @font-face { font-family: "Pretendard"; font-weight: 800; font-style: normal; font-display: swap; src: url("fonts/Pretendard-ExtraBold.otf") format("opentype"); }
 @font-face { font-family: "Pretendard"; font-weight: 900; font-style: normal; font-display: swap; src: url("fonts/Pretendard-Black.otf") format("opentype"); }
 
-/* JetBrains Mono for occasional metric/mono moments */
-@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap");
-
 :root {
   /* ----- COLOR TOKENS ----- */
 
@@ -57,7 +54,6 @@
   --font-sans: "Pretendard", -apple-system, BlinkMacSystemFont,
                "system-ui", Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo",
                "Noto Sans KR", "Malgun Gothic", sans-serif;
-  --font-mono: "JetBrains Mono", "SF Mono", ui-monospace, Menlo, Consolas, monospace;
 
   /* Display — used for big hero metrics & slide titles */
   --display-1: 800 96px/1.0   var(--font-sans);
@@ -81,10 +77,10 @@
   --eyebrow: 600 12px/1.2 var(--font-sans);
   --eyebrow-tracking: 0.12em;
 
-  /* Mono — for metrics & tags */
-  --mono-lg:  500 18px/1.4  var(--font-mono);
-  --mono:     500 14px/1.4  var(--font-mono);
-  --mono-sm:  500 12px/1.4  var(--font-mono);
+  /* Mono-style moments use Pretendard for a single-font portfolio tone */
+  --mono-lg:  500 18px/1.4  var(--font-sans);
+  --mono:     500 14px/1.4  var(--font-sans);
+  --mono-sm:  500 12px/1.4  var(--font-sans);
 
   /* ----- SPACING (4px base) ----- */
   --s-1:  4px;

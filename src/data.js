@@ -25,10 +25,10 @@ window.PROJECTS = [
         environment: ["Unity 6 (6000.3.6f1)", "JetBrains Rider", "Fork"],
       },
       intent: [
-        { label: "목표",       value: "혼자서도 협력 퍼즐의 쾌감을 느낄 수 있는 경험을 만드는 것입니다." },
-        { label: "핵심 구조",  value: "플레이어의 행동을 프레임 단위로 녹화해, 클론으로 재생되는 시간차 협력을 구현했습니다." },
-        { label: "디자인",     value: "기믹 조합으로 매 스테이지마다 \"어떻게 써야 하지?\"라는 발견을 반복하게 했습니다." },
-        { label: "의도된 감정", value: "정답을 스스로 설계하는 과정에서 창작의 성취감이 남도록 의도했습니다." },
+        { label: "목표",       value: "혼자서도 **협력 퍼즐의 쾌감**을 느낄 수 있는 경험을 만드는 것입니다." },
+        { label: "핵심 구조",  value: "플레이어의 행동을 **프레임 단위로 녹화**해, 클론으로 재생되는 **시간차 협력**을 구현했습니다." },
+        { label: "디자인",     value: "기믹 조합으로 매 스테이지마다 **어떻게 써야 하지?**라는 발견을 반복하게 했습니다." },
+        { label: "의도된 감정", value: "정답을 스스로 설계하는 과정에서 **창작의 성취감**이 남도록 의도했습니다." },
       ],
       techChips: [
         "Unity 6",
@@ -71,26 +71,42 @@ window.PROJECTS = [
         // SECTION C — Technical Challenge 01
         title: "저울/도르레 스택 무게 합산",
         subtitle: "스택 구조에서도 모든 무게를 누락 없이 합산하도록 개선",
+        media: {
+          before: {
+            src: "./asset/clone-puzzle/feature-2.gif",
+            alt: "무게가 누락되는 저울 기믹 문제 상황",
+            label: "해결 전",
+            note: "위쪽 무게 누락",
+            caption: "위쪽 물체의 무게가 누락되어 저울 반응이 의도와 다르게 보이던 상태",
+          },
+          after: {
+            src: "./asset/clone-puzzle/feature-2.gif",
+            alt: "스택 무게가 합산되는 저울 기믹 개선 후",
+            label: "해결 후",
+            note: "스택 무게 합산",
+            caption: "스택된 물체의 무게를 합산해 기믹 결과가 예측 가능하게 바뀐 상태",
+          },
+        },
         problem:
           "**맨 아래 무게만 인식**하고, 플레이어나 다른 물체가 박스 위에 오르는 경우에도 **위쪽 무게가 누락**됐습니다.",
         cause:
           "**1-Step 검사 구조**로, 각 무게 소스가 바로 아래 ScalePlatform에만 등록되어 **상단 무게가 누락**됐습니다.",
         alternatives: [
           {
-            label: "ALT 01",
+            label: "대안 1",
             title: "접촉 이벤트 그래프",
             body: "박스 접촉 이벤트로 '얹힘/떨어짐' 그래프를 유지하고, 루트가 따라가며 무게를 합산.",
           },
           {
-            label: "ALT 02",
+            label: "대안 2",
             title: "위쪽 OverlapBox 후 합산",
             body: "저울에 닿은 박스만 위쪽 OverlapBox로 무게를 더해 Register 호출. FixedUpdate마다 폴링.",
             chosen: true,
           },
         ],
         why: [
-          "이벤트 손실이 구조적으로 없는 폴링 구조이기 때문입니다.",
-          "코드 변경 없이 스택·소스 종류를 자유롭게 확장할 수 있기 때문입니다.",
+          "이벤트 손실이 구조적으로 없는 **폴링 구조**이기 때문입니다.",
+          "**기존 Platform 코드 변경 없이** 스택·소스 종류를 확장할 수 있기 때문입니다.",
         ],
         tradeoff: [
           "**비용**: FixedUpdate마다 OverlapBoxAll 2회 호출.",
@@ -98,70 +114,70 @@ window.PROJECTS = [
         ],
         results: [
           { metric: "1단 → 2단",     label: "스택 무게 인식" },
-          { metric: "0 줄",          label: "기존 Platform 코드 변경" },
+          { metric: "0 줄",          label: "Platform 코드 변경" },
           { metric: "+1 Component",  label: "새 무게 소스 추가 비용" },
         ],
         code: {
           filename: "Assets/3.Script/Interaction/ScaleWeightSource.cs",
           language: "csharp",
           caption: "저울 위 박스가 자기 위쪽 한 단계를 OverlapBox로 합산해 플랫폼에 등록",
-          highlightLines: [26],
+          highlightLines: [27],
           body:
-`/// <summary>
-/// 내 무게 + 위에 얹힌 무게를 합쳐 플랫폼에 등록합니다.
-/// 매 FixedUpdate 폴링이라 충돌 이벤트 누락에 영향받지 않습니다.
-/// </summary>
-private void FixedUpdate()
+`// 저울 위에 올라간 물체의 무게를 계산해서 플랫폼에 전달하는 클래스입니다.
+public class ScaleWeightSource : MonoBehaviour
 {
-    // 들려 있는 동안은 저울에서 제외
-    if (_carryable != null && _carryable.IsCarried)
+    // 내 무게와 위에 얹힌 무게를 함께 계산합니다.
+    // 매 프레임 확인해서 충돌 이벤트 누락을 피했습니다.
+    private void FixedUpdate()
     {
-        Unregister();
-        return;
-    }
-
-    // 바닥 박스만 진입 — 아래에 다른 박스가 있으면 null
-    ScalePlatform found = FindScalePlatformBelow();
-
-    if (found != null)
-    {
-        // 좌·우 플랫폼 이동 시 이전 플랫폼에서 해제
-        if (found != _currentPlatform)
+        // 들려 있는 동안은 저울에서 제외합니다.
+        if (_carryable != null && _carryable.IsCarried)
         {
             Unregister();
-            _currentPlatform = found;
+            return;
         }
-        // 핵심: 스택 전체 무게 = 내 무게 + 위에 얹힌 무게
-        found.Register(this, GetWeight() + GetWeightOnTop());
-    }
-    else
-    {
-        Unregister();
-    }
-}
 
-/// <summary>
-/// 자기 바로 위쪽 한 단계만 검사해 얹힌 무게의 합을 돌려줍니다.
-/// 위로 1단계만 보므로 2단 스택까지 정확합니다.
-/// </summary>
-private int GetWeightOnTop()
-{
-    Bounds b = _collider.bounds;
-    Vector2 center = new Vector2(b.center.x, b.max.y + 0.1f);
-    Vector2 size   = new Vector2(b.size.x * 0.8f, 0.2f);
+        // 아래에 다른 박스가 없을 때만 저울에 등록합니다.
+        ScalePlatform found = FindScalePlatformBelow();
 
-    Collider2D[] hits = Physics2D.OverlapBoxAll(center, size, 0f);
-    int total = 0;
-    foreach (Collider2D hit in hits)
-    {
-        if (hit.gameObject == gameObject) continue;
-        // 들려 있는 박스는 제외
-        ICarryable carryable = hit.GetComponent<ICarryable>();
-        if (carryable != null && carryable.IsCarried) continue;
-        ScaleWeightSource ws = hit.GetComponent<ScaleWeightSource>();
-        if (ws != null) total += ws.GetWeight();
+        if (found != null)
+        {
+            // 다른 저울로 이동했다면 이전 등록을 먼저 해제합니다.
+            if (found != _currentPlatform)
+            {
+                Unregister();
+                _currentPlatform = found;
+            }
+            // 스택 전체 무게를 한 번에 넘겨줍니다.
+            found.Register(this, GetWeight() + GetWeightOnTop());
+        }
+        else
+        {
+            Unregister();
+        }
     }
-    return total;
+
+    // 바로 위 한 단계만 확인해 얹힌 무게를 더합니다.
+    // 이 프로젝트에서는 2단 스택까지만 필요했습니다.
+    private int GetWeightOnTop()
+    {
+        Bounds b = _collider.bounds;
+        Vector2 center = new Vector2(b.center.x, b.max.y + 0.1f);
+        Vector2 size   = new Vector2(b.size.x * 0.8f, 0.2f);
+
+        Collider2D[] hits = Physics2D.OverlapBoxAll(center, size, 0f);
+        int total = 0;
+        foreach (Collider2D hit in hits)
+        {
+            if (hit.gameObject == gameObject) continue;
+            // 들려 있는 박스는 계산에서 제외합니다.
+            ICarryable carryable = hit.GetComponent<ICarryable>();
+            if (carryable != null && carryable.IsCarried) continue;
+            ScaleWeightSource ws = hit.GetComponent<ScaleWeightSource>();
+            if (ws != null) total += ws.GetWeight();
+        }
+        return total;
+    }
 }`,
         },
       },
@@ -169,18 +185,34 @@ private int GetWeightOnTop()
         // SECTION D — Technical Challenge 02
         title: "입력 녹화/재생 결정론",
         subtitle: "실행 순서 의존을 제거해 클론 입력을 100% 일치시키도록 개선",
+        media: {
+          before: {
+            src: "./asset/clone-puzzle/feature-1.gif",
+            alt: "클론 입력 재생이 어긋나는 문제 상황",
+            label: "해결 전",
+            note: "입력 소비 순서에 따라 위치 불일치",
+            caption: "입력 소비 순서에 따라 클론이 같은 행동을 다르게 재생하던 상태",
+          },
+          after: {
+            src: "./asset/clone-puzzle/feature-1.gif",
+            alt: "클론 입력 재생이 일치하는 개선 후",
+            label: "해결 후",
+            note: "녹화/소비 분리로 동일 위치 재생",
+            caption: "녹화용 입력과 소비용 입력을 분리해 클론 행동이 일관되게 재생되는 상태",
+          },
+        },
         problem:
           "점프·인터랙트처럼 **누른 순간 한 번**만 인식하는 입력에서 클론이 같은 입력을 **다르게 재생**하는 현상이 있었습니다.",
         cause:
           "녹화용·소비용 플래그를 **하나의 변수**로 공유해, Actor가 먼저 소비하면 같은 프레임의 녹화 단계가 false를 기록하는 **실행 순서 의존**이 원인이었습니다.",
         alternatives: [
           {
-            label: "ALT 01",
-            title: "단일 플래그 + Script Execution Order 강제",
+            label: "대안 1",
+            title: "단일 플래그 + 실행 순서 고정",
             body: "단일 플래그를 유지하고 [녹화 → 소비] 실행 순서를 Unity 프로젝트 설정으로 고정.",
           },
           {
-            label: "ALT 02",
+            label: "대안 2",
             title: "녹화용 / 소비용 플래그 분리",
             body: "입력 1회당 _jumpPressed(소비용)와 _jumpRecord(프레임 끝 초기화)를 동시에 set — 녹화·소비 시점 독립.",
             chosen: true,
@@ -196,63 +228,148 @@ private int GetWeightOnTop()
         ],
         results: [
           { metric: "부분 손실 → 100%", label: "클론 재생 일치율" },
-          { metric: "0 줄",              label: "외부 코드 변경 (IInputProvider 보존)" },
-          { metric: "있음 → 없음",       label: "Script Execution Order 의존" },
+          { metric: "0 줄",              label: "외부 코드 변경" },
+          { metric: "있음 → 없음",       label: "실행 순서 의존" },
         ],
         code: {
-          filename: "Assets/3.Script/Input/PlayerInputProvider.cs",
-          language: "csharp",
           caption: "같은 입력 1회당 소비용/녹화용 두 필드를 동시에 set — 호출 순서와 무관하게 동일 결과",
-          highlightLines: [22],
-          body:
-`/// <summary>
-/// 녹화용·소비용 입력 플래그를 분리해 Script Execution Order 의존을
-/// 제거합니다. 같은 입력 1회당 두 필드를 동시에 set 하므로
-/// Actor와 Recorder의 호출 순서가 결과에 영향을 주지 않습니다.
-/// </summary>
-public class PlayerInputProvider : MonoBehaviour, IInputProvider
+          files: [
+            {
+              name: "Assets/3.Script/Input/InputRecorder.cs",
+              lang: "C#",
+              highlightLines: [40],
+              body:
+`// 플레이어 입력을 녹화하면서 Actor에게도 같은 입력을 제공하는 클래스입니다.
+public class InputRecorder : MonoBehaviour, IInputProvider, IRecordable
 {
-    // Actor가 ConsumeJump()로 소비 — 소비 시 false
+    // 입력을 소비할 값과 녹화에 남길 값을 따로 둡니다.
+    // ConsumeXxx()가 읽으면 바로 false로 바뀝니다.
     private bool _jumpPressed;
-    // Recorder가 PeekJumpForRecord()로 읽기만 — 프레임 끝에 일괄 초기화
-    private bool _jumpRecord;
-
     private bool _interactPressed;
+    private bool _carryPressed;
+    // 녹화용 값은 기록이 끝난 뒤에만 비웁니다.
+    private bool _jumpRecord;
     private bool _interactRecord;
+    private bool _carryRecord;
 
-    public Vector2 MoveAxis { get; private set; }
+    private Vector2 _moveDirection;
+    private List<FrameInput> _recordedFrames = new();
+    private float _recordStartTime;
+    private bool _isRecording;
 
-    /// <summary>InputAction 콜백에서 호출. 두 플래그를 동시에 set.</summary>
-    public void SetJump(bool pressed)
-    {
-        _jumpPressed = pressed;  // 게임 로직용
-        _jumpRecord  = pressed;  // 녹화용 (독립 필드)
-    }
+    // Actor가 읽는 입력 인터페이스입니다.
+    public Vector2 MoveDirection => _moveDirection;
 
-    // Actor 측: 1회성 소비
     public bool ConsumeJump()
     {
-        bool v = _jumpPressed;
-        _jumpPressed = false;
-        return v;
+        bool v = _jumpPressed; _jumpPressed = false; return v;
+    }
+    // 나머지 입력도 같은 방식으로 소비합니다.
+
+    // 같은 입력 한 번을 두 용도에 함께 저장합니다.
+    public void SetInput(Vector2 move, bool jump, bool interact, bool carry)
+    {
+        _moveDirection = move;
+        if (jump)     { _jumpPressed    = true; _jumpRecord    = true; }
+        if (interact) { _interactPressed = true; _interactRecord = true; }
+        if (carry)    { _carryPressed   = true; _carryRecord   = true; }
     }
 
-    // Recorder 측: 읽기 전용 (소비하지 않음)
-    public bool PeekJumpForRecord() => _jumpRecord;
-
-    /// <summary>
-    /// FixedUpdate가 모두 끝난 뒤 호출되어 녹화용 플래그만 초기화.
-    /// (소비용 _jumpPressed는 ConsumeJump 호출 시점에 이미 false)
-    /// </summary>
-    public void ClearRecordFlagsAtEndOfFrame()
+    // 입력을 한 프레임 단위로 기록합니다.
+    private void FixedUpdate()
     {
-        _jumpRecord     = false;
-        _interactRecord = false;
+        if (!_isRecording) return;
+
+        _recordedFrames.Add(new FrameInput
+        {
+            timestamp       = Time.time - _recordStartTime,
+            moveDirection   = _moveDirection,
+            jumpPressed     = _jumpRecord,       // Consume 순서와 상관없이 남아 있습니다.
+            interactPressed = _interactRecord,
+            carryPressed    = _carryRecord,
+        });
+
+        // 기록이 끝난 뒤 녹화용 값만 비웁니다.
+        _jumpRecord = _interactRecord = _carryRecord = false;
     }
 }`,
+            },
+            {
+              name: "Assets/3.Script/Input/IInputProvider.cs",
+              lang: "C#",
+              body:
+`// 플레이어와 클론이 같은 방식으로 입력을 넘기기 위한 인터페이스입니다.
+// 플레이어는 버튼 입력을, 클론은 녹화 데이터를 이 형태로 제공합니다.
+public interface IInputProvider
+{
+    // 이동 방향을 넘깁니다. (-1 ~ 1)
+    Vector2 MoveDirection { get; }
+
+    // 점프 입력은 한 번 읽으면 소비됩니다.
+    bool ConsumeJump();
+
+    // 인터랙트 입력도 한 번 읽으면 소비됩니다.
+    bool ConsumeInteract();
+
+    // 집기와 내려놓기 입력도 같은 규칙을 따릅니다.
+    bool ConsumeCarry();
+}`,
+            },
+          ],
         },
       },
     ],
+    retrospective: {
+      keep: [
+        {
+          title: "IInputProvider 인터페이스 분리.",
+          body: [
+            "플레이어와 클론을 같은 인터페이스로 연결해 **이중 플래그 도입** 비용을 줄였습니다.",
+            "Actor·ClonePlayback 변경 0줄로 설계 비용 절감을 증명했습니다.",
+          ],
+        },
+        {
+          title: "플레이어 경험 기준의 문제 정의.",
+          body: [
+            "TROUBLESHOOTING 02는 '**퍼즐 메커닉 자체가 무너진다**'는 경험 문제였습니다.",
+            "플레이어가 실제로 겪는 결과를 기준으로 심각도를 판단했습니다.",
+          ],
+        },
+      ],
+      problem: [
+        {
+          title: "저울 기믹에서 2단 고정 스택 한계.",
+          body: [
+            "OverlapBox가 바로 위 한 단계만 검사해 **3단 이상 적재 시 상단 무게가 누락**됩니다.",
+            "'2단까지만 사용'을 전제로 스택 깊이를 가정에 묻어둔 설계입니다.",
+          ],
+        },
+        {
+          title: "스테이지 이터레이션 구조의 부재.",
+          body: [
+            "스테이지 데이터는 분리했지만, 기믹 배치는 씬 편집에 의존했습니다.",
+            "**기획 변경(스테이지 추가 등)마다 씬 작업이 필요한** 구조라 이터레이션이 느려졌습니다.",
+          ],
+        },
+      ],
+      try: [
+        {
+          num: 1,
+          title: "여러 층으로 쌓인 무게까지 계산",
+          body: "바로 위 한 칸만 보던 방식을 바꿔, 쌓인 물체를 끝까지 따라갑니다. 층수가 늘어나도 무게가 빠지지 않게 합니다.",
+        },
+        {
+          num: 2,
+          title: "입력 종류를 한 곳에서 관리",
+          body: "점프, 상호작용, 집기 입력을 한 목록에서 관리합니다. 새 입력도 녹화와 재생에 함께 반영되게 합니다.",
+        },
+        {
+          num: 3,
+          title: "클론 재생 방식 다양화",
+          body: "클론을 한 번만 움직일지, 반복할지, 횟수를 정할지 선택합니다. 스테이지마다 필요한 방식으로 조정합니다.",
+        },
+      ],
+    },
   },
   {
     id: "p2",
