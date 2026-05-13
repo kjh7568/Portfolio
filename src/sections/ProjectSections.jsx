@@ -234,9 +234,35 @@ function ProjectFeatures({ p }) {
   );
 }
 
+// Tiny inline-bold parser: turns "**word**" into <strong>word</strong>.
+// Used so data.js can stay plain JS but still emphasize key terms.
+function hl(text) {
+  if (text == null) return null;
+  const parts = String(text).split(/(\*\*[^*]+\*\*)/g);
+  return parts.map((p, i) => {
+    if (p.startsWith("**") && p.endsWith("**")) {
+      return <strong key={i} className="hl">{p.slice(2, -2)}</strong>;
+    }
+    return p;
+  });
+}
+
 // ---------- C / D. Technical Challenge ----------
 function ProjectChallenge({ index, reverse, seed, challenge }) {
-  const subtitle = "TECHNICAL CHALLENGE · 0" + index;
+  const sectionMeta = "TECHNICAL CHALLENGE · 0" + index;
+  // Match the right-column (code) height to the left-column (text) height
+  // so long code snippets scroll internally rather than stretching the row.
+  const textRef = React.useRef(null);
+  const [textHeight, setTextHeight] = React.useState(null);
+  React.useEffect(() => {
+    const el = textRef.current;
+    if (!el || typeof ResizeObserver === "undefined") return;
+    const ro = new ResizeObserver((entries) => {
+      for (const e of entries) setTextHeight(e.contentRect.height);
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
   return (
     <SubSection
       title={
@@ -244,20 +270,21 @@ function ProjectChallenge({ index, reverse, seed, challenge }) {
           ? challenge.title
           : <SkelTitle w={520} h={36} />
       }
-      meta={subtitle}
+      subtitle={challenge && challenge.subtitle ? challenge.subtitle : null}
+      meta={sectionMeta}
     >
       <div className={"challenge" + (reverse ? " reverse" : "")}>
-        <div className="challenge-text">
+        <div className="challenge-text" ref={textRef}>
           <div className="challenge-block">
             <span className="challenge-block-label">문제 인식</span>
             {challenge && challenge.problem
-              ? <p className="challenge-block-body">{challenge.problem}</p>
+              ? <p className="challenge-block-body">{hl(challenge.problem)}</p>
               : <SkelParagraph lines={3} widths={["96%", "84%", "62%"]} />}
           </div>
           <div className="challenge-block">
             <span className="challenge-block-label">원인 분석</span>
             {challenge && challenge.cause
-              ? <p className="challenge-block-body">{challenge.cause}</p>
+              ? <p className="challenge-block-body">{hl(challenge.cause)}</p>
               : <SkelParagraph lines={2} widths={["92%", "70%"]} />}
           </div>
           <div className="challenge-block is-solution">
@@ -295,10 +322,10 @@ function ProjectChallenge({ index, reverse, seed, challenge }) {
               <span className="solution-why-label">Why?</span>
               {Array.isArray(challenge && challenge.why) ? (
                 <ul className="solution-why-list">
-                  {challenge.why.map((w, i) => <li key={i}>{w}</li>)}
+                  {challenge.why.map((w, i) => <li key={i}>{hl(w)}</li>)}
                 </ul>
               ) : challenge && challenge.why ? (
-                <span className="solution-why-body">{challenge.why}</span>
+                <span className="solution-why-body">{hl(challenge.why)}</span>
               ) : (
                 <SkelLine w="86%" h={12} />
               )}
@@ -309,10 +336,10 @@ function ProjectChallenge({ index, reverse, seed, challenge }) {
               <span className="solution-tradeoff-label">Trade-off:</span>
               {Array.isArray(challenge && challenge.tradeoff) ? (
                 <ul className="solution-tradeoff-list">
-                  {challenge.tradeoff.map((t, i) => <li key={i}>{t}</li>)}
+                  {challenge.tradeoff.map((t, i) => <li key={i}>{hl(t)}</li>)}
                 </ul>
               ) : challenge && challenge.tradeoff ? (
-                <span className="solution-tradeoff-body">{challenge.tradeoff}</span>
+                <span className="solution-tradeoff-body">{hl(challenge.tradeoff)}</span>
               ) : (
                 <SkelLine w="78%" h={12} />
               )}
@@ -338,18 +365,32 @@ function ProjectChallenge({ index, reverse, seed, challenge }) {
             )}
           </div>
         </div>
-        <div className="challenge-code">
+        <div
+          className="challenge-code"
+          style={textHeight ? { height: textHeight } : undefined}
+        >
           <CodeBlock
+            files={challenge && challenge.code && challenge.code.files}
+            body={challenge && challenge.code && challenge.code.body}
+            filename={challenge && challenge.code && challenge.code.filename}
+            language={challenge && challenge.code && challenge.code.language}
+            highlightLines={challenge && challenge.code && challenge.code.highlightLines}
             name={index === 1 ? "OptimizationManager.cs" : "AsyncLoader.cs"}
             lang="C#"
             lines={index === 1 ? 28 : 36}
             height={420}
             seed={seed}
           />
-          <div className="row gap-3" style={{ justifyContent: "space-between", alignItems: "center" }}>
-            <span className="caption">CODE BLOCK · placeholder</span>
-            <SkelLine w={120} h={10} />
-          </div>
+          {challenge && challenge.code && challenge.code.caption ? (
+            <div className="row gap-3" style={{ alignItems: "center" }}>
+              <span className="caption">{challenge.code.caption}</span>
+            </div>
+          ) : (
+            <div className="row gap-3" style={{ justifyContent: "space-between", alignItems: "center" }}>
+              <span className="caption">CODE BLOCK · placeholder</span>
+              <SkelLine w={120} h={10} />
+            </div>
+          )}
         </div>
       </div>
     </SubSection>

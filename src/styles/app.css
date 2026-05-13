@@ -273,6 +273,40 @@ body {
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
+/* Chrome-style tab strip under the window header. Each tab is one file. */
+.code-block-tabs {
+  display: flex;
+  gap: 0;
+  background: #0B1220;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+.code-block-tabs::-webkit-scrollbar { height: 4px; }
+.code-block-tabs::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); }
+.code-block-tab {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  border-top: 2px solid transparent;
+  padding: 9px 16px;
+  font: var(--mono-sm);
+  color: rgba(255, 255, 255, 0.42);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 120ms var(--ease), color 120ms var(--ease);
+}
+.code-block-tab:hover {
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.78);
+}
+.code-block-tab.is-active {
+  background: #0F172A;   /* matches .code-block body bg, seamless join */
+  color: #fff;
+  border-top-color: var(--accent);
+}
+
 .code-block-body {
   display: grid;
   grid-template-columns: 44px 1fr;
@@ -319,6 +353,52 @@ body {
 .code-tok.var  { background: #9CDCFE; }   /* variable */
 .code-tok.cmt  { background: rgba(106,153,85,0.7); }
 .code-tok.dim  { background: rgba(255,255,255,0.10); }
+
+/* ----- Real-text mode (when CodeBlock receives `body`) -----
+   Tokens render as inline text with color (not background bars). */
+.code-block.is-text .code-lines {
+  padding: 12px 0;
+  gap: 0;
+}
+.code-block.is-text .code-line {
+  height: auto;
+  min-height: 20px;
+  padding: 0 16px;
+  gap: 0;
+  display: block;
+  white-space: pre;
+  font: 500 12.5px/20px var(--font-mono);
+  color: rgba(255, 255, 255, 0.86);
+}
+.code-block.is-text .code-line.is-hl {
+  /* Highlighted line — Register call. Subtle blue tint, no glow. */
+  background: rgba(96, 165, 250, 0.10);
+  box-shadow: inset 2px 0 0 var(--accent);
+}
+.code-block.is-text .code-tok {
+  display: inline;
+  height: auto;
+  width: auto !important;
+  background: transparent;
+  border-radius: 0;
+  vertical-align: baseline;
+}
+.code-block.is-text .code-tok.kw   { color: #C586C0; }
+.code-block.is-text .code-tok.fn   { color: #DCDCAA; }
+.code-block.is-text .code-tok.type { color: #4EC9B0; }
+.code-block.is-text .code-tok.str  { color: #CE9178; }
+.code-block.is-text .code-tok.num  { color: #B5CEA8; }
+.code-block.is-text .code-tok.var  { color: #9CDCFE; }
+.code-block.is-text .code-tok.cmt  { color: #6A9955; font-style: italic; }
+.code-block.is-text .code-tok.txt  { color: rgba(255, 255, 255, 0.86); }
+
+/* Header file path can be long — truncate cleanly instead of overflowing */
+.code-block.is-text .code-block-name {
+  max-width: min(60ch, 70%);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
 /* ---------- Tag chip ---------- */
 .chip {
@@ -370,11 +450,22 @@ body {
   color: var(--accent);
   text-transform: uppercase;
 }
+.subsection-title-col {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
 .subsection-title {
   font: var(--h2);
   letter-spacing: -0.015em;
   color: var(--fg);
   margin: 0;
+}
+.subsection-subtitle {
+  font: var(--body);
+  color: var(--fg-3);
+  letter-spacing: -0.005em;
 }
 .subsection-meta {
   font: var(--mono-sm);
@@ -906,7 +997,9 @@ a.hero-meta-value:hover { color: var(--accent); }
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 64px;
-  align-items: stretch;
+  /* Right column height is driven by JS (ResizeObserver on .challenge-text),
+     so we don't need grid to stretch the row to its tallest cell. */
+  align-items: start;
 }
 .challenge.reverse {
   grid-template-columns: 1fr 1fr;
@@ -938,6 +1031,14 @@ a.hero-meta-value:hover { color: var(--accent); }
   font: 400 14px/1.75 var(--font-sans);
   color: var(--fg-2);
 }
+
+/* Inline emphasis used by hl() — keyword highlights inside body text */
+.hl {
+  font-weight: 700;
+  color: var(--fg);
+}
+.solution-tradeoff-list .hl { color: var(--warn); }
+.solution-why-list .hl { color: var(--accent); }
 
 /* RESULT — metric trio rendered from data */
 .challenge-results {
@@ -972,18 +1073,22 @@ a.hero-meta-value:hover { color: var(--accent); }
   gap: 16px;
   min-width: 0;
   min-height: 0;
+  /* When inline-style `height` is set (matched to .challenge-text), this
+     becomes the cap; otherwise it grows naturally. */
 }
-/* CodeBlock should fill the available row height set by the text column. */
+/* CodeBlock fills challenge-code's height; body owns the scroll. */
 .challenge-code .code-block {
   display: flex;
   flex-direction: column;
   flex: 1;
   min-height: 0;
+  overflow: hidden;
 }
 .challenge-code .code-block-body {
   flex: 1;
   min-height: 0;
   max-height: none;
+  overflow: auto;
 }
 
 /* ---------- SOLUTION block — internal expansion ----------

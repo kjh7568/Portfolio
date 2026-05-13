@@ -27,12 +27,15 @@ function Section({ id, eyebrow, title, meta, children, alt = false, narrow = fal
 }
 
 // Sub-section divider used inside a project's 6-part flow
-function SubSection({ tag, title, meta, children }) {
+function SubSection({ tag, title, subtitle, meta, children }) {
   return (
     <div className="subsection">
       <div className="subsection-head">
         {tag ? <div className="subsection-tag">{tag}</div> : null}
-        <h3 className="subsection-title">{title}</h3>
+        <div className="subsection-title-col">
+          <h3 className="subsection-title">{title}</h3>
+          {subtitle ? <div className="subsection-subtitle">{subtitle}</div> : null}
+        </div>
         {meta ? <div className="subsection-meta">{meta}</div> : null}
       </div>
       <div className="subsection-body">{children}</div>
