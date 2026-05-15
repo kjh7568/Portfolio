@@ -318,9 +318,9 @@ function ProjectChallenge({ index, reverse, seed, challenge }) {
               })}
             </div>
 
-            {/* Why? — label + bullet list (2 items), blue accent bar */}
+            {/* 선택 이유 — label + bullet list (2 items), blue accent bar */}
             <div className="solution-why-line">
-              <span className="solution-why-label">Why?</span>
+              <span className="solution-why-label">선택 이유</span>
               {Array.isArray(challenge && challenge.why) ? (
                 <ul className="solution-why-list">
                   {challenge.why.map((w, i) => <li key={i}>{hl(w)}</li>)}
@@ -332,9 +332,9 @@ function ProjectChallenge({ index, reverse, seed, challenge }) {
               )}
             </div>
 
-            {/* Trade-off — same shape as Why, warn accent bar */}
+            {/* 감수한 대가 — same shape as 선택 이유, warn accent bar */}
             <div className="solution-tradeoff-line">
-              <span className="solution-tradeoff-label">Trade-off:</span>
+              <span className="solution-tradeoff-label">감수한 대가</span>
               {Array.isArray(challenge && challenge.tradeoff) ? (
                 <ul className="solution-tradeoff-list">
                   {challenge.tradeoff.map((t, i) => <li key={i}>{hl(t)}</li>)}

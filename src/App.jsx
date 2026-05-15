@@ -23,7 +23,7 @@ function TopNav({ activeId, onJump }) {
           onClick={(e) => { e.preventDefault(); onJump("top"); }}
         >
           <span className="topnav-mark-dot" />
-          PORTFOLIO · v3
+          PORTFOLIO
         </a>
         <div className="topnav-links">
           {NAV.map((item) => (
@@ -73,8 +73,7 @@ function App() {
   const handleJump = (id) => {
     const el = document.getElementById(id);
     if (!el) return;
-    const y = el.getBoundingClientRect().top + window.pageYOffset - 64;
-    window.scrollTo({ top: y, behavior: "smooth" });
+    el.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   const appCls = [
@@ -103,9 +102,9 @@ function App() {
           <div className="row gap-5" style={{ justifyContent: "space-between", alignItems: "baseline" }}>
             <div className="stack gap-2">
               <Eyebrow>END OF PORTFOLIO</Eyebrow>
-              <SkelLine w={240} h={14} />
+              <p className="body fg-3">끝까지 읽어주셔서 감사합니다.</p>
             </div>
-            <span className="caption">PORTFOLIO · v3 — Skeleton UI</span>
+            <span className="caption">PORTFOLIO</span>
           </div>
         </div>
       </footer>

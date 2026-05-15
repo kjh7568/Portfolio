@@ -77,6 +77,10 @@ body {
   width: 100%;
   padding: 120px 0;
   border-top: 1px solid var(--line);
+  scroll-margin-top: 64px;
+}
+#top {
+  scroll-margin-top: 64px;
 }
 .section:first-of-type { border-top: 0; }
 .section.alt { background: var(--bg-alt); }
@@ -523,15 +527,16 @@ body {
   display: grid;
   grid-template-columns: 1fr 320px;
   gap: 64px;
-  align-items: start;
+  align-items: center;
 }
 .hero-left { display: flex; flex-direction: column; gap: 32px; }
 .hero-slogan {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 16px;
   margin: 0;
   color: var(--fg);
+  line-height: 1.25;
 }
 .hero-slogan-line { display: block; }
 .hero-tagline {

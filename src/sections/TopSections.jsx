@@ -11,16 +11,16 @@ function Hero() {
 
           {/* slogan (display title, 3 lines) */}
           <h1 className="hero-slogan display-3">
-            <span className="hero-slogan-line">문제의 원인을 <span className="fg-2">추적</span>하고,</span>
-            <span className="hero-slogan-line"><span className="hl-blue">구조</span>로 해결하고,</span>
-            <span className="hero-slogan-line">수치로 <span className="fg-2">증명</span>합니다.</span>
+            <span className="hero-slogan-line">일단 <span className="hl-blue">되게</span> 만들고,</span>
+            <span className="hero-slogan-line">그 다음 <span className="hl-blue">좋게</span> 만들고,</span>
+            <span className="hero-slogan-line">그 다음 <span className="hl-blue">빠르게</span> 만듭니다.</span>
           </h1>
 
           {/* short tagline */}
           <div className="hero-tagline">
-            <p className="body-lg fg">구조를 먼저 세우고, 경험을 먼저 그립니다.</p>
+            <p className="body-lg fg">완벽한 시스템이 아닌, 진화하는 시스템을 만듭니다.</p>
             <p className="body fg-3">
-              데이터 흐름과 책임 소재를 정의한 뒤, 인터페이스와 시스템으로 그 경험을 재현하는 Unity 클라이언트 개발자 김지훈입니다.
+              기획이 바뀌고, 밸런스가 흔들리고, 요구사항이 달라져도 그 변화에 대응할 수 있는 구조를 먼저 고민하고, 플레이어가 실제로 느끼는 경험을 설계하는 Unity 클라이언트 개발자 김지훈입니다.
             </p>
           </div>
 
@@ -49,27 +49,6 @@ function Hero() {
             <div className="hero-identity-role">Unity Client Developer</div>
           </div>
 
-          <div className="hero-edu">
-            <Eyebrow>학력 · EDUCATION</Eyebrow>
-            <ol className="edu-timeline">
-              <li className="edu-item">
-                <span className="edu-dot" aria-hidden />
-                <div className="edu-body">
-                  <div className="edu-date mono-sm">2019.03 — 2026.08</div>
-                  <div className="edu-school">강원대학교</div>
-                  <div className="edu-major">컴퓨터과학전공</div>
-                </div>
-              </li>
-              <li className="edu-item is-active">
-                <span className="edu-dot" aria-hidden />
-                <div className="edu-body">
-                  <div className="edu-date mono-sm">2025.01 — 2025.08</div>
-                  <div className="edu-school">경일게임아카데미</div>
-                  <div className="edu-major">클라이언트 개발자 과정</div>
-                </div>
-              </li>
-            </ol>
-          </div>
         </div>
       </div>
     </section>
