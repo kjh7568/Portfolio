@@ -47,6 +47,35 @@ const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
   "density": "comfortable"
 }/*EDITMODE-END*/;
 
+function LightboxHost() {
+  const [img, setImg] = React.useState(null);
+
+  React.useEffect(() => {
+    const open = (e) => setImg(e.detail);
+    document.addEventListener("lightbox:open", open);
+    return () => document.removeEventListener("lightbox:open", open);
+  }, []);
+
+  React.useEffect(() => {
+    if (!img) return;
+    const onKey = (e) => { if (e.key === "Escape") setImg(null); };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [img]);
+
+  if (!img) return null;
+  return (
+    <div className="lightbox-overlay" onClick={() => setImg(null)}>
+      <img
+        className="lightbox-img"
+        src={img.src}
+        alt={img.alt || ""}
+        onClick={(e) => e.stopPropagation()}
+      />
+    </div>
+  );
+}
+
 function App() {
   const [activeId, setActiveId] = useState("top");
   const [tweak, setTweak] = useTweaks(TWEAK_DEFAULTS);
@@ -84,6 +113,7 @@ function App() {
 
   return (
     <div className={appCls}>
+      <LightboxHost />
       <TopNav activeId={activeId} onJump={handleJump} />
 
       <div id="top">

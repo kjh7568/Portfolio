@@ -60,7 +60,7 @@ window.PROJECTS = [
         image: "./asset/clone-puzzle/feature-3.gif",
       },
     ],
-    featuresVideo: "https://youtu.be/FbooNqqnYjU?si=GmteqdsE2sP1CjBy",
+    featuresVideo: "https://youtu.be/H0rjVcHeFKU",
     // Section C / D — Technical Challenges.
     // Each entry follows the new SOLUTION block model:
     //   alternatives: [{ label, title, body }, { label, title, body, chosen: true }]
@@ -73,14 +73,14 @@ window.PROJECTS = [
         subtitle: "스택 구조에서도 모든 무게를 누락 없이 합산하도록 개선",
         media: {
           before: {
-            src: "./asset/clone-puzzle/feature-2.gif",
+            src: "./asset/clone-puzzle/TS1_Before.gif",
             alt: "무게가 누락되는 저울 기믹 문제 상황",
             label: "해결 전",
             note: "위쪽 무게 누락",
             caption: "위쪽 물체의 무게가 누락되어 저울 반응이 의도와 다르게 보이던 상태",
           },
           after: {
-            src: "./asset/clone-puzzle/feature-2.gif",
+            src: "./asset/clone-puzzle/TS1_After.gif",
             alt: "스택 무게가 합산되는 저울 기믹 개선 후",
             label: "해결 후",
             note: "스택 무게 합산",
@@ -110,7 +110,7 @@ window.PROJECTS = [
         ],
         tradeoff: [
           "**비용**: FixedUpdate마다 OverlapBoxAll 2회 호출.",
-          "**제약**: 2단 스택까지만 정확 — 2단 이상 적재할 상황이 없다는 전제로 감수했습니다.",
+          "**제약**: 2단 스택까지만 정확하며, 2단 이상 적재할 상황이 없다는 전제로 감수했습니다.",
         ],
         results: [
           { metric: "1단 → 2단",     label: "스택 무게 인식" },
@@ -187,14 +187,14 @@ public class ScaleWeightSource : MonoBehaviour
         subtitle: "실행 순서 의존을 제거해 클론 입력을 100% 일치시키도록 개선",
         media: {
           before: {
-            src: "./asset/clone-puzzle/feature-1.gif",
+            src: "./asset/clone-puzzle/TS2_Before.gif",
             alt: "클론 입력 재생이 어긋나는 문제 상황",
             label: "해결 전",
             note: "입력 소비 순서에 따라 위치 불일치",
             caption: "입력 소비 순서에 따라 클론이 같은 행동을 다르게 재생하던 상태",
           },
           after: {
-            src: "./asset/clone-puzzle/feature-1.gif",
+            src: "./asset/clone-puzzle/TS2_After.gif",
             alt: "클론 입력 재생이 일치하는 개선 후",
             label: "해결 후",
             note: "녹화/소비 분리로 동일 위치 재생",
@@ -220,11 +220,11 @@ public class ScaleWeightSource : MonoBehaviour
         ],
         why: [
           "외부 설정이 아닌 **컴포넌트 자체로 결정론 보증**.",
-          "**IInputProvider 시그니처 보존** — Actor·Playback 변경 0줄.",
+          "**IInputProvider 시그니처 보존**: Actor·Playback 변경 0줄.",
         ],
         tradeoff: [
           "**비용**: 입력 액션당 bool 필드 2개 (점프 → _jumpPressed + _jumpRecord).",
-          "**제약**: 새 입력마다 두 필드 set 필수 — 누락 시 입력이 조용히 사라짐.",
+          "**제약**: 새 입력마다 두 필드 set 필수이며, 누락 시 입력이 조용히 사라짐.",
         ],
         results: [
           { metric: "부분 손실 → 100%", label: "클론 재생 일치율" },
@@ -430,7 +430,7 @@ public interface IInputProvider
         image: "./asset/tavern-tales/feature-3.gif",
       },
     ],
-    featuresVideo: "",
+    featuresVideo: "https://youtu.be/8vv70TNvvhQ",
     challenges: [
       {
         // SECTION C — Technical Challenge 01
@@ -438,14 +438,14 @@ public interface IInputProvider
         subtitle: "이동 의도 선언 시점에 칸을 선점하는 이중 점유 구조로 시점 공백 해소",
         media: {
           before: {
-            src: "./asset/tavern-tales/challenge-c-before.gif",
+            src: "./asset/tavern-tales/TS1_Before.gif",
             alt: "회전 대기 중 두 유닛이 같은 칸으로 이동하는 문제 상황",
             label: "해결 전",
             note: "회전 중 칸 비어 있음",
             caption: "회전 애니메이션 재생 중 목표 칸이 빈 것으로 판단되어 두 유닛이 동시에 이동하는 상태",
           },
           after: {
-            src: "./asset/tavern-tales/challenge-c-after.gif",
+            src: "./asset/tavern-tales/TS1_After.gif",
             alt: "선점 예약으로 칸 겹침이 해소된 개선 후",
             label: "해결 후",
             note: "예약으로 칸 선점",
@@ -453,7 +453,7 @@ public interface IInputProvider
           },
         },
         problem:
-          "회전 애니메이션(0.5초) 재생 중 **목표 칸이 빈 상태**로 유지되어, 인접 유닛이 같은 칸으로 이동 — **한 칸에 두 유닛이 동시 점유**하는 겹침이 발생했습니다.",
+          "회전 애니메이션(0.5초) 재생 중 **목표 칸이 빈 상태**로 유지되어, 인접 유닛이 같은 칸으로 이동하면서 **한 칸에 두 유닛이 동시 점유**하는 겹침이 발생했습니다.",
         cause:
           "**칸 점유 처리가 실제 이동 시작 시점에만 존재**해, 회전 구간에서 목표 칸이 빈 상태로 남아 **다른 유닛의 경로 탐색에 유효한 이동지로 포함**됐습니다.",
         alternatives: [
@@ -470,7 +470,7 @@ public interface IInputProvider
           },
         ],
         why: [
-          "**UX 보존**: 회전 애니메이션은 방향 변화를 인지시키는 피드백 — 제거 시 가독성 손실.",
+          "**UX 보존**: 회전 애니메이션은 방향 변화를 인지시키는 피드백으로, 제거 시 가독성 손실이 발생합니다.",
           "**부가 활용**: 예약 상태를 적 이동 선감지에 재사용할 수 있기 때문입니다.",
         ],
         tradeoff: [
@@ -570,14 +570,14 @@ private IEnumerator AutoCombatLoop()
         subtitle: "스킬 실행을 전담 클래스로 위임해 컨트롤러 수정 없이 스킬 확장 가능한 구조로 전환",
         media: {
           before: {
-            src: "./asset/tavern-tales/challenge-d-before.gif",
+            src: "./asset/tavern-tales/TS2_Before.png",
             alt: "스킬 추가마다 MercenaryController를 직접 수정하는 문제 상황",
             label: "해결 전",
             note: "스킬마다 컨트롤러 직접 수정",
             caption: "스킬마다 분기가 누적되어 MercenaryController가 모든 스킬 로직의 보관소가 된 상태",
           },
           after: {
-            src: "./asset/tavern-tales/challenge-d-after.gif",
+            src: "./asset/tavern-tales/TS2_After.png",
             alt: "ISkillExecutor 위임으로 컨트롤러 수정 없이 스킬 확장 가능한 개선 후",
             label: "해결 후",
             note: "Executor 추가 + Factory 1줄",
@@ -606,7 +606,7 @@ private IEnumerator AutoCombatLoop()
           "**기존 스킬 안전**: 독립 파일로 분리되어 수정이 다른 스킬에 영향을 주지 않습니다.",
         ],
         tradeoff: [
-          "**파일 수 증가**: 스킬당 전담 파일 1개 — 현재 10개 파일로 분산됩니다.",
+          "**파일 수 증가**: 스킬당 전담 파일 1개로, 현재 10개 파일로 분산됩니다.",
           "**경유 호출**: 발동 빈도상 체감 성능 차이는 없다는 전제로 감수했습니다.",
         ],
         results: [
@@ -756,7 +756,7 @@ protected override void ExecuteAttack()
     genre: "3D 핵앤슬래시 액션 RPG",
     year: "2025",
     desc: "메인 젬과 보조 젬의 조합으로 자신만의 스킬을 만들어가는 3D 핵앤슬래시 액션 RPG",
-    tags: ["NavMesh", "CSV 데이터 드리븐", "Dependency Injection", "ScriptableObject"],
+    tags: ["NavMesh", "CSV 데이터 드리븐", "Component Pattern", "ScriptableObject"],
     overview: {
       subtitle: "메인 젬과 보조 젬의 조합으로 자신만의 스킬을 만들어가는 3D 핵앤슬래시 액션 RPG",
       keyVisual: "./asset/legend-of-gem/title.png",
@@ -784,7 +784,7 @@ protected override void ExecuteAttack()
         "ScriptableObject",
         "CSV 데이터 드리븐",
         "uGUI 드래그&드롭",
-        "Dependency Injection",
+        "Component Pattern",
       ],
     },
     features: [
@@ -815,14 +815,14 @@ protected override void ExecuteAttack()
         subtitle: "직선 거리를 실제 NavMesh 경로 거리로 전환해 벽 관통 감지 문제 해결",
         media: {
           before: {
-            src: "./asset/legend-of-gem/challenge-c-before.gif",
+            src: "./asset/legend-of-gem/TS1_Before.png",
             alt: "벽 너머 몬스터가 플레이어를 감지하는 문제 상황",
             label: "해결 전",
             note: "벽 너머 일제 반응",
             caption: "직선 거리 기준으로 감지해 벽으로 분리된 공간에서도 몬스터 전체가 반응하던 상태",
           },
           after: {
-            src: "./asset/legend-of-gem/challenge-c-after.gif",
+            src: "./asset/legend-of-gem/TS1_After.png",
             alt: "NavMesh 경로 거리로 벽 관통 감지가 제거된 개선 후",
             label: "해결 후",
             note: "벽 차단으로 감지 안 됨",
@@ -919,14 +919,14 @@ public class EnemyDetector : MonoBehaviour
         subtitle: "스킬별 전담 클래스 분리로 새 보조젬 추가 시 기존 코드 수정 없이 완성",
         media: {
           before: {
-            src: "./asset/legend-of-gem/challenge-d-before.gif",
+            src: "./asset/legend-of-gem/TS2_Before.png",
             alt: "보조젬 추가마다 SkillController를 직접 수정하는 문제 상황",
             label: "해결 전",
             note: "보조젬마다 컨트롤러 직접 수정",
             caption: "보조젬이 추가될수록 조건 분기가 누적되어 SkillController가 모든 젬 로직의 보관소가 된 상태",
           },
           after: {
-            src: "./asset/legend-of-gem/challenge-d-after.gif",
+            src: "./asset/legend-of-gem/TS2_After.png",
             alt: "ISocketGemEffect 위임으로 컨트롤러 수정 없이 보조젬 확장 가능한 개선 후",
             label: "해결 후",
             note: "전담 클래스 추가 + 레지스트리 1줄",
@@ -955,7 +955,7 @@ public class EnemyDetector : MonoBehaviour
           "**기존 스킬 안전**: 독립 파일로 분리되어 수정이 다른 스킬에 영향을 주지 않습니다.",
         ],
         tradeoff: [
-          "**파일 수 증가**: 보조젬당 전담 파일 1개 — 현재 10개 파일로 분산됩니다.",
+          "**파일 수 증가**: 보조젬당 전담 파일 1개로, 현재 10개 파일로 분산됩니다.",
           "**경유 호출**: 발동 빈도상 체감 성능 차이는 없다는 전제로 감수했습니다.",
         ],
         results: [
@@ -1105,8 +1105,8 @@ public class SkillManager : MonoBehaviour
         },
         {
           num: 3,
-          title: "씬 전환 시 데이터 저장·복원 시점 명확화",
-          body: "저장·복원·정리로 시점을 분리하고 단일 진입점을 둡니다. 순서가 바뀌어도 데이터 흐름이 달라지지 않게 합니다.",
+          title: "컴포넌트 패턴에 DI 구조 적용 예정",
+          body: "현재 메인젬과 보조젬은 컴포넌트 패턴으로 런타임 조립됩니다. 추후 보조젬 의존성을 외부에서 주입하는 구조로 개선해 결합도를 낮출 예정입니다.",
         },
       ],
     },
@@ -1148,12 +1148,12 @@ window.TECH_STACK = [
       },
       {
         level: "sub",
-        name: "디자인 패턴 (FSM · Abstract Factory · Factory · DI)",
+        name: "디자인 패턴",
         usages: [
-          "Augment Zero : 보스 AI",
-          "유니모 : 몬스터 생성",
-          "TavernTales : 스킬",
-          "Legend of Gem : 스킬 젬 시스템",
+          "Augment Zero : 보스 AI - FSM",
+          "유니모 : 몬스터 생성 - 추상 팩토리",
+          "TavernTales : 기물 스킬 - 팩토리",
+          "Legend of Gem : 스킬 젬 시스템 - 컴포넌트",
         ],
       },
       {

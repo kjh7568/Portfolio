@@ -1751,6 +1751,47 @@ a.hero-meta-value:hover { color: var(--accent); }
 .app.density-compact .section { padding: 80px 0; }
 .app.density-spacious .section { padding: 160px 0; }
 
+/* ---------- Lightbox ---------- */
+.lightbox-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.78);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  cursor: zoom-out;
+  animation: lightbox-fade-in 0.18s var(--ease) both;
+}
+
+@keyframes lightbox-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.lightbox-img {
+  width: min(88vw, 1080px);
+  height: auto;
+  max-height: 85vh;
+  border-radius: var(--r-2);
+  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.55);
+  cursor: default;
+  animation: lightbox-scale-in 0.2s var(--ease) both;
+}
+
+@keyframes lightbox-scale-in {
+  from { transform: scale(0.94); opacity: 0; }
+  to   { transform: scale(1);    opacity: 1; }
+}
+
+/* Clickable image hint */
+.overview-keyvisual,
+.feature-card-media,
+.challenge-media-img {
+  cursor: zoom-in;
+}
+
 /* Reduce motion */
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; animation: none !important; }

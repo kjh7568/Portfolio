@@ -3,6 +3,10 @@
 // Each project renders this whole sequence with its own data.
 // =========================================================
 
+function openLightbox(src, alt) {
+  document.dispatchEvent(new CustomEvent("lightbox:open", { detail: { src, alt } }));
+}
+
 // ---------- A. Overview (hero layout) ----------
 function ProjectOverview({ p, index }) {
   const ov = p.overview || {};
@@ -36,7 +40,7 @@ function ProjectOverview({ p, index }) {
           {/* LEFT — key visual + link cards */}
           <div className="overview-left">
             {ov.keyVisual
-              ? <img className="overview-keyvisual" src={ov.keyVisual} alt={p.name + " key visual"} />
+              ? <img className="overview-keyvisual" src={ov.keyVisual} alt={p.name + " key visual"} onClick={() => openLightbox(ov.keyVisual, p.name + " key visual")} />
               : <SkelMedia aspect="16x9" label="KEY VISUAL · 16:9" />}
 
             {/* Repository */}
@@ -181,7 +185,7 @@ function ProjectFeatures({ p }) {
             return (
               <article key={i} className="feature-card">
                 {f.image
-                  ? <img className="feature-card-media" src={f.image} alt={"feature " + n} />
+                  ? <img className="feature-card-media" src={f.image} alt={"feature " + n} onClick={() => openLightbox(f.image, f.title || "feature " + n)} />
                   : <SkelMedia aspect="16x9" label={"FEATURE 0" + n + " · MEDIA"} />}
                 <div className="feature-card-body">
                   <div className="feature-card-head">
@@ -379,6 +383,7 @@ function ProjectChallenge({ index, reverse, seed, challenge }) {
                       className="challenge-media-img"
                       src={item.src}
                       alt={item.alt || challenge.title || "troubleshooting media"}
+                      onClick={() => openLightbox(item.src, item.alt || challenge.title)}
                     />
                     <span className="challenge-media-label">{item.label || (i === 0 ? "해결 전" : "해결 후")}</span>
                     {item.note && (
