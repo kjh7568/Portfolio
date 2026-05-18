@@ -1209,14 +1209,6 @@ window.TECH_STACK = [
       },
       {
         level: "sub",
-        name: "Firebase Auth · Firestore",
-        usages: [
-          "BANG! Online : 유저관리 · 로그인",
-          "유니모 : 유저관리 · 로그인",
-        ],
-      },
-      {
-        level: "sub",
         name: "RPC / NetworkedVar",
         usages: ["BANG! Online : 이벤트 통신, 역할별 권한 검증"],
       },
